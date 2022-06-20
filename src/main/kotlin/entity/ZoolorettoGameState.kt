@@ -12,11 +12,11 @@ import java.util.*
  * @param [deliveryTruck] List of the delivery Trucks
  */
 data class ZoolorettoGameState(
-    val paused: Boolean = false, val roundDisc: Boolean = false, val players : Queue<Player>,
-    val bank: Int = 0, val tileStack: TileStack, val deliveryTruck: MutableList<DeliveryTruck>
+    var paused: Boolean = false, var roundDisc: Boolean = false, val players : Queue<Player>,
+    var bank: Int = 0, val tileStack: TileStack, val deliveryTrucks: MutableList<DeliveryTruck>
 ) {
     init {
-        require(deliveryTruck.size in 3..5){"The number of delivery trucks must be between 3 and 5."}
+        require(deliveryTrucks.size in 3..5){"The number of delivery trucks must be between 3 and 5."}
         require(players.size in 2..5){"Invalid number of players. It must be between 2 and 5."}
     }
 }

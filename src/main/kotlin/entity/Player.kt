@@ -16,10 +16,10 @@ data class Player(
     val playerName: String, val botSkillLevel: Difficulty,
     val playerEnclosure: MutableList<Enclosure>, val barn: Enclosure
 ){
-    val passed: Boolean = false
-    val coins = 2
-    val chosenTruck = DeliveryTruck()
-    val score = 0
+    var passed: Boolean = false
+    var coins = 2
+    var chosenTruck : DeliveryTruck? = null
+    var score = 0
 
     init{
         require(playerEnclosure.size in 3..5){"Invalid number of Enclosures."}

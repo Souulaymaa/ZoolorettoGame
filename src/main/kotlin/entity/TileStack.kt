@@ -1,5 +1,5 @@
 package entity
-
+import java.util.Stack
 /**
  * Data class that represents a stock of [tiles]
  *
@@ -8,7 +8,7 @@ package entity
  */
 data class TileStack(val drawStack : Stack<Tile>, val endStack: Stack<Tile>){
     init {
-        require(endStack.size() <= 15){"The end stack of tiles cannot have more than 15 tiles."}
-        require(drawStack.size() <= 112){"The draw stack cannot have more than 112 tiles"}
+        require(endStack.size <= 15){"The end stack of tiles cannot have more than 15 tiles."}
+        require(drawStack.size <= 112){"The draw stack cannot have more than 112 tiles"}
     }
 }

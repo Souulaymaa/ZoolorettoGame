@@ -8,7 +8,7 @@ package entity
  */
 data class DeliveryTruck(val size: Int = 3) {
 
-    val tilesOnTruck = listOf<Tile>()
+    val tilesOnTruck = arrayListOf<Tile>()
 
     init {
         require(tilesOnTruck.size in 0..3) { "Size of tiles must be 0-3. Size was " + tilesOnTruck.size }

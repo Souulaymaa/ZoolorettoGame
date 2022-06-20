@@ -1,5 +1,5 @@
 package entity
-
+import java.util.Stack
 /**
  * Data class that represents the whole Zooloretto game.
  *
@@ -8,9 +8,9 @@ package entity
  * @param undoStack: Stack to undo the current action
  * @param redoStack: Stack to redo the current action
  */
-data class ZoolorettoGame (val simSpeed: Float, val currentGameState: ZoolorettoGameState) {
+data class ZoolorettoGame (val simSpeed: Float, var currentGameState: ZoolorettoGameState) {
 
-    val undoStack = Stack<ZoolorettoGameState>()
-    val redoStack = Stack<ZoolorettoGameState>()
+    var undoStack = Stack<ZoolorettoGameState>()
+    var redoStack = Stack<ZoolorettoGameState>()
 
 }
