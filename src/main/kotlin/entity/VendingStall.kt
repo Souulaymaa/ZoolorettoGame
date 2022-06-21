@@ -8,3 +8,5 @@ package entity
 
 
 data class VendingStall (val stall: StallType):Tile
+
+
