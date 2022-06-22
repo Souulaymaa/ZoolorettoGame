@@ -47,8 +47,8 @@ class ZoolorettoGameTest {
 
         assertNotNull(zoolorettoGame)
         assertNotNull(currentGameState)
-        assertEquals(currentGameState.players.size, 2)
-        assertEquals(currentGameState.deliveryTrucks.size, 3)
+        assertEquals(zoolorettoGame.currentGameState.players.size, 2)
+        assertEquals(zoolorettoGame.currentGameState.deliveryTrucks.size, 3)
     }
 
 }
