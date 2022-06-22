@@ -22,11 +22,11 @@ class ZoolorettoGameTest {
     private val enclosure3 = Enclosure(4, 2, 0, Pair(5,4), false)
 
     /**
-     * test if the [zoolorettoGame] and [currentGameState] aren't null
+     * test if the zoolorettoGame and currentGameState aren't null
      * and if the number of players and trucks is right.
      */
     @Test
-    fun testGameNotNullAndOtherThings() {
+    fun testZoolorettoGame() {
         deliveryTrucks.add(deliveryTruck1)
         deliveryTrucks.add(deliveryTruck2)
         deliveryTrucks.add(deliveryTruck3)
