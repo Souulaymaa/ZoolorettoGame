@@ -23,7 +23,7 @@ class EnclosureTest {
      * checking if getting and setting the animal tiles work
      */
     @Test
-    fun TestAnimalTiles(){
+    fun testAnimalTiles(){
         enclosure1.animalTiles = arrayListOf(animal1, animal2, animal3)
         assertEquals(enclosure1.animalTiles[0], animal1)
         assertEquals(enclosure1.animalTiles[1], animal2)
@@ -34,7 +34,7 @@ class EnclosureTest {
      * checking if getting and setting the vending stalls work
      */
     @Test
-    fun TestVendingStalls(){
+    fun testVendingStalls(){
         enclosure1.vendingStalls = arrayListOf(v1, v2, v3)
         assertEquals( enclosure1.vendingStalls[0], v1)
         assertEquals( enclosure1.vendingStalls[1], v2)
@@ -46,7 +46,7 @@ class EnclosureTest {
      * checking if setting and getting the value of "isBarn" work
      */
     @Test
-    fun TestBarn(){
+    fun testBarn(){
         assertFalse(enclosure1.isBarn)
         enclosure1.isBarn = true
         assertTrue(enclosure1.isBarn)
