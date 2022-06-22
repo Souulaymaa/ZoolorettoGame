@@ -3,7 +3,6 @@ package entity
 /**
  * Enum to distinguish between game species (animals are called with letters)
  */
-
 enum class Species {
     F,
     P,
@@ -31,6 +30,4 @@ enum class Species {
             E -> "Elefant"
             U -> "Kaenguru"
         }
-
-
 }
