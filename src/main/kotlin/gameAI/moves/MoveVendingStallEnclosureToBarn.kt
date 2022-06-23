@@ -1,10 +1,10 @@
-package gameAI
+package gameAI.moves
 
 import entity.Enclosure
 import entity.Player
-import javax.print.attribute.standard.Destination
+import gameAI.Move
 
-class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Player) : Move{
+class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Player) : Move {
 
     override fun performMove() {
         super.performMove()

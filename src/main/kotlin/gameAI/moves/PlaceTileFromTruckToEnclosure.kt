@@ -1,8 +1,9 @@
-package gameAI
+package gameAI.moves
 
-import entity.Tile
+import entity.Enclosure
+import gameAI.Move
 
-class DiscardTile(val target : Tile) : Move {
+class PlaceTileFromTruckToEnclosure(val destination : Enclosure) : Move {
 
     override fun performMove() {
         super.performMove()
@@ -11,4 +12,6 @@ class DiscardTile(val target : Tile) : Move {
     override fun toHintString() {
         super.toHintString()
     }
+
+
 }

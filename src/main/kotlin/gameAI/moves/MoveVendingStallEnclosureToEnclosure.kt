@@ -1,4 +1,4 @@
-package gameAI
+package gameAI.moves
 
 class MoveVendingStallEnclosureToEnclosure {
 }

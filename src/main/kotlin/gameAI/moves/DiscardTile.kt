@@ -1,8 +1,9 @@
-package gameAI
+package gameAI.moves
 
-import entity.Player
+import entity.Tile
+import gameAI.Move
 
-class PlaceTileFromTruckToBarn(destination: Player) :Move {
+class DiscardTile(val target : Tile) : Move {
 
     override fun performMove() {
         super.performMove()
@@ -11,5 +12,4 @@ class PlaceTileFromTruckToBarn(destination: Player) :Move {
     override fun toHintString() {
         super.toHintString()
     }
-
 }

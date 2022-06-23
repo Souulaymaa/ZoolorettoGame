@@ -1,7 +1,7 @@
-package gameAI
+package gameAI.moves
 
 import entity.Enclosure
-import javax.print.attribute.standard.Destination
+import gameAI.Move
 
 class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destination: Enclosure) : Move {
 

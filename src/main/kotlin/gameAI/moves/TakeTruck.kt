@@ -1,6 +1,9 @@
-package gameAI
+package gameAI.moves
 
-class ExpandZoo : Move {
+import entity.DeliveryTruck
+import gameAI.Move
+
+class TakeTruck(val truck: DeliveryTruck) : Move {
 
     override fun performMove() {
         super.performMove()
@@ -9,4 +12,5 @@ class ExpandZoo : Move {
     override fun toHintString() {
         super.toHintString()
     }
+
 }

@@ -1,10 +1,11 @@
-package gameAI
+package gameAI.moves
 
-import entity.Enclosure
 import entity.Player
 import entity.Tile
+import gameAI.Move
 
-class MoveTileFromBarnToEnclosure(val source: Player, val destination: Enclosure, val tile: Tile) : Move {
+class PurchaseTile(val player: Player, val tile: Tile) : Move {
+
     override fun performMove() {
         super.performMove()
     }
@@ -12,5 +13,4 @@ class MoveTileFromBarnToEnclosure(val source: Player, val destination: Enclosure
     override fun toHintString() {
         super.toHintString()
     }
-
 }

@@ -1,8 +1,9 @@
-package gameAI
+package gameAI.moves
 
 import entity.DeliveryTruck
+import gameAI.Move
 
-class TakeTruck(val truck: DeliveryTruck) : Move {
+class AddTileToTruck(val truck: DeliveryTruck) : Move {
 
     override fun performMove() {
         super.performMove()
