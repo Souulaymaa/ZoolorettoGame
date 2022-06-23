@@ -46,7 +46,8 @@ class ZoolorettoGameStateTest {
         players.add(player1)
         players.add(player2)
 
-        val zoolorettoGameState = ZoolorettoGameState(players = players, tileStack = tileStack, deliveryTrucks = deliveryTrucks)
+        val zoolorettoGameState = ZoolorettoGameState(players = players, tileStack = tileStack,
+            deliveryTrucks = deliveryTrucks)
 
         assertNotNull(zoolorettoGameState)
 
