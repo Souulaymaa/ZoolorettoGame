@@ -1,8 +1,5 @@
-package Entity
+package entity
 
-import entity.Difficulty
-import entity.Enclosure
-import entity.Player
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -17,7 +14,6 @@ class PlayerTest {
     private val enclosure = Enclosure(5, 1, 2, Pair(8, 5), false)
     private val enclosures = mutableListOf<Enclosure>()
     private val barn = Enclosure(104, 12, 0, Pair(0, 0), false)
-
 
     /**
      * Check if player has his initial values
