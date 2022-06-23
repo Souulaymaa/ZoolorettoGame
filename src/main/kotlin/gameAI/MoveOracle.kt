@@ -8,6 +8,10 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     init {
         this.currentGameStateCopy = deepZoolorettoCopy(currentGameState)
     }
+
+    fun determineAllCurrentAllowedMoves() : List<Move> {
+        throw NotImplementedError()
+    }
 }
 
 fun deepZoolorettoCopy(toCopy : ZoolorettoGameState) : ZoolorettoGameState{
