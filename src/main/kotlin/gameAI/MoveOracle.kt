@@ -1,8 +1,6 @@
 package gameAI
 
-import entity.Player
-import entity.Tile
-import entity.ZoolorettoGameState
+import entity.*
 import gameAI.moves.*
 import service.deepZoolorettoCopy
 
@@ -78,6 +76,59 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
     fun determineAllTruckRelatedMoves() : List<Move>{
         throw  NotImplementedError()
+    }
+
+    /**
+     * Function to determine alle possible "Exchange All Tiles" Moves (either from barn to enclosure or
+     * from enclosure to enclosure)
+     */
+    fun determineExchangeAllTileMoves() : List<Move>{
+        val currentPlayer = Player(
+            "mockup player to enable type checking in IDE please replace with rootService later", Difficulty.HUMAN,
+            arrayListOf<Enclosure>(),
+            barn=Enclosure(Int.MAX_VALUE, Int.MAX_VALUE, 0, Pair(10,6), isBarn = true)
+        );
+
+        val moveList = ArrayList<Move>()
+
+        if(currentPlayer.coins >= 1){
+           val combinations = determineSwapCombinations(currentPlayer)
+
+            for((k,v) in combinations){
+                TODO("Generate moves from combinations, don't forget to seperate barn and enclosure moves")
+            }
+        }
+
+        return moveList
+    }
+
+    private fun determineSwapCombinations(player: Player) : Map<Enclosure, List<Enclosure>>{
+        val combinations : HashMap<Enclosure, List<Enclosure>> = HashMap()
+
+        //Create a new list to union playerEnclosure and barn, without modifying playerEnclosure directly
+        val playerEnclosureAndBarn = ArrayList(player.playerEnclosure)
+        playerEnclosureAndBarn.add(player.barn)
+
+        for (j in 0..playerEnclosureAndBarn.size){
+            //Enclosure of the current iteration
+            val sourceEnclosure : Enclosure = playerEnclosureAndBarn[j]
+            val swapTargets = ArrayList<Enclosure>()
+
+            //Now find all possible swaps
+            for(k in j .. playerEnclosureAndBarn.size){
+                val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
+
+                val targetEnclosureHasEnoughSlots = targetEnclosure.maxAnimalSlots <= sourceEnclosure.animalTiles.size
+                val sourceEnclosureHasEnoughSlots = sourceEnclosure.maxAnimalSlots <= targetEnclosure.animalTiles.size
+
+                if(targetEnclosureHasEnoughSlots &&  sourceEnclosureHasEnoughSlots){
+                    swapTargets.add(targetEnclosure)
+                }
+            }
+
+            //Create a new entry in the map
+            combinations.put(sourceEnclosure, swapTargets)
+        }
     }
 }
 
