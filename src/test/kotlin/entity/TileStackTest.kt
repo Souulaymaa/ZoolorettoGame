@@ -13,8 +13,6 @@ class TileStackTest {
     /**
      * Some tiles for tests
      */
-    private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
-    private val tileStackTooManyTiles = TileStack(Stack<Tile>(), Stack<Tile>())
     private val animal1 = Animal(Type.FEMALE, Species.F)
     private val animal2 = Animal(Type.MALE, Species.K)
     private val animal3 = Animal(Type.OFFSPRING, Species.P)
@@ -29,6 +27,7 @@ class TileStackTest {
      */
     @Test
     fun testConstructorCorrect(){
+        val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
         tileStack.drawStack.add(animal1)
         tileStack.drawStack.add(animal2)
         tileStack.drawStack.add(animal3)
@@ -45,6 +44,8 @@ class TileStackTest {
      */
     @Test
     fun testConstructorIncorrect(){
+        val tileStackTooManyTiles = TileStack(Stack<Tile>(), Stack<Tile>())
+
         for(i in 0..19){
             tileStackTooManyTiles.endStack.add(coin1)
         }
