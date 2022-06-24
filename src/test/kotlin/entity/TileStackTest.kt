@@ -1,5 +1,6 @@
 package entity
 
+import java.lang.IllegalArgumentException
 import kotlin.test.*
 import java.util.*
 import kotlin.test.assertEquals
@@ -44,12 +45,15 @@ class TileStackTest {
      */
     @Test
     fun testConstructorIncorrect(){
-        val tileStackTooManyTiles = TileStack(Stack<Tile>(), Stack<Tile>())
-
+        val drawStackCorrect = Stack<Tile>()
+        val endStackIncorrect = Stack<Tile>()
         for(i in 0..19){
-            tileStackTooManyTiles.endStack.add(coin1)
+            drawStackCorrect.add(coin2)
+            endStackIncorrect.add(coin1)
         }
-        assertFalse{ tileStackTooManyTiles.endStack.size <= 15 }
+
+        assertFailsWith<IllegalArgumentException> { TileStack(drawStackCorrect, endStackIncorrect) }
+
     }
 
 }
