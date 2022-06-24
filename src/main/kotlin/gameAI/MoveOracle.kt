@@ -23,14 +23,14 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val rootService = RootService()
         val playerWallet = rootService.ZoolorettoGame.currentGameState.players.peek().coins //ZoolorettoGame needs name on arrow in class Diagram
 
-        val discardTile : DiscardTile
-        val exchangeAllTilesBarnToEnclosure : ExchangeAllTilesBarnToEnclosure
-        val exchangeAllTilesEnclosureToEnclosure : ExchangeAllTilesEnclosureToEnclosure
-        val expandZoo : ExpandZoo
-        val moveTileFromBarnToEnclosure : MoveTileFromBarnToEnclosure
-        val moveVendingStallEnclosureToBarn : MoveVendingStallEnclosureToBarn
-        val moveVendingStallEnclosureToEnclosure : MoveVendingStallEnclosureToEnclosure
-        val purchaseTile : PurchaseTile
+        val discardTile : DiscardTile // sanad
+        val exchangeAllTilesBarnToEnclosure : ExchangeAllTilesBarnToEnclosure // micha
+        val exchangeAllTilesEnclosureToEnclosure : ExchangeAllTilesEnclosureToEnclosure //micha
+        val expandZoo : ExpandZoo// sanad
+        val moveTileFromBarnToEnclosure : MoveTileFromBarnToEnclosure //kassem
+        val moveVendingStallEnclosureToBarn : MoveVendingStallEnclosureToBarn //kassem
+        val moveVendingStallEnclosureToEnclosure : MoveVendingStallEnclosureToEnclosure// kassem
+        val purchaseTile : PurchaseTile // sanad
 
         if (purchaseTilePossible()){
             possibleMoneyMoves.add(purchaseTile)
