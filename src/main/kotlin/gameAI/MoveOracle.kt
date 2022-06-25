@@ -109,13 +109,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val playerEnclosureAndBarn = ArrayList(player.playerEnclosure)
         playerEnclosureAndBarn.add(player.barn)
 
-        for (j in 0..playerEnclosureAndBarn.size){
+        for (j in 0 until playerEnclosureAndBarn.size){
             //Enclosure of the current iteration
             val sourceEnclosure : Enclosure = playerEnclosureAndBarn[j]
             val swapTargets = ArrayList<Enclosure>()
 
             //Now find all possible swaps
-            for(k in j .. playerEnclosureAndBarn.size){
+            for(k in j + 1 until playerEnclosureAndBarn.size){
+                //k might be bigger or equal
+                if(k >= playerEnclosureAndBarn.size){
+                    break;
+                }
+
                 val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
 
                 val targetEnclosureHasEnoughSlots = targetEnclosure.maxAnimalSlots <= sourceEnclosure.animalTiles.size
