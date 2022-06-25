@@ -134,6 +134,8 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             //Create a new entry in the map
             combinations.put(sourceEnclosure, swapTargets)
         }
+
+        return combinations;
     }
 }
 
