@@ -81,27 +81,61 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     /**
      * Function to determine alle possible "Exchange All Tiles" Moves (either from barn to enclosure or
      * from enclosure to enclosure)
+     *
+     * @return List of possible "Exchange All Tiles" Moves
      */
     fun determineExchangeAllTileMoves() : List<Move>{
-        val currentPlayer = Player(
-            "mockup player to enable type checking in IDE please replace with rootService later", Difficulty.HUMAN,
-            arrayListOf<Enclosure>(),
-            barn=Enclosure(Int.MAX_VALUE, Int.MAX_VALUE, 0, Pair(10,6), isBarn = true)
-        );
+        val currentPlayer = rootService.ZoolorettoGame.currentGameState.players.peek()
 
-        val moveList = ArrayList<Move>()
+        var moveList = ArrayList<Move>()
 
         if(currentPlayer.coins >= 1){
            val combinations = determineSwapCombinations(currentPlayer)
 
-            for((k,v) in combinations){
-                TODO("Generate moves from combinations, don't forget to seperate barn and enclosure moves")
-            }
+           moveList = exchangeAllTilesCombinationsToMoves(combinations, currentPlayer)
         }
 
         return moveList
     }
 
+    /**
+     * Function to "flatten" the map of [combinations] into a List of moves. Notice that once we hit a barn enclosure
+     * we use the Player and the [ExchangeAllTilesBarnToEnclosure] class and [ExchangeAllTilesEnclosureToEnclosure]
+     * otherwise.
+     *
+     * @param combinations Mapping from an enclosure to possible swap targets
+     * @param currentPlayer Parameter to fit the [ExchangeAllTilesBarnToEnclosure] cases
+     * @return List of all possible move combinations as Move type
+     */
+    private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
+                                                    currentPlayer: Player): ArrayList<Move>
+     {
+        val moveList = ArrayList<Move>()
+
+        for ((sourceEnclosure, targetList) in combinations) {
+            for (targetEnclosure in targetList) {
+                if (sourceEnclosure.isBarn) {
+                    moveList.add(ExchangeAllTilesBarnToEnclosure(targetEnclosure, currentPlayer))
+                } else if (targetEnclosure.isBarn) {
+                    moveList.add(ExchangeAllTilesBarnToEnclosure(sourceEnclosure, currentPlayer))
+                } else {
+                    moveList.add(ExchangeAllTilesEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
+                }
+            }
+        }
+
+         return moveList
+    }
+
+    /**
+     * Function to determine valid swap combinations of a player's enclosures and barn. The function first unions
+     * the player's barn with the player's enclosures in a new list. Then a nested for-loop creates
+     * all swap combinations. Due to the symmetry of swaps, the nested for-loop can start at one enclosure further
+     * than the outer loop.
+     *
+     * @param player Player with a barn and enclosure
+     * @return combinations Valid swap combinations
+     */
     private fun determineSwapCombinations(player: Player) : Map<Enclosure, List<Enclosure>>{
         val combinations : HashMap<Enclosure, List<Enclosure>> = HashMap()
 
@@ -123,10 +157,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
                 val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
 
-                val targetEnclosureHasEnoughSlots = targetEnclosure.maxAnimalSlots <= sourceEnclosure.animalTiles.size
-                val sourceEnclosureHasEnoughSlots = sourceEnclosure.maxAnimalSlots <= targetEnclosure.animalTiles.size
-
-                if(targetEnclosureHasEnoughSlots &&  sourceEnclosureHasEnoughSlots){
+                if(egibleToSwap(sourceEnclosure, targetEnclosure)){
                     swapTargets.add(targetEnclosure)
                 }
             }
@@ -136,6 +167,20 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
 
         return combinations;
+    }
+
+    /**
+     * Function to check if two enclosures are compatible by their sizes when swapping
+     *
+     * @param source first enclosure to swap, naming does not matter due to symmetry
+     * @param target second enclosure to swap, naming does not matter due to symmetry
+     * @return true if enclosures are compatible, false otherwise
+     */
+    fun egibleToSwap(source : Enclosure, target :Enclosure): Boolean {
+        val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
+        val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
+
+        return targetEnclosureHasEnoughSlots && sourceEnclosureHasEnoughSlots
     }
 }
 
