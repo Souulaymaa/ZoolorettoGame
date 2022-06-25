@@ -3,6 +3,8 @@ package service
 import entity.*
 
 class PlayerActionService(val rootService: RootService) : AbstractRefreshingService() {
+    val tileToEnclosuresMap = mutableMapOf<Tile, List<Enclosure>>()
+
     fun addTile(truck: DeliveryTruck){
         val game = rootService.zoolorettoGame!!.currentGameState
 
@@ -133,6 +135,9 @@ class PlayerActionService(val rootService: RootService) : AbstractRefreshingServ
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
+    fun moveFromEnclosureToBarn(source: Enclosure, destination: Player, tile: Tile) {
+
+    }
     fun expandZoo() {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
@@ -155,15 +160,157 @@ class PlayerActionService(val rootService: RootService) : AbstractRefreshingServ
         rootService.zoolorettoGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
-    fun takeTruck(truck: DeliveryTruck) {
 
+    fun takeTruck(truck: DeliveryTruck) : Map<Tile, List<Enclosure>> {
+
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
+
+        require(game.deliveryTrucks.contains(truck))
+        require(truck.size in 1..3 && truck.tilesOnTruck.isNotEmpty())
+        require(!player.passed)
+
+        if(game.deliveryTrucks.size == 1) {
+            //kopieren von currentGame
+
+            player.chosenTruck = truck
+            game.deliveryTrucks.remove(truck)
+            truck.tilesOnTruck.forEach {
+                when (it) {
+                    is Coin -> player.coins++
+                    else -> {
+                        setTileToEnclosures(it, player)
+                    }
+                }
+            }
+            game.players.forEach {
+                it.passed = false
+            }
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        else {
+            //Kopieren von currentGame
+
+            player = game.players.poll()
+            player.chosenTruck = truck
+            player.passed = true
+            game.deliveryTrucks.remove(truck)
+            truck.tilesOnTruck.forEach {
+                when (it) {
+                    is Coin -> player.coins++
+                    else -> {
+                        setTileToEnclosures(it, player)
+                    }
+                }
+            }
+            game.players.forEach {
+                it.passed = false
+            }
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        return tileToEnclosuresMap
     }
-    fun placeTileFromTruck(destination: Enclosure) {
 
+    fun placeTileFromTruck(destination: Enclosure) : Map<Tile, List<Enclosure>> {
+
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
+        val truck = player.chosenTruck
+
+        require(player.playerEnclosure.contains(destination))
+        checkNotNull(truck)
+        val tile = truck.tilesOnTruck[0]
+        require(tileToEnclosuresMap[tile]!!.contains(destination))
+
+        if(truck.tilesOnTruck.size == 1) {
+            //Kopieren von currentGame
+
+            player = game.players.poll()
+
+            if (tile is VendingStall) {
+                destination.vendingStalls.add(tile)
+                refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
+            }
+            else if (tile is Animal) {
+                destination.animalTiles.add(tile)
+                refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
+            }
+            truck.tilesOnTruck.removeFirst()
+            tileToEnclosuresMap.remove(tile)
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        else {
+            //Kopieren von currentGame
+
+            if (tile is VendingStall) {
+                destination.vendingStalls.add(tile)
+                tileToEnclosuresMap.remove(tile)
+                refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
+            }
+            else if (tile is Animal) {
+                player.barn.animalTiles.add(tile)
+                tileToEnclosuresMap.remove(tile)
+                refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
+            }
+            truck.tilesOnTruck.removeFirst()
+            tileToEnclosuresMap.remove(tile)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        return tileToEnclosuresMap
     }
 
-    fun placeTileFromTruck(destination: Player) {
+    fun placeTileFromTruck(destination: Player) : Map<Tile, List<Enclosure>> {
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
+        val truck = player.chosenTruck
 
+        require(player.equals(destination))
+        checkNotNull(truck)
+        val tile = truck.tilesOnTruck[0]
+
+        if(truck.tilesOnTruck.size == 1) {
+            //Kopieren von currentGame
+
+            player = game.players.poll()
+
+            if (tile is VendingStall) {
+                player.barn.vendingStalls.add(tile)
+            }
+            else if (tile is Animal) {
+                player.barn.animalTiles.add(tile)
+            }
+            truck.tilesOnTruck.removeFirst()
+            tileToEnclosuresMap.remove(tile)
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        else {
+            //Kopieren von currentGame
+
+            if (tile is VendingStall) {
+                player.barn.vendingStalls.add(tile)
+            }
+            else if (tile is Animal) {
+                player.barn.animalTiles.add(tile)
+            }
+            truck.tilesOnTruck.removeFirst()
+            tileToEnclosuresMap.remove(tile)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        return tileToEnclosuresMap
     }
 
     fun exchangeAllTiles(source: Enclosure, destination: Player) {
@@ -184,5 +331,34 @@ class PlayerActionService(val rootService: RootService) : AbstractRefreshingServ
 
     fun showHint() : String {
         return ""
+    }
+
+    private fun setTileToEnclosures(tile: Tile, player: Player) {
+        val availableEnclosures = mutableListOf<Enclosure>()
+        availableEnclosures.add(player.barn)
+
+        if (tile is VendingStall) {
+            player.playerEnclosure.forEach {
+                if(it.vendingStalls.size < it.maxVendingStalls) {
+                    availableEnclosures.add(it)
+                }
+            }
+        }
+        else if (tile is Animal){
+            player.playerEnclosure.forEach {
+                if (it.animalTiles.size == 0) {
+                    availableEnclosures.add(it)
+                }
+                else if (tile.species == it.animalTiles[0].species){
+                    availableEnclosures.add(it)
+                }
+            }
+        }
+        tileToEnclosuresMap[tile] = availableEnclosures
+    }
+    private fun refreshTileToEnclosuresMap(map: Map<Tile, List<Enclosure>>, player: Player) {
+        map.forEach {
+            setTileToEnclosures(it.key, player)
+        }
     }
 }
