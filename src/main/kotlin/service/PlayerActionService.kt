@@ -58,8 +58,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
     fun moveOneTile (source: Player, destination: Enclosure, tile: Tile) {
         val game = rootService.zoolorettoGame!!.currentGameState
-
         var player = game.players.peek()
+
+        check(!player.passed)
         if(player.coins == 0) {
             println("the player has not enough coins!!")
             return
@@ -75,12 +76,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         if(tile is VendingStall) {
             if(destination.vendingStalls.size < destination.maxVendingStalls) {
-                rootService.zoolorettoGame.undoStack.add(game)
+                //Kopieren von currentGame
 
                 player = game.players.poll()
                 destination.vendingStalls.add(tile)
                 player.barn.vendingStalls.remove(tile)
                 player.coins--
+                game.bank++
                 game.players.add(player)
 
                 rootService.zoolorettoGame.redoStack.clear()
@@ -93,13 +95,32 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         else if (tile is Animal){
             if(destination.animalTiles.size < destination.maxAnimalSlots) {
-                rootService.zoolorettoGame.undoStack.add(game)
+                //Kopieren von currentGame
 
-                player = game.players.poll()
-                destination.animalTiles.add(tile)
-                player.barn.animalTiles.remove(tile)
-                player.coins--
-                game.players.add(player)
+                if (destination.animalTiles.size == 0) {
+                    player = game.players.poll()
+                    destination.animalTiles.add(tile)
+                    player.barn.animalTiles.remove(tile)
+                    player.coins--
+                    game.players.add(player)
+                }
+                else {
+                    check(tile.species == destination.animalTiles[0].species)
+                    player = game.players.poll()
+                    destination.animalTiles.add(tile)
+
+                    if (checkForNewBaby(tile, destination)) {
+                        if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                            player.barn.animalTiles.add(Animal(Type.OFFSPRING, tile.species))
+                        }
+                        else {
+                            destination.animalTiles.add(Animal(Type.OFFSPRING, tile.species))
+                        }
+                    }
+                    player.barn.animalTiles.remove(tile)
+                    player.coins--
+                    game.players.add(player)
+                }
 
                 rootService.zoolorettoGame.redoStack.clear()
                 onAllRefreshables { refreshAfterPlayerAction() }
@@ -111,6 +132,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
+        check(!player.passed)
         if(player.coins == 0) {
             println("the player doesn't have enough coins!!")
             return
@@ -123,12 +145,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             println("no vending stall can be moved!!")
             return
         }
-        rootService.zoolorettoGame.undoStack.add(game)
+        //Kopieren von currentGame
 
         player = game.players.poll()
         destination.vendingStalls.add(source.vendingStalls[0])
         source.vendingStalls.removeFirst()
         player.coins--
+        game.bank++
         game.players.add(player)
 
         rootService.zoolorettoGame.redoStack.clear()
@@ -140,10 +163,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
+        check(player.coins >= 1)
+        check(!player.passed)
         check(!source.isBarn)
         check(player.equals(destination))
         check(player.playerEnclosure.contains(source))
-        check(player.coins >= 1)
 
         if (tile is VendingStall) {
             //kopieren von currentGame
@@ -153,6 +177,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             source.vendingStalls.remove(tile)
             player.barn.vendingStalls.add(tile)
             player.coins--
+            game.bank++
             game.players.add(player)
 
             rootService.zoolorettoGame.redoStack.clear()
@@ -166,16 +191,19 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             source.animalTiles.remove(tile)
             player.barn.animalTiles.add(tile)
             player.coins--
+            game.bank++
             game.players.add(player)
 
             rootService.zoolorettoGame.redoStack.clear()
             onAllRefreshables { refreshAfterPlayerAction() }
         }
     }
+
     fun expandZoo() {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
+        check(!player.passed)
         if(player.coins < 3) {
             println("the player doesn't have enough coins!!")
             return
@@ -189,6 +217,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         player = game.players.poll()
         player.playerEnclosure.add(Enclosure(5, 1, 0, Pair(9,5), false))
         player.coins -= 3
+        game.bank += 3
         game.players.add(player)
 
         rootService.zoolorettoGame.redoStack.clear()
@@ -267,18 +296,20 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
             if (tile is VendingStall) {
                 destination.vendingStalls.add(tile)
+                tileToEnclosuresMap.remove(tile)
                 refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
             }
             else if (tile is Animal) {
                 destination.animalTiles.add(tile)
+                if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                    bonusCoins(game, player, destination)
+                }
+                checkAndAddNewBaby(game, player, tile, destination)
+                tileToEnclosuresMap.remove(tile)
                 refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
             }
             truck.tilesOnTruck.removeFirst()
-            tileToEnclosuresMap.remove(tile)
             game.players.add(player)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
         else {
             //Kopieren von currentGame
@@ -289,16 +320,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
             }
             else if (tile is Animal) {
-                player.barn.animalTiles.add(tile)
+                destination.animalTiles.add(tile)
+                if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                    bonusCoins(game, player, destination)
+                }
+                checkAndAddNewBaby(game, player, tile, destination)
                 tileToEnclosuresMap.remove(tile)
                 refreshTileToEnclosuresMap(tileToEnclosuresMap, player)
             }
             truck.tilesOnTruck.removeFirst()
-            tileToEnclosuresMap.remove(tile)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
 
@@ -347,20 +380,159 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         return tileToEnclosuresMap
     }
 
-    fun exchangeAllTiles(source: Enclosure, destination: Player) {
+    fun exchangeAllTiles(source: Enclosure, destination: Player, animal: Animal) {
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
 
+        check(player.coins >= 1)
+        check(!player.passed)
+        check(player.playerEnclosure.contains(source))
+        check(player.equals(destination))
+        check(source.animalTiles.isNotEmpty() && player.barn.animalTiles.contains(animal))
+        check(source.animalTiles[0].species != animal.species)
+
+        val tempList: ArrayList<Animal> = arrayListOf()
+        player.barn.animalTiles.forEach {
+            if (it.species == animal.species) {
+                tempList.add(it)
+            }
+        }
+        check(tempList.size <= source.maxAnimalSlots)
+        //kopieren von currentGame
+
+        player = game.players.poll()
+        player.coins--
+        player.barn.animalTiles.removeAll(tempList.toSet())
+        player.barn.animalTiles.addAll(source.animalTiles)
+        source.animalTiles.clear()
+        source.animalTiles.addAll(tempList)
+
+        source.animalTiles.forEach {
+            checkAndAddNewBabyWithoutBonusCoins(player, it, source)
+        }
+        game.players.add(player)
+
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
     }
 
     fun exchangeAllTiles(source: Enclosure, destination: Enclosure) {
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
 
+        check(player.coins >= 1)
+        check(!player.passed)
+        check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
+        check(source.animalTiles.isNotEmpty() && destination.animalTiles.isNotEmpty())
+        check(source.animalTiles[0].species != destination.animalTiles[0].species)
+        check(source.animalTiles.size <= destination.maxAnimalSlots &&
+              destination.animalTiles.size <= source.maxAnimalSlots)
+        //Kopieren von currentGame
+
+        player = game.players.poll()
+
+        val tempAnimalTiles: ArrayList<Animal> = arrayListOf()
+        tempAnimalTiles.addAll(source.animalTiles)
+        source.animalTiles.clear()
+        source.animalTiles.addAll(destination.animalTiles)
+        destination.animalTiles.clear()
+        destination.animalTiles.addAll(tempAnimalTiles)
+
+        source.animalTiles.forEach {
+            checkAndAddNewBabyWithoutBonusCoins(player, it, source)
+        }
+        destination.animalTiles.forEach {
+            checkAndAddNewBabyWithoutBonusCoins(player, it, destination)
+        }
+
+        player.coins--
+        game.players.add(player)
+
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
     }
 
-    fun purchaseTile(player: Player, tile: Tile) {
+    fun purchaseTile(player: Player, tile: Tile, destination: Enclosure) {
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var currentPlayer = game.players.peek()
 
+        check(currentPlayer.coins >= 2)
+        check(!player.passed)
+        check(game.players.contains(player))
+        check(currentPlayer.playerEnclosure.contains(destination))
+
+        if (tile is VendingStall) {
+            check(player.barn.vendingStalls.contains(tile))
+            check(destination.vendingStalls.size < destination.maxVendingStalls)
+            //kopieren von currentGame
+            currentPlayer = game.players.poll()
+            player.coins++
+            game.bank++
+            currentPlayer.coins -= 2
+            destination.vendingStalls.add(tile)
+            player.barn.vendingStalls.remove(tile)
+            game.players.add(currentPlayer)
+        }
+        else if (tile is Animal) {
+            check(player.barn.animalTiles.contains(tile))
+            check(destination.animalTiles.size < destination.maxAnimalSlots)
+
+            currentPlayer = game.players.poll()
+            currentPlayer.coins -= 2
+            player.coins++
+            game.bank++
+            if (destination.animalTiles.size == 0) {
+                destination.animalTiles.add(tile)
+                player.barn.animalTiles.remove(tile)
+            }
+            else {
+                check(destination.animalTiles[0].species == tile.species)
+                destination.animalTiles.add(tile)
+                player.barn.animalTiles.remove(tile)
+                if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                    bonusCoins(game, currentPlayer, destination)
+                }
+                checkAndAddNewBaby(game, currentPlayer, tile, destination)
+
+                game.players.add(currentPlayer)
+            }
+        }
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
     }
 
     fun discardTile(target: Tile) {
 
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
+
+        check(player.coins >= 2)
+        check(!player.passed)
+
+        if (target is VendingStall) {
+            check(player.barn.vendingStalls.contains(target))
+            //Kopieren von currentGame
+            player = game.players.poll()
+            player.barn.vendingStalls.remove(target)
+            player.coins -= 2
+            game.bank += 2
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        else if (target is Animal) {
+            check(player.barn.animalTiles.contains(target))
+            //Kopieren von currentGame
+            player = game.players.poll()
+            player.barn.animalTiles.remove(target)
+            player.coins -= 2
+            game.bank += 2
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
     }
 
     fun showHint() : String {
@@ -416,5 +588,42 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
         }
         return false
+    }
+
+    private fun bonusCoins(game: ZoolorettoGameState, player: Player, enclosure: Enclosure) {
+        if (game.bank >= enclosure.bonusCoins) {
+            player.coins += enclosure.bonusCoins
+            game.bank -+ enclosure.bonusCoins
+        }
+        else {
+            player.coins += game.bank
+            game.bank = 0
+        }
+    }
+
+    private fun checkAndAddNewBaby(game: ZoolorettoGameState, player: Player, animal: Animal, enclosure: Enclosure) {
+        if (checkForNewBaby(animal, enclosure)) {
+            if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
+                player.barn.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+            }
+            else if (enclosure.animalTiles.size - 1 == enclosure.maxAnimalSlots) {
+                enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+                bonusCoins(game, player, enclosure)
+            }
+            else {
+                enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+            }
+        }
+    }
+
+    private fun checkAndAddNewBabyWithoutBonusCoins(player: Player, animal: Animal, enclosure: Enclosure) {
+        if (checkForNewBaby(animal, enclosure)) {
+            if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
+                player.barn.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+            }
+            else {
+                enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+            }
+        }
     }
 }
