@@ -2,10 +2,12 @@ package gameAI
 
 import entity.*
 import gameAI.moves.*
+import service.RootService
 import service.deepZoolorettoCopy
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
-    val currentGameStateCopy : ZoolorettoGameState
+    private val currentGameStateCopy : ZoolorettoGameState
+    private val rootService = RootService()
 
     init {
         this.currentGameStateCopy = deepZoolorettoCopy(currentGameState)
@@ -19,7 +21,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val possibleMoneyMoves = arrayListOf<Move>()
 
         val rootService = RootService()
-        val playerWallet = rootService.ZoolorettoGame.currentGameState.players.peek().coins //ZoolorettoGame needs name on arrow in class Diagram
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val playerWallet = zoolorettoGame.currentGameState.players.peek().coins //ZoolorettoGame needs name on arrow in class Diagram
 
         val discardTile : DiscardTile // sanad
         val exchangeAllTilesBarnToEnclosure : ExchangeAllTilesBarnToEnclosure // micha
@@ -30,9 +34,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveVendingStallEnclosureToEnclosure : MoveVendingStallEnclosureToEnclosure// kassem
         val purchaseTile : PurchaseTile // sanad
 
-        if (purchaseTilePossible()){
-            possibleMoneyMoves.add(purchaseTile)
-        }
+//        if (purchaseTilePossible()){
+//            possibleMoneyMoves.add(purchaseTile)
+//        }
         throw NotImplementedError()
     }
 
@@ -41,38 +45,68 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      */
     private fun otherPlayerHasTileInBarn(currentPlayer: Player) : Map<Player, Set<Tile>>{
         val rootService = RootService()
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
         val purchasableTiles = HashMap<Player, Set<Tile>>()
-        for(player in rootService.ZoolorettoGame.currentGameState.players){
+        for(player in zoolorettoGame.currentGameState.players){
             if(currentPlayer != player) {
-                purchasableTiles.put(player,)
+                /*purchasableTiles.put(player,)*/
                 for (enclosure in player.playerEnclosure) {
                     if (enclosure.isBarn) {
                         for (tile in enclosure.animalTiles) {
 
                         }
-                        for (tile in enclosure.vendingStall) {
+                        for (tile in enclosure.vendingStalls) {
                         }
                     }
 
                 }
             }
         }
-
+    return HashMap()
     }
 
+    private fun moveTileFromBarnToEnclosurePossible(): Boolean {
+        //note: don't forget to check chosenTruck is empty
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+        if (currentPlayer.coins < 1) {
+            return false
+        }
+        if (currentPlayer.barn.animalTiles.size == 0 && currentPlayer.barn.vendingStalls.size == 0){
+            return false
+        }
+        for(animalTile in currentPlayer.barn.animalTiles){
+            for(enclosure in currentPlayer.playerEnclosure){
+                if((animalTile.species == enclosure.animalTiles[0].species &&
+                    enclosure.animalTiles.size < enclosure.maxAnimalSlots) || (enclosure.animalTiles.size == 0)){
+                    return true
+                }
+            }
+        }
+        if(currentPlayer.barn.vendingStalls.size != 0){
+            for (enclosure in currentPlayer.playerEnclosure){
+                if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
     /**
      * function to determine if the purchaseTileAction is possible
      */
-    private fun purchaseTilePossible() : Boolean{
-        val rootService = RootService()
-        val currentPlayer = rootService.ZoolorettoGame.currentGameState.players.peek()
-        return if(currentPlayer.coins >= 2){
-            otherPlayerHasTileInBarn(currentPlayer)
-        }else{
-            false
-        }
-    }
+//    private fun purchaseTilePossible() : Boolean{
+//        val rootService = RootService()
+//        val currentPlayer = rootService.zoolorettoGame.currentGameState.players.peek()
+//        return if(currentPlayer.coins >= 2){
+//            otherPlayerHasTileInBarn(currentPlayer)
+//        }else{
+//            false
+//        }
+//    }
 
     fun determineAllTruckRelatedMoves() : List<Move>{
         throw  NotImplementedError()
