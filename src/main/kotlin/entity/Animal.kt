@@ -8,4 +8,4 @@ package entity
  */
 
 
-data class Animal (val type: Type, val species: Species):Tile
+data class Animal (val type: Type, val species: Species, var hasChild: Boolean = false):Tile

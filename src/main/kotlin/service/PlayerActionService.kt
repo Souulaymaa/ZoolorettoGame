@@ -2,8 +2,8 @@ package service
 
 import entity.*
 
-class PlayerActionService(val rootService: RootService) : AbstractRefreshingService() {
-    val tileToEnclosuresMap = mutableMapOf<Tile, List<Enclosure>>()
+class PlayerActionService(private val rootService: RootService) : AbstractRefreshingService() {
+    private val tileToEnclosuresMap = mutableMapOf<Tile, List<Enclosure>>()
 
     fun addTile(truck: DeliveryTruck){
         val game = rootService.zoolorettoGame!!.currentGameState
@@ -135,8 +135,42 @@ class PlayerActionService(val rootService: RootService) : AbstractRefreshingServ
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
-    fun moveFromEnclosureToBarn(source: Enclosure, destination: Player, tile: Tile) {
+    fun moveTileFromEnclosureToBarn(source: Enclosure, destination: Player, tile: Tile) {
 
+        val game = rootService.zoolorettoGame!!.currentGameState
+        var player = game.players.peek()
+
+        check(!source.isBarn)
+        check(player.equals(destination))
+        check(player.playerEnclosure.contains(source))
+        check(player.coins >= 1)
+
+        if (tile is VendingStall) {
+            //kopieren von currentGame
+
+            check(source.vendingStalls.contains(tile))
+            player = game.players.poll()
+            source.vendingStalls.remove(tile)
+            player.barn.vendingStalls.add(tile)
+            player.coins--
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
+        else if (tile is Animal) {
+            //kopieren von currentGame
+
+            check(source.animalTiles.contains(tile))
+            player = game.players.poll()
+            source.animalTiles.remove(tile)
+            player.barn.animalTiles.add(tile)
+            player.coins--
+            game.players.add(player)
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
+        }
     }
     fun expandZoo() {
         val game = rootService.zoolorettoGame!!.currentGameState
@@ -356,9 +390,31 @@ class PlayerActionService(val rootService: RootService) : AbstractRefreshingServ
         }
         tileToEnclosuresMap[tile] = availableEnclosures
     }
+
     private fun refreshTileToEnclosuresMap(map: Map<Tile, List<Enclosure>>, player: Player) {
         map.forEach {
             setTileToEnclosures(it.key, player)
         }
+    }
+
+    private fun checkForNewBaby(animal: Animal, enclosure: Enclosure) : Boolean {
+        if (animal.hasChild) {
+            return false
+        }
+        enclosure.animalTiles.forEach {
+            if (!it.hasChild) {
+                if (animal.type == Type.MALE && it.type == Type.FEMALE) {
+                    animal.hasChild = true
+                    it.hasChild = true
+                    return true
+                }
+                if (animal.type == Type.FEMALE && it.type == Type.MALE) {
+                    animal.hasChild = true
+                    it.hasChild = true
+                    return true
+                }
+            }
+        }
+        return false
     }
 }
