@@ -119,7 +119,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @return List of possible "Exchange All Tiles" Moves
      */
     fun determineExchangeAllTileMoves() : List<Move>{
-        val currentPlayer = rootService.ZoolorettoGame.currentGameState.players.peek()
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
 
         var moveList = ArrayList<Move>()
 
@@ -186,7 +188,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             for(k in j + 1 until playerEnclosureAndBarn.size){
                 //k might be bigger or equal
                 if(k >= playerEnclosureAndBarn.size){
-                    break;
+                    break
                 }
 
                 val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
@@ -197,7 +199,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             }
 
             //Create a new entry in the map
-            combinations.put(sourceEnclosure, swapTargets)
+            combinations[sourceEnclosure] = swapTargets
         }
 
         return combinations;
@@ -210,7 +212,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param target second enclosure to swap, naming does not matter due to symmetry
      * @return true if enclosures are compatible, false otherwise
      */
-    fun egibleToSwap(source : Enclosure, target :Enclosure): Boolean {
+    private fun egibleToSwap(source : Enclosure, target :Enclosure): Boolean {
         val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
         val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
 
