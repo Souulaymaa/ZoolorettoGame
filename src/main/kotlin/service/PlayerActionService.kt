@@ -570,17 +570,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     private fun checkForNewBaby(animal: Animal, enclosure: Enclosure) : Boolean {
-        if (animal.hasChild) {
+        if (animal.hasChild || animal.type == Type.OFFSPRING || animal.type == Type.NONE) {
             return false
         }
         enclosure.animalTiles.forEach {
-            if (!it.hasChild) {
-                if (animal.type == Type.MALE && it.type == Type.FEMALE) {
-                    animal.hasChild = true
-                    it.hasChild = true
-                    return true
-                }
-                if (animal.type == Type.FEMALE && it.type == Type.MALE) {
+            if (!it.hasChild && it.type != Type.NONE && it.type != Type.OFFSPRING) {
+                if ((animal.type == Type.MALE && it.type == Type.FEMALE) ||
+                    (animal.type == Type.FEMALE && it.type == Type.MALE)) {
                     animal.hasChild = true
                     it.hasChild = true
                     return true
