@@ -353,7 +353,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
     /**
-     * Function to check if two enclosures are compatible by their sizes and animal type when swapping
+     * Function to check if two enclosures are compatible by their sizes and animal type when swapping.
+     * Two enclosures are compatible, if they can hold each other amount of animal tiles and the
+     * animal types of both enclosures differ.
      *
      * @param source first enclosure to swap, naming does not matter due to symmetry
      * @param target second enclosure to swap, naming does not matter due to symmetry
