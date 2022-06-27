@@ -19,9 +19,9 @@ enum class Type {
      */
     override fun toString() =
         when (this) {
-            Type.MALE -> "M"
-            Type.FEMALE -> "F"
-            Type.NONE -> "N"
-            Type.OFFSPRING -> "O"
+            MALE -> "M"
+            FEMALE -> "F"
+            NONE -> "N"
+            OFFSPRING -> "O"
         }
 }
