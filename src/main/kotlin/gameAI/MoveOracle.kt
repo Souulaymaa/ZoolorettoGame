@@ -353,7 +353,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
     /**
-     * Function to check if two enclosures are compatible by their sizes when swapping
+     * Function to check if two enclosures are compatible by their sizes and animal type when swapping
      *
      * @param source first enclosure to swap, naming does not matter due to symmetry
      * @param target second enclosure to swap, naming does not matter due to symmetry
@@ -363,7 +363,17 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
         val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
 
-        return targetEnclosureHasEnoughSlots && sourceEnclosureHasEnoughSlots
+        var sameAnimalType = false;
+
+        if(!source.animalTiles.isEmpty() && source.animalTiles.isEmpty()){
+            val sourceType = source.animalTiles.get(0).type
+            val targetType = target.animalTiles.get(0).type
+
+            sameAnimalType = sourceType == targetType
+        }
+
+
+        return targetEnclosureHasEnoughSlots && sourceEnclosureHasEnoughSlots && !sameAnimalType
     }
 }
 
