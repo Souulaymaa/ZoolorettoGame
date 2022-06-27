@@ -34,37 +34,111 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveVendingStallEnclosureToEnclosure : MoveVendingStallEnclosureToEnclosure// kassem
         val purchaseTile : PurchaseTile // sanad
 
-//        if (purchaseTilePossible()){
-//            possibleMoneyMoves.add(purchaseTile)
-//        }
+
         throw NotImplementedError()
     }
 
     /**
-     * function to determine if the other players in the game have a tile in their Barn
+     * function that
+     * @return list of all moves a player can make with "DiscardTile" action.
      */
-    private fun otherPlayerHasTileInBarn(currentPlayer: Player) : Map<Player, Set<Tile>>{
-        val rootService = RootService()
+    private fun discardTileMoves(): ArrayList<Move>
+    {
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
-        val purchasableTiles = HashMap<Player, Set<Tile>>()
-        for(player in zoolorettoGame.currentGameState.players){
-            if(currentPlayer != player) {
-                /*purchasableTiles.put(player,)*/
-                for (enclosure in player.playerEnclosure) {
-                    if (enclosure.isBarn) {
-                        for (tile in enclosure.animalTiles) {
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+        val moveList = ArrayList<Move>()
+        val discardableTiles = discardablePlayerTiles(currentPlayer)
 
-                        }
-                        for (tile in enclosure.vendingStalls) {
-                        }
-                    }
+        for (tile in discardableTiles) {
+            moveList.add(DiscardTile(tile))
+        }
 
-                }
+        return moveList
+    }
+
+    /**
+     * function to determine if the player has a tile in their Barn, which would enable the "DiscardTile" action
+     * @return set of Tiles that can be discarded
+     */
+    private fun discardablePlayerTiles(currentPlayer: Player) :  Set<Tile>{
+        val zoolorettoGame = rootService.zoolorettoGame
+        val discardableTiles = mutableSetOf<Tile>()
+        checkNotNull(zoolorettoGame)
+
+        if(currentPlayer.coins < 2){
+            return discardableTiles
+        }
+        for (enclosure in currentPlayer.playerEnclosure) {
+            if (!enclosure.isBarn) {
+                continue                                         //skips all enclosures of player that is not barn
+            }
+            for (tile in enclosure.animalTiles) {
+                discardableTiles.add(tile)
+            }
+            for (tile in enclosure.vendingStalls) {
+                discardableTiles.add(tile)
             }
         }
-    return HashMap()
+        return discardableTiles
     }
+
+    /**
+     * function that returns a list of all move combination a player can make with "PurchaseTile" action
+     */
+    private fun purchaseTileMoves(): ArrayList<Move>
+    {
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+
+        val combinations = purchasableOtherPlayerTiles(currentPlayer)
+        val moveList = ArrayList<Move>()
+        for ((player, purchasableTiles) in combinations) {
+            for (tile in purchasableTiles) {
+                moveList.add(PurchaseTile(player, tile))
+            }
+        }
+        return moveList
+    }
+
+
+    /**
+     * function to determine if the other players in the game have a tile in their Barn, if so
+     * maps each player with every purchasable tile found on his barn.
+     * @return map of player to tiles
+     */
+    private fun purchasableOtherPlayerTiles(currentPlayer: Player) : Map<Player, Set<Tile>>{
+        val zoolorettoGame = rootService.zoolorettoGame
+        val purchasableTiles : HashMap<Player, Set<Tile>> = HashMap()
+
+        checkNotNull(zoolorettoGame)
+
+        if(currentPlayer.coins < 2){
+            return purchasableTiles
+        }
+        for(player in zoolorettoGame.currentGameState.players){
+            val tileSet = mutableSetOf<Tile>()
+            if(currentPlayer == player) {
+                continue                                             //skips the current player using continue
+            }
+            for (enclosure in player.playerEnclosure) {
+                if (!enclosure.isBarn) {
+                    continue                                         //skips all enclosures of player that is not barn
+                }
+                for (tile in enclosure.animalTiles) {
+                    tileSet.add(tile)
+                }
+                for (tile in enclosure.vendingStalls) {
+                    tileSet.add(tile)
+                }
+            }
+            purchasableTiles[player] = tileSet
+        }
+    return purchasableTiles
+    }
+
+
 
     /**
      * function to determine all the possible moveTileFromBarnToEnclosure actions.
@@ -179,19 +253,6 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 //            }
 //        }
 //        return false
-//    }
-
-    /**
-     * function to determine if the purchaseTileAction is possible
-     */
-//    private fun purchaseTilePossible() : Boolean{
-//        val rootService = RootService()
-//        val currentPlayer = rootService.zoolorettoGame.currentGameState.players.peek()
-//        return if(currentPlayer.coins >= 2){
-//            otherPlayerHasTileInBarn(currentPlayer)
-//        }else{
-//            false
-//        }
 //    }
 
     fun determineAllTruckRelatedMoves() : List<Move>{
