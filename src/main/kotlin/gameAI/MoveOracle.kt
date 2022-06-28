@@ -2,8 +2,8 @@ package gameAI
 
 import entity.*
 import gameAI.moves.*
+import service.GameStateService.Companion.deepZoolorettoCopy
 import service.RootService
-import service.deepZoolorettoCopy
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
     private val currentGameStateCopy : ZoolorettoGameState
