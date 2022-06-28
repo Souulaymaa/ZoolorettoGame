@@ -133,6 +133,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                     tileSet.add(tile)
                 }
             }
+            for(tile in tileSet){
+                var found = false
+                for(enclosure in currentPlayer.playerEnclosure){
+                    if(tile == enclosure.animalTiles[0]){
+                        found = true
+                        continue
+                    }
+                }
+                if(!found){
+                    tileSet.remove(tile)
+                }
+            }
             purchasableTiles[player] = tileSet
         }
     return purchasableTiles
