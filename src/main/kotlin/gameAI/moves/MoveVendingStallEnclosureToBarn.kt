@@ -10,8 +10,8 @@ class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Pl
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return ""
     }
 
 }

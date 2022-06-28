@@ -11,7 +11,7 @@ class ExchangeAllTilesBarnToEnclosure(val source : Enclosure, val destination: P
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return ""
     }
 }

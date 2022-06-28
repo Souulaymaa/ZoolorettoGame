@@ -6,3 +6,7 @@ package entity
  *
  */
 interface Tile
+
+    fun toString() : String{
+        throw NotImplementedError()
+    }

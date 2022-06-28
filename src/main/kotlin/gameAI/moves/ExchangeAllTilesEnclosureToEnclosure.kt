@@ -9,7 +9,7 @@ class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destinati
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return ""
     }
 }

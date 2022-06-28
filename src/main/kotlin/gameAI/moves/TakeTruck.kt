@@ -9,8 +9,8 @@ class TakeTruck(val truck: DeliveryTruck) : Move {
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return "Take truck ${truck.truckNumber}."
     }
 
 }

@@ -4,6 +4,8 @@ interface Move {
 
     fun performMove(){}
 
-    fun toHintString(){}
+    fun toHintString() : String{
+        throw NotImplementedError()
+    }
 
 }

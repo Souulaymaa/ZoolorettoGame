@@ -9,3 +9,8 @@ package entity
 
 
 data class Animal (val type: Type, val species: Species):Tile
+{
+    override fun toString(): String {
+        return species.toString()
+    }
+}
