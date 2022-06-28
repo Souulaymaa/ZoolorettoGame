@@ -20,7 +20,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if(truck.tilesOnTruck.size < 3) {
             if(game.roundDisc) {
                 if(!game.tileStack.endStack.isEmpty()) {
-                    rootService.zoolorettoGame.undoStack.add(game)
+                    val copyCurrentGame = deepZoolorettoCopy(game)
+                    rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
                     player = game.players.poll()
                     val tile = game.tileStack.endStack.removeFirst()
@@ -36,7 +37,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 }
             }
             else if(!game.tileStack.drawStack.isEmpty()) {
-                rootService.zoolorettoGame.undoStack.add(game)
+                val copyCurrentGame = deepZoolorettoCopy(game)
+                rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
                 player = game.players.poll()
                 val tile = game.tileStack.endStack.removeFirst()
@@ -76,7 +78,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         if(tile is VendingStall) {
             if(destination.vendingStalls.size < destination.maxVendingStalls) {
-                //Kopieren von currentGame
+                val copyCurrentGame = deepZoolorettoCopy(game)
+                rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
                 player = game.players.poll()
                 destination.vendingStalls.add(tile)
@@ -95,7 +98,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         else if (tile is Animal){
             if(destination.animalTiles.size < destination.maxAnimalSlots) {
-                //Kopieren von currentGame
+                val copyCurrentGame = deepZoolorettoCopy(game)
+                rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
                 if (destination.animalTiles.size == 0) {
                     player = game.players.poll()
@@ -108,15 +112,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                     check(tile.species == destination.animalTiles[0].species)
                     player = game.players.poll()
                     destination.animalTiles.add(tile)
-
-                    if (checkForNewBaby(tile, destination)) {
-                        if (destination.animalTiles.size == destination.maxAnimalSlots) {
-                            player.barn.animalTiles.add(Animal(Type.OFFSPRING, tile.species))
-                        }
-                        else {
-                            destination.animalTiles.add(Animal(Type.OFFSPRING, tile.species))
-                        }
+                    if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                        bonusCoins(game, player, destination)
                     }
+                    checkAndAddNewBaby(game, player, tile, destination)
                     player.barn.animalTiles.remove(tile)
                     player.coins--
                     game.players.add(player)
@@ -145,7 +144,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             println("no vending stall can be moved!!")
             return
         }
-        //Kopieren von currentGame
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         destination.vendingStalls.add(source.vendingStalls[0])
@@ -169,9 +169,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(player.equals(destination))
         check(player.playerEnclosure.contains(source))
 
-        if (tile is VendingStall) {
-            //kopieren von currentGame
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
+        if (tile is VendingStall) {
             check(source.vendingStalls.contains(tile))
             player = game.players.poll()
             source.vendingStalls.remove(tile)
@@ -179,13 +180,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             player.coins--
             game.bank++
             game.players.add(player)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
         else if (tile is Animal) {
-            //kopieren von currentGame
-
             check(source.animalTiles.contains(tile))
             player = game.players.poll()
             source.animalTiles.remove(tile)
@@ -193,10 +189,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             player.coins--
             game.bank++
             game.players.add(player)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
+
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
     }
 
     fun expandZoo() {
@@ -212,7 +208,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             println("the player can't expand the zoo!!")
             return
         }
-        rootService.zoolorettoGame.undoStack.add(game)
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         player.playerEnclosure.add(Enclosure(5, 1, 0, Pair(9,5), false))
@@ -233,9 +230,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         require(truck.size in 1..3 && truck.tilesOnTruck.isNotEmpty())
         require(!player.passed)
 
-        if(game.deliveryTrucks.size == 1) {
-            //kopieren von currentGame
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
+        if(game.deliveryTrucks.size == 1) {
             player.chosenTruck = truck
             game.deliveryTrucks.remove(truck)
             truck.tilesOnTruck.forEach {
@@ -249,12 +247,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.players.forEach {
                 it.passed = false
             }
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
         else {
-            //Kopieren von currentGame
-
             player = game.players.poll()
             player.chosenTruck = truck
             player.passed = true
@@ -271,10 +265,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 it.passed = false
             }
             game.players.add(player)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
+
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
 
@@ -289,9 +283,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val tile = truck.tilesOnTruck[0]
         require(tileToEnclosuresMap[tile]!!.contains(destination))
 
-        if(truck.tilesOnTruck.size == 1) {
-            //Kopieren von currentGame
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
+        if(truck.tilesOnTruck.size == 1) {
             player = game.players.poll()
 
             if (tile is VendingStall) {
@@ -312,8 +307,6 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.players.add(player)
         }
         else {
-            //Kopieren von currentGame
-
             if (tile is VendingStall) {
                 destination.vendingStalls.add(tile)
                 tileToEnclosuresMap.remove(tile)
@@ -344,9 +337,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         checkNotNull(truck)
         val tile = truck.tilesOnTruck[0]
 
-        if(truck.tilesOnTruck.size == 1) {
-            //Kopieren von currentGame
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
+        if(truck.tilesOnTruck.size == 1) {
             player = game.players.poll()
 
             if (tile is VendingStall) {
@@ -358,13 +352,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             truck.tilesOnTruck.removeFirst()
             tileToEnclosuresMap.remove(tile)
             game.players.add(player)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
         else {
-            //Kopieren von currentGame
-
             if (tile is VendingStall) {
                 player.barn.vendingStalls.add(tile)
             }
@@ -373,10 +362,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             truck.tilesOnTruck.removeFirst()
             tileToEnclosuresMap.remove(tile)
-
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
         }
+
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
 
@@ -398,7 +387,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
         }
         check(tempList.size <= source.maxAnimalSlots)
-        //kopieren von currentGame
+
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         player.coins--
@@ -427,7 +418,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(source.animalTiles[0].species != destination.animalTiles[0].species)
         check(source.animalTiles.size <= destination.maxAnimalSlots &&
               destination.animalTiles.size <= source.maxAnimalSlots)
-        //Kopieren von currentGame
+
+        val copyCurrentGame = deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
 
@@ -464,7 +457,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (tile is VendingStall) {
             check(player.barn.vendingStalls.contains(tile))
             check(destination.vendingStalls.size < destination.maxVendingStalls)
-            //kopieren von currentGame
+
+            val copyCurrentGame = deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+
             currentPlayer = game.players.poll()
             player.coins++
             game.bank++
@@ -476,6 +472,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         else if (tile is Animal) {
             check(player.barn.animalTiles.contains(tile))
             check(destination.animalTiles.size < destination.maxAnimalSlots)
+
+            val copyCurrentGame = deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
             currentPlayer = game.players.poll()
             currentPlayer.coins -= 2
@@ -511,7 +510,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         if (target is VendingStall) {
             check(player.barn.vendingStalls.contains(target))
-            //Kopieren von currentGame
+            val copyCurrentGame = deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+
             player = game.players.poll()
             player.barn.vendingStalls.remove(target)
             player.coins -= 2
@@ -523,7 +524,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         else if (target is Animal) {
             check(player.barn.animalTiles.contains(target))
-            //Kopieren von currentGame
+            val copyCurrentGame = deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+
             player = game.players.poll()
             player.barn.animalTiles.remove(target)
             player.coins -= 2
