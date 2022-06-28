@@ -24,7 +24,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
     private fun determineAllMoneyMoves() : List<Move> {
 
-        //don't forget to union all money moves in correct format/type
+        //don't forget to union all money moves in correct format/type.
 
         val possibleMoneyMoves = arrayListOf<Move>()
 
@@ -47,6 +47,29 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
 
+    /**
+     *function that determines whether Expand Zoo money action is feasible or not
+     * @return Array list containing one move or no move at all depending on outcome
+     * the move within the Array List is the ExpandZoo() move itself.
+     */
+    private fun expandZooMove() : ArrayList<Move> {
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+        val moveList = ArrayList<Move>()
+
+        if(currentPlayer.coins < 3){
+            return moveList
+        }
+        for (enclosure in currentPlayer.playerEnclosure){
+            if (enclosure.animalTiles.isEmpty()){
+                return moveList
+            }
+        }
+        val expandZoo = ExpandZoo()
+        moveList.add(expandZoo)
+        return moveList
+    }
 
     /**
      * function that
