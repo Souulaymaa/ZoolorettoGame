@@ -1,7 +1,7 @@
 package entity
 import java.util.Stack
 /**
- * Data class that represents a stock of [tiles]
+ * Data class that represents a stock of [Tile]
  *
  * @param endStack: A stack of tiles with a size of 15 at most.
  * @param drawStack: A stack of tiles with a size of 112 at most.

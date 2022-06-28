@@ -5,8 +5,8 @@ import java.util.Stack
  *
  * @param simSpeed: Simulation speed
  * @param currentGameState: current "game state"
- * @param undoStack: Stack to undo the current action
- * @param redoStack: Stack to redo the current action
+ * @property undoStack: Stack to undo the current action
+ * @property redoStack: Stack to redo the current action
  */
 data class ZoolorettoGame (val simSpeed: Float, var currentGameState: ZoolorettoGameState) {
 
