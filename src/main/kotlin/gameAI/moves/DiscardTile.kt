@@ -9,7 +9,7 @@ class DiscardTile(val target : Tile) : Move {
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return "Discard Tile ${target.toString()} from Barn."
     }
 }

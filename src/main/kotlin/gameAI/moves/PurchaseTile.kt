@@ -10,7 +10,7 @@ class PurchaseTile(val player: Player, val tile: Tile) : Move {
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return "Buy ${tile.toString()} from barn of player ${player.playerName}."
     }
 }

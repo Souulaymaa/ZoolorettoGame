@@ -14,10 +14,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
     fun determineAllCurrentAllowedMoves() : List<Move> {
+        //don't forget to check if current player has taken truck or not before calculating available money action moves
         throw NotImplementedError()
     }
 
-    fun determineAllMoneyMoves() : List<Move> {
+    private fun determineAllTruckRelatedMoves() : List<Move>{
+        throw  NotImplementedError()
+    }
+
+    private fun determineAllMoneyMoves() : List<Move> {
+
+        //don't forget to union all money moves in correct format/type.
+
         val possibleMoneyMoves = arrayListOf<Move>()
 
         val rootService = RootService()
@@ -36,6 +44,31 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
 
         throw NotImplementedError()
+    }
+
+
+    /**
+     *function that determines whether Expand Zoo money action is feasible or not
+     * @return Array list containing one move or no move at all depending on outcome
+     * the move within the Array List is the ExpandZoo() move itself.
+     */
+    private fun expandZooMove() : ArrayList<Move> {
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+        val moveList = ArrayList<Move>()
+
+        if(currentPlayer.coins < 3){
+            return moveList
+        }
+        for (enclosure in currentPlayer.playerEnclosure){
+            if (enclosure.animalTiles.isEmpty()){
+                return moveList
+            }
+        }
+        val expandZoo = ExpandZoo()
+        moveList.add(expandZoo)
+        return moveList
     }
 
     /**
@@ -133,6 +166,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                     tileSet.add(tile)
                 }
             }
+            for(tile in tileSet){
+                var found = false
+                for(enclosure in currentPlayer.playerEnclosure){
+                    if(tile == enclosure.animalTiles[0]){
+                        found = true
+                        continue
+                    }
+                }
+                if(!found){
+                    tileSet.remove(tile)
+                }
+            }
             purchasableTiles[player] = tileSet
         }
     return purchasableTiles
@@ -225,40 +270,6 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         return possibleMoves
     }
 
-
-//    private fun moveTileFromBarnToEnclosurePossible(): Boolean {
-//        //note: don't forget to check chosenTruck is empty
-//        val zoolorettoGame = rootService.zoolorettoGame
-//        checkNotNull(zoolorettoGame)
-//        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
-//        if (currentPlayer.coins < 1) {
-//            return false
-//        }
-//        if (currentPlayer.barn.animalTiles.size == 0 && currentPlayer.barn.vendingStalls.size == 0){
-//            return false
-//        }
-//        for(animalTile in currentPlayer.barn.animalTiles){
-//            for(enclosure in currentPlayer.playerEnclosure){
-//                if((animalTile.species == enclosure.animalTiles[0].species &&
-//                    enclosure.animalTiles.size < enclosure.maxAnimalSlots) || (enclosure.animalTiles.size == 0)){
-//                    return true
-//                }
-//            }
-//        }
-//        if(currentPlayer.barn.vendingStalls.size != 0){
-//            for (enclosure in currentPlayer.playerEnclosure){
-//                if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
-//                    return true
-//                }
-//            }
-//        }
-//        return false
-//    }
-
-    fun determineAllTruckRelatedMoves() : List<Move>{
-        throw  NotImplementedError()
-    }
-
     /**
      * Function to determine all possible "Exchange All Tiles" Moves (either from barn to enclosure or
      * from enclosure to enclosure)
@@ -340,7 +351,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
                 val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
 
-                if(egibleToSwap(sourceEnclosure, targetEnclosure)){
+                if(eligibleToSwap(sourceEnclosure, targetEnclosure)){
                     swapTargets.add(targetEnclosure)
                 }
             }
@@ -361,21 +372,21 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param target second enclosure to swap, naming does not matter due to symmetry
      * @return true if enclosures are compatible, false otherwise
      */
-    private fun egibleToSwap(source : Enclosure, target :Enclosure): Boolean {
+    private fun eligibleToSwap(source : Enclosure, target :Enclosure): Boolean {
         val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
         val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
 
-        var sameAnimalType = false;
+        var sameAnimalSpecies = false;
 
-        if(!source.animalTiles.isEmpty() && source.animalTiles.isEmpty()){
-            val sourceType = source.animalTiles.get(0).type
-            val targetType = target.animalTiles.get(0).type
+        if(source.animalTiles.isNotEmpty() && target.animalTiles.isNotEmpty()){
+            val sourceSpecies = source.animalTiles[0].species
+            val targetSpecies = target.animalTiles[0].species
 
-            sameAnimalType = sourceType == targetType
+            sameAnimalSpecies = sourceSpecies == targetSpecies
         }
 
 
-        return targetEnclosureHasEnoughSlots && sourceEnclosureHasEnoughSlots && !sameAnimalType
+        return targetEnclosureHasEnoughSlots && sourceEnclosureHasEnoughSlots && !sameAnimalSpecies
     }
 }
 

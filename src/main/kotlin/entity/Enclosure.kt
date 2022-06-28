@@ -9,4 +9,6 @@ data class Enclosure(val maxAnimalSlots: Int, val maxVendingStalls: Int, val bon
 
     val animalTiles = arrayListOf<Animal>()
     val vendingStalls = arrayListOf<VendingStall>()
+
+    val enclosureNumber = String //ex. one, two... important for hint.
 }

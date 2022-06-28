@@ -10,8 +10,8 @@ class MoveTileFromBarnToEnclosure(val source: Player, val destination: Enclosure
         super.performMove()
     }
 
-    override fun toHintString() {
-        super.toHintString()
+    override fun toHintString(): String {
+        return ""
     }
 
 }
