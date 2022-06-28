@@ -8,14 +8,15 @@ import org.junit.jupiter.api.Test
  */
 internal class VendingStallTest{
 
-    private val testCase1 = VendingStall(StallType.VENDING1)
-    private val testCase2 = VendingStall(StallType.VENDING2)
+
 
     /**
      * checks functionality of constructor
      */
     @Test
     fun checkObject(){
+        val testCase1 = VendingStall(StallType.VENDING1)
+        val testCase2 = VendingStall(StallType.VENDING2)
         assertEquals(testCase1.stall, StallType.VENDING1)
         assertNotEquals(null, testCase2)
     }
