@@ -10,7 +10,7 @@ class TakeTruck(val truck: DeliveryTruck) : Move {
     }
 
     override fun toHintString(): String {
-        return "Take truck ${truck.truckNumber}."
+        return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
     }
 
 }

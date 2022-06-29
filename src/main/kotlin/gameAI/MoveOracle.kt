@@ -21,6 +21,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     private fun determineAllTruckRelatedMoves() : List<Move>{
         throw  NotImplementedError()
     }
+    fun determineAddTileToTruckMoves() : List<Move>{
+        throw NotImplementedError()
+    }
 
     private fun determineAllMoneyMoves() : List<Move> {
 
@@ -45,6 +48,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
         throw NotImplementedError()
     }
+
 
 
     /**
@@ -360,6 +364,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for ((sourceEnclosure, targetList) in combinations) {
             for (targetEnclosure in targetList) {
                 if (sourceEnclosure.isBarn) {
+                    for (species in sourceEnclosure){
+
+                    }
                     moveList.add(ExchangeAllTilesBarnToEnclosure(targetEnclosure, currentPlayer))
                 } else if (targetEnclosure.isBarn) {
                     moveList.add(ExchangeAllTilesBarnToEnclosure(sourceEnclosure, currentPlayer))
