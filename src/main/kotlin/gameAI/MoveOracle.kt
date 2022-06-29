@@ -224,6 +224,23 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
     /**
+     * function that returns all possible choices for moving a tile from the barn to the enclosure.
+     */
+    private fun allMoveTileFromBarnToEnclosure(): List<Move>{
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+
+        val combinations = possibleTileBarnToEnclosureMoves()
+        val moveList = ArrayList<Move>()
+        for((tile,enclosures) in combinations){
+            for(enclosure in enclosures){
+                moveList.add(MoveTileFromBarnToEnclosure(currentPlayer, enclosure, tile))
+            }
+        }
+        return moveList
+    }
+    /**
      * function to determine all the possible moveVendingStallEnclosureToBarn actions.
      * @return list of enclosures containing vending stalls.
      */
@@ -243,6 +260,21 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         return possibleMoves
     }
 
+    /**
+     * function that returns all the possible choices for moving a vending stall from an enclosure to the barn.
+     */
+    private fun allMoveVendingStallEnclosureToBarn(): List<Move>{
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+
+        val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
+        val moveList = ArrayList<Move>()
+        for(enclosure in possibleEnclosures){
+            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer))
+        }
+        return moveList
+    }
     /**
      * function to determine all the possible moveVendingStallEnclosureToEnclosure actions.
      * @return map of an enclosure containing a vending stall to a list of enclosures the vending
@@ -268,6 +300,25 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             }
         }
         return possibleMoves
+    }
+
+    /**
+     * function that returns all the possible choices for moving a vending stall from an enclosure
+     * to another enclosure
+     */
+    private fun allMoveVendingStallEnclosureToEnclosure(): List<Move>{
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
+
+        val combinations = possibleVendingStallEnclosureToEnclosureMoves()
+        val moveList = ArrayList<Move>()
+        for((sourceEnclosure, enclosures) in combinations){
+            for(targetEnclosure in enclosures){
+                moveList.add(MoveVendingStallEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
+            }
+        }
+        return moveList
     }
 
     /**
@@ -360,7 +411,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             combinations[sourceEnclosure] = swapTargets
         }
 
-        return combinations;
+        return combinations
     }
 
     /**
@@ -376,7 +427,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
         val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
 
-        var sameAnimalSpecies = false;
+        var sameAnimalSpecies = false
 
         if(source.animalTiles.isNotEmpty() && target.animalTiles.isNotEmpty()){
             val sourceSpecies = source.animalTiles[0].species
