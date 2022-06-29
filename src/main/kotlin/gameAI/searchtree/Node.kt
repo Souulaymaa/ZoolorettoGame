@@ -46,7 +46,7 @@ class Node(val zoolorettoGameState : ZoolorettoGameState, val aiPlayer : Player,
                 val copy = GameStateService.deepZoolorettoCopy(zoolorettoGameState)
                 performMove(copy, move)
 
-                val movesTakenPlusOne = ArrayList<Move>()
+                val movesTakenPlusOne = ArrayList<Move>(movesTaken)
                 movesTakenPlusOne.add(move)
 
                 val child = Node(copy, aiPlayer, movesTakenPlusOne)
