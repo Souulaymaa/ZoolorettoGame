@@ -364,12 +364,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for ((sourceEnclosure, targetList) in combinations) {
             for (targetEnclosure in targetList) {
                 if (sourceEnclosure.isBarn) {
-                    for (species in sourceEnclosure){
-
-                    }
-                    moveList.add(ExchangeAllTilesBarnToEnclosure(targetEnclosure, currentPlayer))
+                    moveList.addAll(createMovesForEachSpeciesInBarn(targetEnclosure, currentPlayer))
                 } else if (targetEnclosure.isBarn) {
-                    moveList.add(ExchangeAllTilesBarnToEnclosure(sourceEnclosure, currentPlayer))
+                    moveList.addAll(createMovesForEachSpeciesInBarn(sourceEnclosure, currentPlayer))
                 } else {
                     moveList.add(ExchangeAllTilesEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
                 }
@@ -377,6 +374,25 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
 
          return moveList
+    }
+
+    /**
+     * Function to group the barn by its containing species and creating [ExchangeAllTilesBarnToEnclosure]
+     * moves
+     *
+     * @param enclosure the source enclosure
+     * @param player the player containing the barn
+     */
+    private fun createMovesForEachSpeciesInBarn(enclosure: Enclosure,
+                                                player: Player): List<ExchangeAllTilesBarnToEnclosure>{
+        val speciesMap = player.barn.animalTiles.groupBy { it.species }
+
+        val outList = arrayListOf<ExchangeAllTilesBarnToEnclosure>()
+
+        for ((species, tiles) in speciesMap){
+            outList.add(ExchangeAllTilesBarnToEnclosure(enclosure, player, species))
+        }
+        return outList
     }
 
     /**
