@@ -46,7 +46,7 @@ class Tree(val zoolorettoGameState: ZoolorettoGameState, level: Int) {
             }
         }
 
-        return rootNode
+        return nodeWithMaxScore
     }
 
 
