@@ -19,7 +19,7 @@ internal class DeliveryTruckTest{
      */
     @Test
     fun checkObject(){
-        assertEquals(successTruck.maxSize, 3)
+        assertEquals(successTruck.size, 3)
         successTruck.tilesOnTruck.add(stall)
         successTruck.tilesOnTruck.add(animal1)
         successTruck.tilesOnTruck.add(animal2)
