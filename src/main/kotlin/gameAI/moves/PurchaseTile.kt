@@ -11,6 +11,6 @@ class PurchaseTile(val player: Player, val tile: Tile) : Move {
     }
 
     override fun toHintString(): String {
-        return "Buy ${tile.toString()} from barn of player ${player.playerName}."
+        return "Buy $tile from barn of player ${player.playerName}."
     }
 }

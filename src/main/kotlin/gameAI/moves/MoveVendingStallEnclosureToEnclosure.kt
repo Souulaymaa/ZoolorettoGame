@@ -1,7 +1,6 @@
 package gameAI.moves
 
 import entity.Enclosure
-import entity.Player
 import gameAI.Move
 
 class MoveVendingStallEnclosureToEnclosure(val source: Enclosure, val destination: Enclosure) : Move {
