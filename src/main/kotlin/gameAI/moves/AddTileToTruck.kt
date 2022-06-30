@@ -10,7 +10,7 @@ class AddTileToTruck(val truck: DeliveryTruck) : Move {
     }
 
     override fun toHintString(): String {
-        return "Add drawn Tile to Truck ${truck.truckNumber}."
+        TODO("Implement toHintString")
     }
 
 }
