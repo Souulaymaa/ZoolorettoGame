@@ -1,19 +1,18 @@
 package gameAI.searchtree
 
 import entity.ZoolorettoGameState
-import gameAI.Move
 import service.GameStateService
 import java.util.*
 import kotlin.collections.ArrayList
 
-class Tree(val zoolorettoGameState: ZoolorettoGameState, level: Int) {
-    val rootNode : Node
+class Tree(private val zoolorettoGameState: ZoolorettoGameState, level: Int) {
+    private val rootNode : Node
 
     init {
         val zoolorettoGameStateCopy = GameStateService.deepZoolorettoCopy(zoolorettoGameState)
         val currentPlayer = zoolorettoGameStateCopy.players.peek()
 
-        rootNode = Node(zoolorettoGameStateCopy, currentPlayer, ArrayList<Move>())
+        rootNode = Node(zoolorettoGameStateCopy, currentPlayer, ArrayList())
         rootNode.createChildren(level)
     }
 
@@ -37,7 +36,7 @@ class Tree(val zoolorettoGameState: ZoolorettoGameState, level: Int) {
 
             //Check if we have a higher score, than we know already
             if (currentNode.aiScore >= nodeWithMaxScore.aiScore){
-                nodeWithMaxScore = currentNode;
+                nodeWithMaxScore = currentNode
             }
 
             //Add all children to the Queue

@@ -108,7 +108,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
         for (enclosure in currentPlayer.playerEnclosure) {
             if (!enclosure.isBarn) {
-                continue                                         //skips all enclosures of player that is not barn
+                continue
             }
             for (tile in enclosure.animalTiles) {
                 discardableTiles.add(tile)
