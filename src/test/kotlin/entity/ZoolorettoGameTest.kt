@@ -1,6 +1,7 @@
+package entity
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import entity.*
 import java.util.*
 import kotlin.test.assertNotNull
 
