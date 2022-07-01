@@ -10,6 +10,7 @@ class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destinati
     }
 
     override fun toHintString(): String {
-        return ""
+        return "Exchange ${source.animalTiles[0].toString()} from Enclosure  ${source.pointValues.toString()} " +
+                "Points with ${destination.animalTiles[0].toString()}"
     }
 }

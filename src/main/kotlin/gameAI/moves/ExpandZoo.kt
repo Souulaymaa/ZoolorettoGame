@@ -9,6 +9,6 @@ class ExpandZoo : Move {
     }
 
     override fun toHintString(): String {
-        return ""
+        return "Expand Zoo"
     }
 }

@@ -10,7 +10,7 @@ class PlaceTileFromTruckToEnclosure(val destination : Enclosure) : Move {
     }
 
     override fun toHintString(): String {
-        return "Place tile in enclosure ${destination.enclosureNumber}."
+        return "move tile to Enclosure with ${destination.pointValues.toString()} Points"
     }
 
 

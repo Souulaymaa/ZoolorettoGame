@@ -11,7 +11,7 @@ class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Pl
     }
 
     override fun toHintString(): String {
-        return ""
+        return "move VendingStall from Enclosure with ${source.pointValues.toString()} Points to barn"
     }
 
 }

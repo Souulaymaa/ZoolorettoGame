@@ -10,7 +10,11 @@ class AddTileToTruck(val truck: DeliveryTruck) : Move {
     }
 
     override fun toHintString(): String {
-        return "Add drawn Tile to Truck ${truck.truckNumber}."
+        if (truck.tilesOnTruck.isEmpty()){
+            return "Add drawn Tile to empty Truck"
+        }
+        return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
+
     }
 
 }

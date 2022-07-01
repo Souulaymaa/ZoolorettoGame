@@ -11,7 +11,8 @@ class MoveTileFromBarnToEnclosure(val source: Player, val destination: Enclosure
     }
 
     override fun toHintString(): String {
-        return ""
+        return "move tile ${tile.toString()} from barn to Enclosure with ${destination.pointValues.toString()} Points"
+
     }
 
 }

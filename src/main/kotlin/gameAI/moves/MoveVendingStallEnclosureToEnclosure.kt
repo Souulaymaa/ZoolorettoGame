@@ -1,7 +1,6 @@
 package gameAI.moves
 
 import entity.Enclosure
-import entity.Player
 import gameAI.Move
 
 class MoveVendingStallEnclosureToEnclosure(val source: Enclosure, val destination: Enclosure) : Move {
@@ -10,6 +9,7 @@ class MoveVendingStallEnclosureToEnclosure(val source: Enclosure, val destinatio
         super.performMove()
     }
     override fun toHintString(): String {
-        return "Move Vending Stall"
+        return "move vending stall from Enclosure with ${source.pointValues.toString()} Points to Enclosure with " +
+                "${source.pointValues.toString()} Points"
     }
 }
