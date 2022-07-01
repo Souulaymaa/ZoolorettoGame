@@ -10,7 +10,6 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * Calculates the player's score
      * @return a score of the player
      */
-
     fun determineScore(player : Player) : Int {
         var score = calculateBarnScore(player)
         player.playerEnclosure.forEach {
@@ -21,7 +20,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
 
     /**
      * Calculates the ranking of players.
-     * @return a sorted list of all player with the score of each player
+     * @return a sorted map of all player with the score of each player
      */
     fun determineHighscore (players: List<Player>): Map<Player, Int> {
         require(players.size in 2 .. 5)
@@ -43,6 +42,16 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      *
      * @param [enclosure] the enclosure that we calculate the score in it
      * @return the total points in the enclosure
+     * Rules:
+     * a) For a full enclosure (all spaces filled with animals), the player earns the higher
+     * of the two point values shown in the enclosure.
+     * b) For an enclosure with 1 empty space (all but 1 space filled with animals),
+     * the player earns the lower of the two point values shown in the enclosure.
+     * c) For an enclosure with two or more empty spaces, the player only scores points
+     * if he has a vending stall on at least one of the stall spaces associated with the enclosure.
+     * In this case, the player scores 1 point for each animal in the enclosure.
+     * d) If a player has an enclosure with two or more empty spaces and no vending stall
+     * in the stall spaces that are associated with the enclosure, he scores no points for the enclosure
      */
     private fun calcuateEnclosureScore(enclosure: Enclosure) : Int {
         var score = enclosure.vendingStalls.size * 2
@@ -56,6 +65,10 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         else if (enclosure.vendingStalls.size != 0) {
             score += enclosure.animalTiles.size
         }
+        else if (enclosure.animalTiles.size - 2 == enclosure.maxAnimalSlots && enclosure.vendingStalls.size == 0)
+        {
+            score += 0
+        }
         return score
     }
 
@@ -64,6 +77,11 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      *
      * @param [player] the player who we calculate the score in his barn
      * @return the total points in the barn
+     * Rules:
+     * For each vending stall type on stall spaces, the player receives 2 points.
+     * For each vending stall type in his barn, the player receives minus 2 points.
+     * For each animal type in his barn, the player receives minus 2 points.
+     * Example: Claus has 3 elephants in his barn and receives 2 minus points for them.
      */
     private fun calculateBarnScore(player: Player) : Int {
         var score = player.barn.vendingStalls.size * 2
