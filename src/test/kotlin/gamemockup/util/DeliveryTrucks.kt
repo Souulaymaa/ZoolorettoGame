@@ -7,13 +7,29 @@ class DeliveryTrucks {
         val deliveryTrucksForTwoPlayers = mutableListOf<DeliveryTruck>(
             DeliveryTruck(1),
             DeliveryTruck(2),
-            DeliveryTruck(3),
+            DeliveryTruck(3)
             )
 
-        val deliveryTrucksMoreThanTwoPlayers = mutableListOf<DeliveryTruck>(
+        val deliveryTrucksForThreePlayers = mutableListOf<DeliveryTruck>(
             DeliveryTruck(3),
             DeliveryTruck(3),
-            DeliveryTruck(3),
+            DeliveryTruck(3)
         )
+
+        val deliveryTrucksForFourPlayers = mutableListOf<DeliveryTruck>(
+            DeliveryTruck(3),
+            DeliveryTruck(3),
+            DeliveryTruck(3),
+            DeliveryTruck(3)
+        )
+
+        val deliveryTrucksForFivePlayers = mutableListOf<DeliveryTruck>(
+            DeliveryTruck(3),
+            DeliveryTruck(3),
+            DeliveryTruck(3),
+            DeliveryTruck(3),
+            DeliveryTruck(3)
+            )
+
     }
 }
