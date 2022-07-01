@@ -21,52 +21,38 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      */
     fun addTile(truck: DeliveryTruck){
         val game = rootService.zoolorettoGame!!.currentGameState
-
-        if(!game.deliveryTrucks.contains(truck)) {
-            println("wrong truck!!")
-            return
-        }
         var player = game.players.peek()
-        if(player.passed) {
-            println("the player can not add a tile!!")
-            return
-        }
-        if(truck.tilesOnTruck.size < 3) {
-            val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
-            if(game.roundDisc) {
-                if(game.tileStack.endStack.isNotEmpty()) {
-                    player = game.players.poll()
-                    val tile = game.tileStack.endStack.removeFirst()
-                    truck.tilesOnTruck.add(tile)
-                    game.players.add(player)
-                }
-                else {
-                    println("there are no more tiles!!")
-                    return
-                }
-            }
-            else if(game.tileStack.drawStack.isNotEmpty()) {
-                player = game.players.poll()
-                val tile = game.tileStack.drawStack.removeFirst()
-                truck.tilesOnTruck.add(tile)
-                game.players.add(player)
-            }
-            else {
-                player = game.players.poll()
-                val tile = game.tileStack.endStack.removeFirst()
-                truck.tilesOnTruck.add(tile)
-                game.players.add(player)
-                game.roundDisc = true
-            }
-            rootService.zoolorettoGame.redoStack.clear()
-            onAllRefreshables { refreshAfterPlayerAction() }
+        check(game.deliveryTrucks.contains(truck)) {"wrong truck!"}
+        check(!player.passed) {"this player has passed!"}
+
+        require(game.tileStack.endStack.isNotEmpty()) {"There are no more tiles!"}
+        require(truck.tilesOnTruck.size < 3) {"This truck is full!"}
+
+        val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+
+        if(game.roundDisc) {
+            player = game.players.poll()
+            val tile = game.tileStack.endStack.removeFirst()
+            truck.tilesOnTruck.add(tile)
+            game.players.add(player)
+        }
+        else if(game.tileStack.drawStack.isNotEmpty()) {
+            player = game.players.poll()
+            val tile = game.tileStack.drawStack.removeFirst()
+            truck.tilesOnTruck.add(tile)
+            game.players.add(player)
         }
         else {
-            println("the truck is full")
-            return
+            player = game.players.poll()
+            val tile = game.tileStack.endStack.removeFirst()
+            truck.tilesOnTruck.add(tile)
+            game.players.add(player)
+            game.roundDisc = true
         }
+        rootService.zoolorettoGame.redoStack.clear()
+        onAllRefreshables { refreshAfterPlayerAction() }
     }
 
     /**
@@ -83,68 +69,54 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(!player.passed)
-        if(player.coins == 0) {
-            println("the player has not enough coins!!")
-            return
-        }
-        if(destination.isBarn) {
-            println("it is not allowed to move tiles to the barn")
-            return
-        }
-        if(!player.playerEnclosure.contains(destination) || !player.equals(source)
-            || (!player.barn.animalTiles.contains(tile) && !player.barn.vendingStalls.contains(tile))) {
-            println("wrong parameter!!")
-            return
-        }
+        check(!player.passed) {"this player has passed!"}
+        require(player.coins >= 1) {"You don't have enough coins!"}
+        check(player.playerEnclosure.contains(destination))
+        check(player.equals(source))
+        check(player.barn.animalTiles.contains(tile) || player.barn.vendingStalls.contains(tile))
+
         if(tile is VendingStall) {
-            if(destination.vendingStalls.size < destination.maxVendingStalls) {
-                val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-                rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            require(destination.vendingStalls.size < destination.maxVendingStalls) {"There is no space!"}
+            val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
-                player = game.players.poll()
-                destination.vendingStalls.add(tile)
-                player.barn.vendingStalls.remove(tile)
-                player.coins--
-                game.bank++
-                game.players.add(player)
+            player = game.players.poll()
+            destination.vendingStalls.add(tile)
+            player.barn.vendingStalls.remove(tile)
+            player.coins--
+            game.bank++
+            game.players.add(player)
 
-                rootService.zoolorettoGame.redoStack.clear()
-                onAllRefreshables { refreshAfterPlayerAction() }
-            }
-            else {
-                println("there isn't enough space!!")
-                return
-            }
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
         }
         else if (tile is Animal){
-            if(destination.animalTiles.size < destination.maxAnimalSlots) {
-                val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-                rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            require(destination.animalTiles.size < destination.maxAnimalSlots) {"There is no space!"}
+            val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
-                if (destination.animalTiles.size == 0) {
-                    player = game.players.poll()
-                    destination.animalTiles.add(tile)
-                    player.barn.animalTiles.remove(tile)
-                    player.coins--
-                    game.players.add(player)
-                }
-                else {
-                    check(tile.species == destination.animalTiles[0].species)
-                    player = game.players.poll()
-                    destination.animalTiles.add(tile)
-                    if (destination.animalTiles.size == destination.maxAnimalSlots) {
-                        bonusCoins(game, player, destination)
-                    }
-                    checkAndAddNewBaby(game, player, tile, destination)
-                    player.barn.animalTiles.remove(tile)
-                    player.coins--
-                    game.players.add(player)
-                }
-
-                rootService.zoolorettoGame.redoStack.clear()
-                onAllRefreshables { refreshAfterPlayerAction() }
+            if (destination.animalTiles.size == 0) {
+                player = game.players.poll()
+                destination.animalTiles.add(tile)
+                player.barn.animalTiles.remove(tile)
+                player.coins--
+                game.players.add(player)
             }
+            else {
+                check(tile.species == destination.animalTiles[0].species)
+                player = game.players.poll()
+                destination.animalTiles.add(tile)
+                if (destination.animalTiles.size == destination.maxAnimalSlots) {
+                    bonusCoins(game, player, destination)
+                }
+                checkAndAddNewBaby(game, player, tile, destination)
+                player.barn.animalTiles.remove(tile)
+                player.coins--
+                game.players.add(player)
+            }
+
+            rootService.zoolorettoGame.redoStack.clear()
+            onAllRefreshables { refreshAfterPlayerAction() }
         }
     }
 
@@ -158,19 +130,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(!player.passed)
-        if(player.coins == 0) {
-            println("the player doesn't have enough coins!!")
-            return
-        }
-        if(!player.playerEnclosure.contains(source) || !player.playerEnclosure.contains(destination)) {
-            println("wrong parameter!!")
-            return
-        }
-        if(source.vendingStalls.size == 0 || destination.vendingStalls.size == destination.maxVendingStalls) {
-            println("no vending stall can be moved!!")
-            return
-        }
+        check(!player.passed) {"this player has passed!"}
+        check(player.coins >= 1) {"You don't have enough coins!"}
+        check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
+        check(source.vendingStalls.isNotEmpty()) {"You don't have vending stalls in this enclosure!"}
+        check(destination.vendingStalls.size != destination.maxVendingStalls) {"This enclosure is full!"}
+
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
         rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
 
@@ -197,8 +162,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(player.coins >= 1)
-        check(!player.passed)
+        require(player.coins >= 1) {"You don't have enough coins!"}
+        check(!player.passed) {"this player has passed!"}
         check(!source.isBarn)
         check(player.equals(destination))
         check(player.playerEnclosure.contains(source))
@@ -237,11 +202,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(!player.passed)
-        if(player.coins < 3) {
-            println("the player doesn't have enough coins!!")
-            return
-        }
+        check(!player.passed) {"this player has passed!"}
+        require(player.coins >= 3) {"You don't have enough coins!"}
+
         if(player.playerEnclosure.size == 5 || (player.playerEnclosure.size == 4 && game.players.size > 2)) {
             println("the player can't expand the zoo!!")
             return
@@ -273,7 +236,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         require(game.deliveryTrucks.contains(truck))
         require(truck.size in 1..3 && truck.tilesOnTruck.isNotEmpty())
-        require(!player.passed)
+        require(!player.passed) {"this player has passed!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
         rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
@@ -450,12 +413,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(player.coins >= 1)
-        check(!player.passed)
+        require(player.coins >= 1) {"You don't have enough coins!"}
+        check(!player.passed) {"this player has passed!"}
         check(player.playerEnclosure.contains(source))
         check(player.equals(destination))
-        check(source.animalTiles.isNotEmpty() && player.barn.animalTiles.contains(animal))
-        check(source.animalTiles[0].species != animal.species)
+        require(source.animalTiles.isNotEmpty()) {"This enclosure is empty!"}
+        check(player.barn.animalTiles.contains(animal))
+        require(source.animalTiles[0].species != animal.species) {"The animal types must be different!"}
 
         val tempList: ArrayList<Animal> = arrayListOf()
         player.barn.animalTiles.forEach {
@@ -463,7 +427,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 tempList.add(it)
             }
         }
-        check(tempList.size <= source.maxAnimalSlots)
+        check(tempList.size <= source.maxAnimalSlots) {"This enclosure is too small!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
         rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
@@ -496,11 +460,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(player.coins >= 1)
-        check(!player.passed)
+        require(player.coins >= 1) {"You don't have enough coins!"}
+        require(!player.passed) {"this player has passed!"}
         check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
-        check(source.animalTiles.isNotEmpty() && destination.animalTiles.isNotEmpty())
-        check(source.animalTiles[0].species != destination.animalTiles[0].species)
+        require(source.animalTiles.isNotEmpty() && destination.animalTiles.isNotEmpty()){"Enclosure is full"}
+        check(source.animalTiles[0].species != destination.animalTiles[0].species) {"same species!!"}
         check(source.animalTiles.size <= destination.maxAnimalSlots &&
               destination.animalTiles.size <= source.maxAnimalSlots)
 
@@ -531,14 +495,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method implements the purchase tile move, when a player buys a tile from another player's barn.
      *
+     * @param player the other player, who the player wants to buy a tile from his barn
+     * @param tile the tile, that the player wants to buy
+     * @param destination the enclosure, that the player wants to put this tile in it
      */
     fun purchaseTile(player: Player, tile: Tile, destination: Enclosure) {
         val game = rootService.zoolorettoGame!!.currentGameState
         var currentPlayer = game.players.peek()
 
-        check(currentPlayer.coins >= 2)
-        check(!player.passed)
+        require(currentPlayer.coins >= 2) {"You don't have enough coins!"}
+        require(!player.passed) {"this player has passed!"}
         check(game.players.contains(player))
         check(currentPlayer.playerEnclosure.contains(destination))
 
@@ -589,15 +557,18 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method implements the discard move, when a player chooses to discard a tile from his barn
+     * out of the game.
      *
+     * @param target the tile, that the player wants to discard
      */
     fun discardTile(target: Tile) {
 
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(player.coins >= 2)
-        check(!player.passed)
+        require(player.coins >= 2) {"You don't have enough coins!"}
+        require(!player.passed) {"this player has passed!"}
 
         if (target is VendingStall) {
             check(player.barn.vendingStalls.contains(target))
@@ -630,14 +601,19 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method gives a hint to the player and shows him what he could play
      *
+     * @return the showing message as a String
      */
     fun showHint() : String {
         return ""
     }
 
     /**
+     * this method maps each tile to the available enclosures.
      *
+     * @param tile the tile, that we want to find his available enclosures
+     * @param player the player, so that we have access to his enclosures and barn
      */
     private fun setTileToEnclosures(tile: Tile, player: Player) {
         val availableEnclosures = mutableListOf<Enclosure>()
@@ -664,7 +640,11 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method refreshes the map (tile -> enclosures) after we remove one tile from it and
+     * place it in any enclosure in the zoo.
      *
+     * @param map the to refresh map of tile to enclosures
+     * @param player the player, that we have access to his enclosures and barn
      */
     private fun refreshTileToEnclosuresMap(map: Map<Tile, List<Enclosure>>, player: Player) {
         map.forEach {
@@ -673,7 +653,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method checks if an animal can become a new baby in a specified enclosure.
      *
+     * @param animal the animal, that we want to check if it becomes a new child
+     * @param enclosure the enclosure, that we want to check in it
+     *
+     * @return true if animal becomes a child, otherwise false
      */
     private fun checkForNewBaby(animal: Animal, enclosure: Enclosure) : Boolean {
         if (animal.hasChild || animal.type == Type.OFFSPRING || animal.type == Type.NONE) {
@@ -693,7 +678,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method checks if a player becomes bonus coins, when he fills an enclosure.
+     * It depends, how many coins there are in the bank.
      *
+     * @param game the zooloretto game, so that we know how many coins there are in the bank
+     * @param player the player, so that he becomes his bonus coins
+     * @param enclosure the enclosure, that we want to check if it is full
      */
     private fun bonusCoins(game: ZoolorettoGameState, player: Player, enclosure: Enclosure) {
         if (game.bank >= enclosure.bonusCoins) {
@@ -707,14 +697,19 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method checks if an animal becomes a child and if the player becomes bonus coins.
      *
+     * @param game so that we have access to the bank for bonus coins
+     * @param player to give the player bonus coins and to get access to the barn
+     * @param animal that we want to check if it becomes a baby
+     * @param enclosure that we want to check in it
      */
     private fun checkAndAddNewBaby(game: ZoolorettoGameState, player: Player, animal: Animal, enclosure: Enclosure) {
         if (checkForNewBaby(animal, enclosure)) {
-            if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
+            if (enclosure.animalTiles.size >= enclosure.maxAnimalSlots) {
                 player.barn.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
             }
-            else if (enclosure.animalTiles.size - 1 == enclosure.maxAnimalSlots) {
+            else if (enclosure.animalTiles.size + 1 == enclosure.maxAnimalSlots) {
                 enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
                 bonusCoins(game, player, enclosure)
             }
@@ -725,21 +720,30 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
+     * this method checks if an animal in an enclosure becomes a baby based on an exchanging action,
+     * so that the player doesn't receive any bonus coins.
      *
+     * @param player so that we have access to his barn, when the baby has to go to the barn
+     * @param animal the animal, that we want to check, if it becomes a baby or not
+     * @param enclosure the enclosure, that we want to check in it
      */
     private fun checkAndAddNewBabyWithoutBonusCoins(player: Player, animal: Animal, enclosure: Enclosure) {
         if (checkForNewBaby(animal, enclosure)) {
             if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
                 player.barn.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
             }
-            else {
+            else if (enclosure.animalTiles.size < enclosure.maxAnimalSlots){
                 enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
             }
         }
     }
 
     /**
+     * this method checks if the game ends.
+     * When roundDisc true is, then the game ends, when the round is over.
+     * That means that each player has taken a truck and passed.
      *
+     * @param game to get access to the players in the game
      */
     private fun checkIfGameEnds(game: ZoolorettoGameState) {
         if(game.roundDisc) {
