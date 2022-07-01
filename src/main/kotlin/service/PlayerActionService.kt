@@ -235,7 +235,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         var player = game.players.peek()
 
         require(game.deliveryTrucks.contains(truck))
-        require(truck.size in 1..3 && truck.tilesOnTruck.isNotEmpty())
+        require(truck.maxSize in 1..3 && truck.tilesOnTruck.isNotEmpty())
         require(!player.passed) {"this player has passed!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
