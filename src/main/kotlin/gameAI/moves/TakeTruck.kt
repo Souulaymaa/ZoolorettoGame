@@ -3,7 +3,7 @@ package gameAI.moves
 import entity.DeliveryTruck
 import gameAI.Move
 
-class TakeTruck(val truck: DeliveryTruck) : Move {
+class TakeTruck(private val truck: DeliveryTruck) : Move {
 
     override fun performMove() {
         super.performMove()

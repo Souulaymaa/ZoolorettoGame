@@ -108,7 +108,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
         for (enclosure in currentPlayer.playerEnclosure) {
             if (!enclosure.isBarn) {
-                continue                                         //skips all enclosures of player that is not barn
+                continue
             }
             for (tile in enclosure.animalTiles) {
                 discardableTiles.add(tile)
@@ -205,7 +205,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             return possibleMoves
         }
         for(animalTile in currentPlayer.barn.animalTiles){
-            var enclosures: MutableList<Enclosure> = mutableListOf()
+            val enclosures: MutableList<Enclosure> = mutableListOf()
             for(enclosure in currentPlayer.playerEnclosure){
                 if((animalTile.species == enclosure.animalTiles[0].species &&
                             enclosure.animalTiles.size < enclosure.maxAnimalSlots) || (enclosure.animalTiles.size == 0)){
@@ -216,7 +216,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             possibleMoves[animalTile] = enclosures
         }
         for(vendingTile in currentPlayer.barn.vendingStalls){
-            var enclosures: MutableList<Enclosure> = mutableListOf()
+            val enclosures: MutableList<Enclosure> = mutableListOf()
             for (enclosure in currentPlayer.playerEnclosure){
                 if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
                     enclosures.add(enclosure)
@@ -294,7 +294,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
         for(sourceEnclosure in currentPlayer.playerEnclosure){
             if(sourceEnclosure.vendingStalls.size > 0){
-                var enclosures: MutableList<Enclosure> = mutableListOf()
+                val enclosures: MutableList<Enclosure> = mutableListOf()
                 for(targetEnclosure in currentPlayer.playerEnclosure){
                     if (sourceEnclosure != targetEnclosure && targetEnclosure.vendingStalls.size < targetEnclosure.maxVendingStalls){
                         enclosures.add(targetEnclosure)
