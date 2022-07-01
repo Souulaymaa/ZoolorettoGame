@@ -18,9 +18,9 @@ enum class StallType {
      */
     override fun toString() =
         when(this) {
-            StallType.VENDING1 -> "V1"
-            StallType.VENDING2 -> "V2"
-            StallType.VENDING3 -> "V3"
-            StallType.VENDING4 -> "V4"
+            VENDING1 -> "V1"
+            VENDING2 -> "V2"
+            VENDING3 -> "V3"
+            VENDING4 -> "V4"
         }
 }

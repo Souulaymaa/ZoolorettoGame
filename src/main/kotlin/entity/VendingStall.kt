@@ -7,4 +7,8 @@ package entity
  */
 
 
-data class VendingStall (val stall: StallType):Tile
+data class VendingStall (val stall: StallType):Tile(){
+    override fun toString(): String {
+        return stall.toString()
+    }
+}

@@ -1,6 +1,7 @@
+package entity
+
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import entity.*
 import java.util.*
 import kotlin.test.assertNotNull
 
@@ -38,11 +39,13 @@ class ZoolorettoGameTest {
         playerEnclosures.add(enclosure3)
 
         val players : Queue<Player> = LinkedList()
-        players.add(Player("Beshr", Difficulty.HUMAN, playerEnclosures, barn))
-        players.add(Player("Basheer", Difficulty.HUMAN, playerEnclosures, barn))
+        players.add(Player("Beshr", Difficulty.HUMAN))
+        players.add(Player("Basheer", Difficulty.HUMAN))
 
-        val currentGameState = ZoolorettoGameState(players = players, tileStack = tileStack,
-            deliveryTrucks = deliveryTrucks)
+        val currentGameState = ZoolorettoGameState(
+            players = players, tileStack = tileStack,
+            deliveryTrucks = deliveryTrucks
+        )
         val zoolorettoGame = ZoolorettoGame(1.0f, currentGameState)
 
         assertNotNull(zoolorettoGame)
