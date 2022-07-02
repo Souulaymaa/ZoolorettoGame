@@ -68,4 +68,48 @@ class GameStateServiceTest {
 
 
     }
+    //    @Test
+//    fun testSaveAndLoadHighScores(){
+//        rootService.highscore = mutableListOf(Pair("Kassem",5.0), Pair("Sanad", 4.0))
+//        val scores1 = rootService.highscore
+//        gameStateService.saveHighscore(scores1, "")
+//        val scores = gameStateService.loadHighscore()
+//        println(scores)
+//        scores1.add(Pair("Michael", 3.0))
+//        val newScores = gameStateService.loadHighscore()
+//        println(newScores)
+//        gameStateService.saveHighscore(scores1, "")
+//        val newScores1 = gameStateService.loadHighscore()
+//        println(newScores1)
+//    }
+//
+//    @Test
+//    fun testSaveAndLoadState(){
+//        deliveryTrucks.add(deliveryTruck1)
+//        deliveryTrucks.add(deliveryTruck2)
+//        deliveryTrucks.add(deliveryTruck3)
+//        player1.playerEnclosure = playerEnclosures
+//        player2.playerEnclosure = playerEnclosures
+//        players.add(player1)
+//        players.add(player2)
+//
+//        val zoolorettoGameState = ZoolorettoGameState(
+//            players = players, tileStack = tileStack,
+//            deliveryTrucks = deliveryTrucks
+//        )
+//
+//        val zoolorettoGame = ZoolorettoGame(1f, zoolorettoGameState)
+//
+//        rootService.zoolorettoGame = zoolorettoGame
+//        val game = rootService.zoolorettoGame
+//        checkNotNull(game)
+//        gameStateService.saveState()
+//        var savedGame = gameStateService.loadState()
+//        checkNotNull(savedGame)
+//        assertEquals(zoolorettoGame, game)
+//        assertSame(zoolorettoGame, game)
+//        assertEquals(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
+//        assertNotSame(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
+//    }
+
 }
