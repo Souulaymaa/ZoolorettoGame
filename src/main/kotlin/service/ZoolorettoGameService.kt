@@ -119,6 +119,11 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         this.onAllRefreshables { refreshAfterGameEnd() }
     }
 */
+    fun endGame(){
+        TODO("endGame commented")
+    }
+
+
     /**
      * returns a player given their [name] and [Difficulty]
      */
