@@ -81,15 +81,18 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         // if toShuffle is true we shuffle the list
         if(toShuffle){players.toMutableList().shuffle(Random(123))}
         // make the list a queue
-        val playerQueue : Queue<Player> = LinkedList<Player>(players)
-        val gameState : ZoolorettoGameState
+        val playerQueue : Queue<Player> = LinkedList(players)
         // checking the number of players to determine the number of delivery trucks
-        if(playerList.size == 2){
-            gameState = ZoolorettoGameState(false, false, playerQueue, initialiseTileStack(),
-                ArrayList<DeliveryTruck>(3))
+        val gameState : ZoolorettoGameState = if(playerList.size == 2){
+            ZoolorettoGameState(
+                paused = false, roundDisc = false, players = playerQueue, tileStack = initialiseTileStack(),
+                deliveryTrucks = ArrayList(3)
+            )
         } else{
-            gameState = ZoolorettoGameState(false, false, playerQueue, initialiseTileStack(),
-                ArrayList<DeliveryTruck>(playerList.size))
+            ZoolorettoGameState(
+                paused = false, roundDisc = false, players = playerQueue, tileStack = initialiseTileStack(),
+                deliveryTrucks = ArrayList(playerList.size)
+            )
         }
         rootService.zoolorettoGame = ZoolorettoGame(1.52f , gameState)
         onAllRefreshables { refreshAfterCreateGame() }
