@@ -30,7 +30,9 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         require(truck.tilesOnTruck.size < truck.maxSize) {"This truck is full!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         if(game.roundDisc) {
             player = game.players.poll()
@@ -51,7 +53,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.players.add(player)
             game.roundDisc = true
         }
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -68,7 +70,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     fun moveOneTile(source: Player, destination: Enclosure, tile: Tile) {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         check(!player.passed) {"this player has passed!"}
         require(player.coins >= 1) {"You don't have enough coins!"}
         check(player.playerEnclosure.contains(destination))
@@ -78,7 +81,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if(tile is VendingStall) {
             require(destination.vendingStalls.size < destination.maxVendingStalls) {"There is no space!"}
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             player = game.players.poll()
             destination.vendingStalls.add(tile)
@@ -87,13 +90,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.bank++
             game.players.add(player)
 
-            rootService.zoolorettoGame.redoStack.clear()
+            zooGame.redoStack.clear()
             onAllRefreshables { refreshAfterPlayerAction() }
         }
         else if (tile is Animal){
             require(destination.animalTiles.size < destination.maxAnimalSlots) {"There is no space!"}
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             if (destination.animalTiles.size == 0) {
                 player = game.players.poll()
@@ -115,7 +118,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.players.add(player)
             }
 
-            rootService.zoolorettoGame.redoStack.clear()
+            zooGame.redoStack.clear()
             onAllRefreshables { refreshAfterPlayerAction() }
         }
     }
@@ -127,6 +130,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @param destination the enclosure, that we want to move the vending stall to it
      */
     fun moveVendingStall(source: Enclosure, destination: Enclosure) {
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
@@ -137,7 +142,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(destination.vendingStalls.size != destination.maxVendingStalls) {"This enclosure is full!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         destination.vendingStalls.add(source.vendingStalls[0])
@@ -146,7 +151,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         game.bank++
         game.players.add(player)
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -161,7 +166,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(player.coins >= 1) {"You don't have enough coins!"}
         check(!player.passed) {"this player has passed!"}
         check(!source.isBarn)
@@ -169,7 +175,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(player.playerEnclosure.contains(source))
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         if (tile is VendingStall) {
             check(source.vendingStalls.contains(tile))
@@ -190,7 +196,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.players.add(player)
         }
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -201,7 +207,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     fun expandZoo() {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         check(!player.passed) {"this player has passed!"}
         require(player.coins >= 3) {"You don't have enough coins!"}
 
@@ -210,7 +217,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             return
         }
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         player.playerEnclosure.add(Enclosure(5, 1, 0, Pair(9,5), false))
@@ -218,7 +225,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         game.bank += 3
         game.players.add(player)
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -233,13 +240,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(game.deliveryTrucks.contains(truck))
         require(truck.maxSize in 1..3 && truck.tilesOnTruck.isNotEmpty())
         require(!player.passed) {"this player has passed!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         if(game.deliveryTrucks.size == 1) {
             player.chosenTruck = truck
@@ -277,7 +285,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.players.add(player)
         }
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
@@ -296,14 +304,15 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
         val truck = player.chosenTruck
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(player.playerEnclosure.contains(destination))
         checkNotNull(truck)
         val tile = truck.tilesOnTruck[0]
         require(tileToEnclosuresMap[tile]!!.contains(destination))
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         if(truck.tilesOnTruck.size == 1) {
             player = game.players.poll()
@@ -343,7 +352,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             truck.tilesOnTruck.removeFirst()
         }
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
@@ -359,13 +368,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
         val truck = player.chosenTruck
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(player.equals(destination))
         checkNotNull(truck)
         val tile = truck.tilesOnTruck[0]
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         if(truck.tilesOnTruck.size == 1) {
             player = game.players.poll()
@@ -392,7 +402,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             tileToEnclosuresMap.remove(tile)
         }
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
         return tileToEnclosuresMap
     }
@@ -412,7 +422,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     fun exchangeAllTiles(source: Enclosure, destination: Player, animal: Animal) {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(player.coins >= 1) {"You don't have enough coins!"}
         check(!player.passed) {"this player has passed!"}
         check(player.playerEnclosure.contains(source))
@@ -430,7 +441,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(tempList.size <= source.maxAnimalSlots) {"This enclosure is too small!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         player.coins--
@@ -444,7 +455,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         game.players.add(player)
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -459,7 +470,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     fun exchangeAllTiles(source: Enclosure, destination: Enclosure) {
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         require(player.coins >= 1) {"You don't have enough coins!"}
         require(!player.passed) {"this player has passed!"}
         check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
@@ -469,7 +481,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
               destination.animalTiles.size <= source.maxAnimalSlots)
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+        zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
 
@@ -490,7 +502,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         player.coins--
         game.players.add(player)
 
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -509,13 +521,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         require(!player.passed) {"this player has passed!"}
         check(game.players.contains(player))
         check(currentPlayer.playerEnclosure.contains(destination))
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         if (tile is VendingStall) {
             check(player.barn.vendingStalls.contains(tile))
             check(destination.vendingStalls.size < destination.maxVendingStalls)
 
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             currentPlayer = game.players.poll()
             player.coins++
@@ -530,7 +543,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             check(destination.animalTiles.size < destination.maxAnimalSlots)
 
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             currentPlayer = game.players.poll()
             currentPlayer.coins -= 2
@@ -552,7 +565,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
                 game.players.add(currentPlayer)
             }
         }
-        rootService.zoolorettoGame.redoStack.clear()
+        zooGame.redoStack.clear()
         onAllRefreshables { refreshAfterPlayerAction() }
     }
 
@@ -563,7 +576,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @param target the tile, that the player wants to discard
      */
     fun discardTile(target: Tile) {
-
+        val zooGame = rootService.zoolorettoGame
+        checkNotNull(zooGame)
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
@@ -573,7 +587,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         if (target is VendingStall) {
             check(player.barn.vendingStalls.contains(target))
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             player = game.players.poll()
             player.barn.vendingStalls.remove(target)
@@ -581,13 +595,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.bank += 2
             game.players.add(player)
 
-            rootService.zoolorettoGame.redoStack.clear()
+            zooGame.redoStack.clear()
             onAllRefreshables { refreshAfterPlayerAction() }
         }
         else if (target is Animal) {
             check(player.barn.animalTiles.contains(target))
             val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            rootService.zoolorettoGame.undoStack.add(copyCurrentGame)
+            zooGame.undoStack.add(copyCurrentGame)
 
             player = game.players.poll()
             player.barn.animalTiles.remove(target)
@@ -595,7 +609,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             game.bank += 2
             game.players.add(player)
 
-            rootService.zoolorettoGame.redoStack.clear()
+            zooGame.redoStack.clear()
             onAllRefreshables { refreshAfterPlayerAction() }
         }
     }
