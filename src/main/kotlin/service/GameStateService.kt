@@ -7,6 +7,8 @@ import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Paths
 import com.google.gson.Gson
+import com.google.gson.internal.LinkedTreeMap
+import java.util.stream.Collectors
 
 
 /**
@@ -48,8 +50,12 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
         } catch (e:SecurityException){
             return null
         }
+
+        val fileContent = reader.lines().collect(Collectors.joining())
+        val obj : T = gson.fromJson(fileContent, T::class.java)
+
         reader.close()
-        return gson.fromJson(fileName, T::class.java)
+        return obj
     }
 
 
@@ -75,8 +81,20 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      *
      * @return Returns the highscore list or null if the file does not exist yet.
      */
-    fun loadHighscore() : List<Pair<String, Double>>? {
-        return loadFromJSON<List<Pair<String, Double>>>(highscoreFileName)
+    fun loadHighscore() : MutableList<Pair<String, Double>> {
+        val listOfLinkedTreeMap = loadFromJSON<List<LinkedTreeMap<String,Double>>>(highscoreFileName)
+
+        val pairList = mutableListOf<Pair<String, Double>>()
+
+        listOfLinkedTreeMap!!.forEach {
+            val first : String = it.get("first") as String
+            val second : Double =  it.get("second") as Double
+
+            val pair = Pair<String, Double> (first, second)
+            pairList.add(pair)
+        }
+
+        return pairList
     }
     /**
      * Function to create a deep copy of [ZoolorettoGameState] object without

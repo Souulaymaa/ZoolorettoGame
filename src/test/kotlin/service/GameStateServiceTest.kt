@@ -1,6 +1,9 @@
 package service
 
+import com.google.gson.Gson
 import entity.*
+import gamemockup.ZoolorettoGameStateMockups
+import java.io.File
 import java.util.*
 import kotlin.test.*
 
@@ -8,7 +11,6 @@ import kotlin.test.*
  * Test Cases for [GameStateService]
  */
 class GameStateServiceTest {
-
     private val rootService = RootService()
     private val gameStateService = GameStateService(rootService)
 
@@ -64,24 +66,27 @@ class GameStateServiceTest {
         assertNotSame(zoolorettoGameState.players.peek(), gameCopy.players.peek())
         assertNotSame(zoolorettoGameState.deliveryTrucks, gameCopy.deliveryTrucks)
         assertNotSame(zoolorettoGameState.tileStack, gameCopy.tileStack)
-
-
-
     }
-    //    @Test
-//    fun testSaveAndLoadHighScores(){
-//        rootService.highscore = mutableListOf(Pair("Kassem",5.0), Pair("Sanad", 4.0))
-//        val scores1 = rootService.highscore
-//        gameStateService.saveHighscore(scores1, "")
-//        val scores = gameStateService.loadHighscore()
-//        println(scores)
-//        scores1.add(Pair("Michael", 3.0))
-//        val newScores = gameStateService.loadHighscore()
-//        println(newScores)
-//        gameStateService.saveHighscore(scores1, "")
-//        val newScores1 = gameStateService.loadHighscore()
-//        println(newScores1)
-//    }
+    @Test
+    fun testSaveAndLoadHighScores(){
+        rootService.highscore = mutableListOf(Pair("Kassem",5.0), Pair("Sanad", 4.0))
+        val scoresIngame = rootService.highscore
+
+        gameStateService.saveHighscore()
+
+        val scoresFromFile = gameStateService.loadHighscore()
+
+        assertEquals(scoresIngame, scoresFromFile)
+
+        scoresIngame.add(Pair("Michael", 3.0))
+
+        val scoresLoaded = gameStateService.loadHighscore()
+        println(scoresLoaded)
+
+        gameStateService.saveHighscore()
+        val newScores1 = gameStateService.loadHighscore()
+        println(newScores1)
+    }
 //
 //    @Test
 //    fun testSaveAndLoadState(){
