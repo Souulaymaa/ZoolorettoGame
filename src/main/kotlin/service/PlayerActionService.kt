@@ -27,7 +27,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(!player.passed) {"this player has passed!"}
 
         require(game.tileStack.endStack.isNotEmpty()) {"There are no more tiles!"}
-        require(truck.tilesOnTruck.size < 3) {"This truck is full!"}
+        require(truck.tilesOnTruck.size < truck.maxSize) {"This truck is full!"}
 
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
         val zooGame = rootService.zoolorettoGame
@@ -333,7 +333,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             }
             truck.tilesOnTruck.removeFirst()
             game.players.add(player)
-            checkIfGameEnds(game)
+            checkIfRoundEnds(game)
         }
         else {
             if (tile is VendingStall) {
@@ -389,7 +389,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             truck.tilesOnTruck.removeFirst()
             tileToEnclosuresMap.remove(tile)
             game.players.add(player)
-            checkIfGameEnds(game)
+            checkIfRoundEnds(game)
         }
         else {
             if (tile is VendingStall) {
@@ -753,19 +753,29 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
     }
 
     /**
-     * this method checks if the game ends.
-     * When roundDisc true is, then the game ends, when the round is over.
-     * That means that each player has taken a truck and passed.
+     * this method checks if the round ends.
+     * When roundDisc is true, then ends the game, when the round is over.
+     * That means that each player has taken a truck and passed,
+     * otherwise the round ends and each player gives his truck to the delivery trucks
+     * and a new round will be started.
      *
      * @param game to get access to the players in the game
      */
-    private fun checkIfGameEnds(game: ZoolorettoGameState) {
-        if(game.roundDisc) {
-            var end = true
-            game.players.forEach {
-                if (!it.passed) end = false
+    private fun checkIfRoundEnds(game: ZoolorettoGameState) {
+        var endRound = true
+        game.players.forEach {
+            if (!it.passed) endRound = false
+        }
+        if (endRound) {
+            if (game.roundDisc) {
+                rootService.zoolorettoGameService.endGame()
             }
-            if (end) rootService.zoolorettoGameService.endGame()
+            else {
+                game.players.forEach {
+                    it.passed = false
+                    game.deliveryTrucks.add(it.chosenTruck!!)
+                }
+            }
         }
     }
 }
