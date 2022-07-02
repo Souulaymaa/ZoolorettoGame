@@ -23,8 +23,6 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     implementation(group = "tools.aqua", name = "bgw-gui", version = "0.6")
     implementation("com.google.code.gson:gson:2.9.0")
-    implementation("org.apache.commons", "commons-csv","1.5")
-    implementation ("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.3")
 }
 
 tasks.distZip {

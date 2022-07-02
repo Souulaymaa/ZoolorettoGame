@@ -1,7 +1,5 @@
 package service
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import com.fasterxml.jackson.module.kotlin.readValue
 import entity.*
 import java.io.BufferedReader
 import java.io.File
@@ -41,7 +39,7 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * It is used for [GameStateService.loadHighscore] and [GameStateService.loadGame]
      */
     private inline fun <reified T> loadFromJSON(fileName: String): T? {
-        val mapper = jacksonObjectMapper()
+        val gson = Gson()
         val reader: BufferedReader
         try {
             reader = Files.newBufferedReader(Paths.get(fileName))
@@ -50,9 +48,8 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
         } catch (e:SecurityException){
             return null
         }
-        val string = reader.readText()
         reader.close()
-        return mapper.readValue((string))
+        return gson.fromJson(fileName, T::class.java)
     }
 
 
@@ -60,8 +57,8 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * Private function to save the object [obj] to a JSON string in the file [fileName]
      */
     private fun <T> save(obj : T, fileName: String){
-        val mapper = jacksonObjectMapper()
-        val json = mapper.writeValueAsString(obj)
+        val gson = Gson()
+        val json = gson.toJson(obj)
         val file = File(fileName)
         file.writeText(json)
     }
