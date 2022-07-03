@@ -213,8 +213,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         require(player.coins >= 3) {"You don't have enough coins!"}
 
         if(player.playerEnclosure.size == 5 || (player.playerEnclosure.size == 4 && game.players.size > 2)) {
-            println("the player can't expand the zoo!!")
-            return
+            throw IllegalArgumentException("\"the player can't expand the zoo!!\"")
         }
         val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
         zooGame.undoStack.add(copyCurrentGame)
