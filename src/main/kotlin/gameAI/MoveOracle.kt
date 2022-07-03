@@ -26,7 +26,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * Function, that determines all possible [AddTileToTruck] moves assuming, that when the function is called,
      * the current player may choose draw a tile and add it on the truck.
      *
-     * The functions iterates over all delivery trucks and creates new [AddTileToTruck] moves
+     * The function iterates over all delivery trucks and creates new [AddTileToTruck] moves
      * and returns them as a list.
      */
     fun determineAddTileToTruckMoves() : List<AddTileToTruck>{
