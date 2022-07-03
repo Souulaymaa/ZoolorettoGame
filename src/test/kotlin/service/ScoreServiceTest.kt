@@ -107,6 +107,7 @@ internal class ScoreServiceTest {
         player1.playerEnclosure[4].animalTiles.add(TileLists.flamingos[1])
         player1.playerEnclosure[4].vendingStalls.add(TileLists.vendingStalls[0])
 
+        //score must be equal to -8
         assertEquals(-8, scoreService.determineScore(player1))
 
     }
