@@ -216,10 +216,10 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             throw IllegalArgumentException("\"the player can't expand the zoo!!\"")
         }
         //val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-       //zooGame.undoStack.add(copyCurrentGame)
+        //zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
-        player.playerEnclosure.add(Enclosure(5, 1, 1, Pair(9,5), false))
+        player.playerEnclosure.add(Enclosure(5, 2, 1, Pair(9,5), false))
         player.coins -= 3
         game.bank += 3
         game.players.add(player)

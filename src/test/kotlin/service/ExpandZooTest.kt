@@ -87,7 +87,7 @@ class ExpandZooTest {
         game.players.poll()
         game.players.add(player1)
 
-        //the second player has  coins but can't expand, cuz he had 4 enclosures.
+        //the second player has 3 coins but can't expand, cuz he had 4 enclosures.
         assertThrows<IllegalArgumentException> { rootService.playerActionService.expandZoo() }
     }
 }
