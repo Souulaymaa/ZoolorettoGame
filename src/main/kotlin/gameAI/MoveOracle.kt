@@ -29,7 +29,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * The functions iterates over all delivery trucks and creates new [AddTileToTruck] moves
      * and returns them as a list.
      */
-    fun determineAddTileToTruckMoves() : List<Move>{
+    fun determineAddTileToTruckMoves() : List<AddTileToTruck>{
         val moves = mutableListOf<AddTileToTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
@@ -45,6 +45,25 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
         for(deliveryTuck in deliveryTrucks){
             moves.add(AddTileToTruck(deliveryTuck))
+        }
+
+        return moves
+    }
+
+    /**
+     * Function, that determines all possible [TakeTruck] moves.
+     *
+     * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruck] move
+     * and returns all moves afterwards as a list.
+     */
+    fun determineAllTakeTruckMoves() : List<TakeTruck>{
+        val moves = mutableListOf<TakeTruck>()
+        val deliveryTrucks = currentGameStateCopy.deliveryTrucks
+
+        for(deliveryTuck in deliveryTrucks){
+            if(deliveryTuck.tilesOnTruck.isNotEmpty()){
+                moves.add(TakeTruck(deliveryTuck))
+            }
         }
 
         return moves
