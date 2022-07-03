@@ -8,8 +8,6 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import com.google.gson.Gson
 import com.google.gson.internal.LinkedTreeMap
-import java.util.stream.Collectors
-
 
 /**
  * Class to load and save Zooloretto as well as load [Tile] to [TileStack]
@@ -32,13 +30,13 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * Save [ZoolorettoGameState] to file as a JSON String
      */
     fun saveState() {
-        save(rootService.currentGame, zoolorettoFileName)
+        save(rootService.zoolorettoGame, zoolorettoFileName)
     }
 
     /**
      * Generic function to load something from a JSON stored in the file [fileName].
      *
-     * It is used for [GameStateService.loadHighscore] and [GameStateService.loadGame]
+     * It is used for [GameStateService.loadHighScore] and [GameStateService.loadState]
      */
     private inline fun <reified T> loadFromJSON(fileName: String): T? {
         val gson = Gson()
@@ -51,8 +49,7 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
             return null
         }
 
-        val fileContent = reader.lines().collect(Collectors.joining())
-        val obj : T = gson.fromJson(fileContent, T::class.java)
+        val obj = gson.fromJson(reader.readLine(), T::class.java)
 
         reader.close()
         return obj
@@ -72,7 +69,7 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
     /**
      * Save [RootService.highscore] to a file as JSON string
      */
-    fun saveHighscore() {
+    fun saveHighScore() {
         save(rootService.highscore, highscoreFileName)
     }
 
@@ -81,16 +78,16 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      *
      * @return Returns the highscore list or null if the file does not exist yet.
      */
-    fun loadHighscore() : MutableList<Pair<String, Double>> {
+    fun loadHighScore() : MutableList<Pair<String, Double>> {
         val listOfLinkedTreeMap = loadFromJSON<List<LinkedTreeMap<String,Double>>>(highscoreFileName)
 
         val pairList = mutableListOf<Pair<String, Double>>()
 
         listOfLinkedTreeMap!!.forEach {
-            val first : String = it.get("first") as String
-            val second : Double =  it.get("second") as Double
+            val first : String = it["first"] as String
+            val second : Double =  it["second"] as Double
 
-            val pair = Pair<String, Double> (first, second)
+            val pair = Pair (first, second)
             pairList.add(pair)
         }
 

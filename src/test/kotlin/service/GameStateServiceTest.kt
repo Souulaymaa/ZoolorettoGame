@@ -1,9 +1,6 @@
 package service
 
-import com.google.gson.Gson
 import entity.*
-import gamemockup.ZoolorettoGameStateMockups
-import java.io.File
 import java.util.*
 import kotlin.test.*
 
@@ -18,21 +15,16 @@ class GameStateServiceTest {
     private val deliveryTruck1 = DeliveryTruck()
     private val deliveryTruck2 = DeliveryTruck()
     private val deliveryTruck3 = DeliveryTruck()
-    private val deliveryTrucks = mutableListOf<DeliveryTruck>()
+    private val deliveryTrucks = mutableListOf(deliveryTruck1, deliveryTruck2, deliveryTruck3)
 
     // tileStack is needed for the constructor of ZoolorettoGameState.
     private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
 
-    // playerEnclosures and a barn are needed to create the players.
-    private val enclosure1 = Enclosure(6, 1, 0, Pair(4,3), false)
-    private val enclosure2 = Enclosure(5, 2, 3, Pair(5,4), false)
-    private val enclosure3 = Enclosure(4, 2, 2, Pair(6,3), false)
-    private val playerEnclosures = mutableListOf(enclosure1, enclosure2, enclosure3)
 
     // Player Queue is also needed for the constructor of ZoolorettoGameState.
     private val player1 = Player("Player 1", Difficulty.HUMAN)
     private val player2 = Player("Player 2", Difficulty.HUMAN)
-    private val players: Queue<Player> = LinkedList()
+    private val players: Queue<Player> = LinkedList(listOf(player1, player2))
 
     /**
      * tests the [GameStateService.deepZoolorettoCopy] function.
@@ -40,13 +32,6 @@ class GameStateServiceTest {
      */
     @Test
     fun testDeepZoolorettoCopy(){
-        deliveryTrucks.add(deliveryTruck1)
-        deliveryTrucks.add(deliveryTruck2)
-        deliveryTrucks.add(deliveryTruck3)
-        player1.playerEnclosure = playerEnclosures
-        player2.playerEnclosure = playerEnclosures
-        players.add(player1)
-        players.add(player2)
 
         val zoolorettoGameState = ZoolorettoGameState(
             players = players, tileStack = tileStack,
@@ -67,54 +52,63 @@ class GameStateServiceTest {
         assertNotSame(zoolorettoGameState.deliveryTrucks, gameCopy.deliveryTrucks)
         assertNotSame(zoolorettoGameState.tileStack, gameCopy.tileStack)
     }
+
+    /**
+     * Tests the [GameStateService.saveHighScore] and [GameStateService.loadHighScore] functions.
+     * Checks if the highScore list is saved and loaded correctly.
+     */
     @Test
     fun testSaveAndLoadHighScores(){
-        rootService.highscore = mutableListOf(Pair("Kassem",5.0), Pair("Sanad", 4.0))
-        val scoresIngame = rootService.highscore
+        rootService.highscore = mutableListOf(Pair("Player1",5.0), Pair("Player2", 4.0))
+        val scoresInGame = rootService.highscore
 
-        gameStateService.saveHighscore()
+        // saves the highScore list in a file.
+        gameStateService.saveHighScore()
 
-        val scoresFromFile = gameStateService.loadHighscore()
+        // loads the saved highScore list.
+        val scoresFromFile = gameStateService.loadHighScore()
 
-        assertEquals(scoresIngame, scoresFromFile)
+        // Ensures that the scoresInGame and the loaded scores are equal.
+        assertEquals(scoresInGame, scoresFromFile)
+        assertNotSame(scoresInGame, scoresFromFile)
 
-        scoresIngame.add(Pair("Michael", 3.0))
+        scoresInGame.add(Pair("Player3", 3.0))
 
-        val scoresLoaded = gameStateService.loadHighscore()
-        println(scoresLoaded)
-
-        gameStateService.saveHighscore()
-        val newScores1 = gameStateService.loadHighscore()
-        println(newScores1)
+        gameStateService.saveHighScore()
+        val newLoadedScores = gameStateService.loadHighScore()
+        assertEquals(scoresInGame, newLoadedScores)
+        assertNotSame(scoresInGame, newLoadedScores)
     }
-//
-//    @Test
-//    fun testSaveAndLoadState(){
-//        deliveryTrucks.add(deliveryTruck1)
-//        deliveryTrucks.add(deliveryTruck2)
-//        deliveryTrucks.add(deliveryTruck3)
-//        player1.playerEnclosure = playerEnclosures
-//        player2.playerEnclosure = playerEnclosures
-//        players.add(player1)
-//        players.add(player2)
-//
-//        val zoolorettoGameState = ZoolorettoGameState(
-//            players = players, tileStack = tileStack,
-//            deliveryTrucks = deliveryTrucks
-//        )
-//
-//        val zoolorettoGame = ZoolorettoGame(1f, zoolorettoGameState)
-//
-//        rootService.zoolorettoGame = zoolorettoGame
-//        val game = rootService.zoolorettoGame
-//        checkNotNull(game)
-//        gameStateService.saveState()
-//        var savedGame = gameStateService.loadState()
-//        checkNotNull(savedGame)
-//        assertEquals(zoolorettoGame, game)
-//        assertSame(zoolorettoGame, game)
-//        assertEquals(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
-//        assertNotSame(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
-//    }
+
+    /**
+     * Tests the [GameStateService.saveState] and [GameStateService.loadState] functions.
+     * Checks if the [ZoolorettoGame] is saved and loaded correctly.
+     */
+    @Test
+    fun testSaveAndLoadState(){
+
+        val zoolorettoGameState = ZoolorettoGameState(
+            players = players, tileStack = tileStack,
+            deliveryTrucks = deliveryTrucks
+        )
+
+        val zoolorettoGame = ZoolorettoGame(1f, zoolorettoGameState)
+
+        rootService.zoolorettoGame = zoolorettoGame
+
+        val game = rootService.zoolorettoGame
+        checkNotNull(game)
+
+        // saves the zoolorettoGame in a file.
+        gameStateService.saveState()
+
+        // loads the saved zoolorettoGame from the file.
+        val savedGame = gameStateService.loadState()
+        checkNotNull(savedGame)
+
+        // Ensures that the saved game and the loaded game are equal but have different references.
+        assertEquals(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
+        assertNotSame(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
+    }
 
 }
