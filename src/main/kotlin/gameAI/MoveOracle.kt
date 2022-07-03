@@ -21,8 +21,33 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     private fun determineAllTruckRelatedMoves() : List<Move>{
         throw  NotImplementedError()
     }
+
+    /**
+     * Function, that determines all possible [AddTileToTruck] moves assuming, that when the function is called,
+     * the current player may choose draw a tile and add it on the truck.
+     *
+     * The functions iterates over all delivery trucks and creates new [AddTileToTruck] moves
+     * and returns them as a list.
+     */
     fun determineAddTileToTruckMoves() : List<Move>{
-        throw NotImplementedError()
+        val moves = mutableListOf<AddTileToTruck>()
+        val deliveryTrucks = currentGameStateCopy.deliveryTrucks
+
+
+        /** Might be useful, if the AddTileToTruck will be changed
+        val nextTile = if(tileStack.drawStack.isNotEmpty()){
+        tileStack.drawStack.firstElement()
+        }
+        else{
+        tileStack.endStack.firstElement()
+        }
+         */
+
+        for(deliveryTuck in deliveryTrucks){
+            moves.add(AddTileToTruck(deliveryTuck))
+        }
+
+        return moves
     }
 
     private fun determineAllMoneyMoves() : List<Move> {
