@@ -135,14 +135,14 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         val game = rootService.zoolorettoGame!!.currentGameState
         var player = game.players.peek()
 
-        check(!player.passed) {"this player has passed!"}
-        check(player.coins >= 1) {"You don't have enough coins!"}
-        check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
-        check(source.vendingStalls.isNotEmpty()) {"You don't have vending stalls in this enclosure!"}
-        check(destination.vendingStalls.size != destination.maxVendingStalls) {"This enclosure is full!"}
+        require(!player.passed) {"this player has passed!"}
+        require(player.coins >= 1) {"You don't have enough coins!"}
+        require(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
+        require(source.vendingStalls.isNotEmpty()) {"You don't have vending stalls in this enclosure!"}
+        require(destination.vendingStalls.size < destination.maxVendingStalls) {"This enclosure is full!"}
 
-        val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        zooGame.undoStack.add(copyCurrentGame)
+        //val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+        //zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         destination.vendingStalls.add(source.vendingStalls[0])
