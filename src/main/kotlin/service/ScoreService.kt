@@ -1,19 +1,21 @@
 package service
 
-import entity.Animal
-import entity.Enclosure
-import entity.Player
-import entity.Species
+import entity.*
 
+/**
+ * service layer class to calculate the score of each player and gives back a high score list.
+ *
+ * @param rootService
+ */
 class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
     /**
      * Calculates the player's score
      * @return a score of the player
      */
     fun determineScore(player : Player) : Int {
-        var score = calculateBarnScore(player)
+        var score = calculateBarnScore(player) + calculateVendingStalls(player)
         player.playerEnclosure.forEach {
-            score += calcuateEnclosureScore(it)
+            score += calculateEnclosureScore(it)
         }
         return score
     }
@@ -53,8 +55,8 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * d) If a player has an enclosure with two or more empty spaces and no vending stall
      * in the stall spaces that are associated with the enclosure, he scores no points for the enclosure
      */
-    private fun calcuateEnclosureScore(enclosure: Enclosure) : Int {
-        var score = enclosure.vendingStalls.size * 2
+    private fun calculateEnclosureScore(enclosure: Enclosure) : Int {
+        var score = 0
 
         if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.first
@@ -80,7 +82,30 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * Example: Claus has 3 elephants in his barn and receives 2 minus points for them.
      */
     private fun calculateBarnScore(player: Player) : Int {
-        var score = player.barn.vendingStalls.size * 2
+        var score = 0
+
+        val vendingStall1 = arrayListOf<VendingStall>()
+        val vendingStall2 = arrayListOf<VendingStall>()
+        val vendingStall3 = arrayListOf<VendingStall>()
+        val vendingStall4 = arrayListOf<VendingStall>()
+
+        player.barn.vendingStalls.forEach {
+            if (it == VendingStall(StallType.VENDING1)) {
+                vendingStall1.add(VendingStall(StallType.VENDING1))
+            }
+            else if (it == (VendingStall(StallType.VENDING2))) {
+                vendingStall2.add(VendingStall(StallType.VENDING2))
+            }
+            else if (it == (VendingStall(StallType.VENDING3))) {
+                vendingStall3.add(VendingStall(StallType.VENDING3))
+            }
+            else {
+                vendingStall4.add(VendingStall(StallType.VENDING4))
+            }
+        }
+        val vendingStallList = arrayListOf(vendingStall1, vendingStall2, vendingStall3, vendingStall4)
+        vendingStallList.forEach { if (it.isNotEmpty()) score -= 2 }
+
         val flamingoList = arrayListOf<Animal>()
         val pandaList = arrayListOf<Animal>()
         val kamelList = arrayListOf<Animal>()
@@ -101,20 +126,40 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
                 Species.L -> leopardList.add(it)
             }
         }
-        val animalList : ArrayList<List<Animal>> = arrayListOf()
-        animalList.add(flamingoList)
-        animalList.add(pandaList)
-        animalList.add(kamelList)
-        animalList.add(schimpanseList)
-        animalList.add(kaenguruList)
-        animalList.add(elefantList)
-        animalList.add(zebraList)
-        animalList.add(leopardList)
+        val animalList = arrayListOf(flamingoList, pandaList, kamelList, schimpanseList, kaenguruList,
+                                     elefantList, zebraList, leopardList)
         animalList.forEach {
             if (it.isNotEmpty()) {
-                score += 2
+                score -= 2
             }
         }
-        return -1 * score
+        return score
+    }
+    private fun calculateVendingStalls(player: Player) : Int {
+        var score = 0
+        val vendingStall1 = arrayListOf<VendingStall>()
+        val vendingStall2 = arrayListOf<VendingStall>()
+        val vendingStall3 = arrayListOf<VendingStall>()
+        val vendingStall4 = arrayListOf<VendingStall>()
+
+        player.playerEnclosure.forEach {
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING1))) {
+                vendingStall1.add(VendingStall(StallType.VENDING1))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING2))) {
+                vendingStall2.add(VendingStall(StallType.VENDING2))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING3))) {
+                vendingStall3.add(VendingStall(StallType.VENDING3))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING4))) {
+                vendingStall4.add(VendingStall(StallType.VENDING4))
+            }
+        }
+
+        val vendingStallList = arrayListOf(vendingStall1, vendingStall2, vendingStall3, vendingStall4)
+        vendingStallList.forEach { if (it.isNotEmpty()) score += 2 }
+
+        return score
     }
 }
