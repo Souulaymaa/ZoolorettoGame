@@ -59,6 +59,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.first
         }
+        //enclosure.maxAnimalSlots -1 instead of enclosure.animalTiles.size -1 !
         else if (enclosure.animalTiles.size - 1 == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.second
         }
