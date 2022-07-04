@@ -6,12 +6,10 @@ package entity
  * @param size has the fixe value 3
  * @param tilesOnTruck is an Array with 0..3 Tiles
  */
-data class DeliveryTruck(val size: Int = 3) {
+data class DeliveryTruck(val maxSize: Int = 3) {
 
     val tilesOnTruck = arrayListOf<Tile>()
-    //val truckNumber = String //entweder one, two, three
     init {
         require(tilesOnTruck.size in 0..3) { "Size of tiles must be 0-3. Size was " + tilesOnTruck.size }
     }
-
 }

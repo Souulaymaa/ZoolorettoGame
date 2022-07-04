@@ -5,7 +5,7 @@ package entity
  * Classes Animal, Coin and VendingStall implement this interface
  *
  */
-interface Tile
+abstract class Tile
 
     fun toString() : String{
         throw NotImplementedError()

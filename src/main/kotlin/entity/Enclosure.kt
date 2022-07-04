@@ -7,7 +7,6 @@ package entity
 data class Enclosure(val maxAnimalSlots: Int, val maxVendingStalls: Int, val bonusCoins: Int,
                 val pointValues: Pair<Int,Int>, val isBarn: Boolean ) {
 
-    val animalTiles = arrayListOf<Animal>()
-    val vendingStalls = arrayListOf<VendingStall>()
-
+    var animalTiles = arrayListOf<Animal>()
+    var vendingStalls = arrayListOf<VendingStall>()
 }
