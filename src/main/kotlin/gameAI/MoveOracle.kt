@@ -13,13 +13,40 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         this.currentGameStateCopy = deepZoolorettoCopy(currentGameState)
     }
 
+    /**
+     * Function, that returns all current allowed moves for a given [ZoolorettoGameState] in the constructor of the
+     * class and the current player.
+     *
+     * Unions all truck related moves with all money moves.
+     *
+     * @return ArrayList of all current allowed moves
+     */
     fun determineAllCurrentAllowedMoves() : List<Move> {
-        //don't forget to check if current player has taken truck or not before calculating available money action moves
-        throw NotImplementedError()
+        val allCurrentAllowedMoves = ArrayList<Move>()
+
+        allCurrentAllowedMoves.addAll(determineAllTruckRelatedMoves())
+        allCurrentAllowedMoves.addAll(determineAllMoneyMoves())
+
+        return allCurrentAllowedMoves
     }
 
+    /**
+     * Function, that returns all truck related moves for the current player.
+     *
+     * Returns either add-tile-to-truck-moves or add-take-truck-moves.
+     *
+     * @return ArrayList of either add-tile-to-truck-moves or add-take-truck-moves
+     */
     private fun determineAllTruckRelatedMoves() : List<Move>{
-        throw  NotImplementedError()
+        val zoolorettoGame = rootService.zoolorettoGame
+        checkNotNull(zoolorettoGame)
+        val currentPlayerTruckTaken = zoolorettoGame.currentGameState.paused
+
+        return if(currentPlayerTruckTaken){
+            determineAddTileToTruckMoves()
+        } else{
+            determineAllTakeTruckMoves()
+        }
     }
 
     /**
@@ -72,27 +99,25 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     }
 
     private fun determineAllMoneyMoves() : List<Move> {
-
-        //don't forget to union all money moves in correct format/type.
-
         val possibleMoneyMoves = arrayListOf<Move>()
 
-        val rootService = RootService()
-        val zoolorettoGame = rootService.zoolorettoGame
-        checkNotNull(zoolorettoGame)
-        val playerWallet = zoolorettoGame.currentGameState.players.peek().coins //ZoolorettoGame needs name on arrow in class Diagram
+        val discardTileMoves = discardTileMoves()
+        val exchangeAllTileMoves= determineExchangeAllTileMoves()
+        val expandZoo = expandZooMove()
+        val moveTileFromBarnToEnclosure = allMoveTileFromBarnToEnclosure()
+        val moveVendingStallEnclosureToBarn = allMoveVendingStallEnclosureToBarn()
+        val moveVendingStallEnclosureToEnclosure = allMoveVendingStallEnclosureToEnclosure()
+        val purchaseTile = purchaseTileMoves()
 
-        val discardTile : DiscardTile // sanad
-        val exchangeAllTilesBarnToEnclosure : ExchangeAllTilesBarnToEnclosure // micha
-        val exchangeAllTilesEnclosureToEnclosure : ExchangeAllTilesEnclosureToEnclosure //micha
-        val expandZoo : ExpandZoo// sanad
-        val moveTileFromBarnToEnclosure : MoveTileFromBarnToEnclosure //kassem
-        val moveVendingStallEnclosureToBarn : MoveVendingStallEnclosureToBarn //kassem
-        val moveVendingStallEnclosureToEnclosure : MoveVendingStallEnclosureToEnclosure// kassem
-        val purchaseTile : PurchaseTile // sanad
+        possibleMoneyMoves.addAll(discardTileMoves)
+        possibleMoneyMoves.addAll(exchangeAllTileMoves)
+        possibleMoneyMoves.addAll(expandZoo)
+        possibleMoneyMoves.addAll(moveTileFromBarnToEnclosure)
+        possibleMoneyMoves.addAll(moveVendingStallEnclosureToBarn)
+        possibleMoneyMoves.addAll(moveVendingStallEnclosureToEnclosure)
+        possibleMoneyMoves.addAll(purchaseTile)
 
-
-        throw NotImplementedError()
+        return possibleMoneyMoves
     }
 
 
@@ -357,10 +382,6 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * to another enclosure
      */
     private fun allMoveVendingStallEnclosureToEnclosure(): List<Move>{
-        val zoolorettoGame = rootService.zoolorettoGame
-        checkNotNull(zoolorettoGame)
-        val currentPlayer = zoolorettoGame.currentGameState.players.peek()
-
         val combinations = possibleVendingStallEnclosureToEnclosureMoves()
         val moveList = ArrayList<Move>()
         for((sourceEnclosure, enclosures) in combinations){
