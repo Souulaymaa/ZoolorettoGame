@@ -2,7 +2,7 @@ package gameAI
 
 import entity.*
 import gameAI.moves.*
-import service.GameStateService.Companion.deepZoolorettoCopy
+import service.GameStateService
 import service.RootService
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
@@ -10,7 +10,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     private val rootService = RootService()
 
     init {
-        this.currentGameStateCopy = deepZoolorettoCopy(currentGameState)
+        this.currentGameStateCopy = GameStateService.deepZoolorettoCopy(currentGameState)
     }
 
     /**
@@ -71,7 +71,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
          */
 
         for(deliveryTruck in deliveryTrucks){
-            if(deliveryTruck.tilesOnTruck.size < deliveryTruck.size) {
+            if(deliveryTruck.tilesOnTruck.size < deliveryTruck.maxSize) {
                 moves.add(AddTileToTruck(deliveryTruck))
             }
         }

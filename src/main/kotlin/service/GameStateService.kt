@@ -30,7 +30,7 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * Save [ZoolorettoGameState] to file as a JSON String
      */
     fun saveState() {
-        save(rootService.currentGame, zoolorettoFileName)
+        save(rootService.zoolorettoGame?.currentGameState, zoolorettoFileName)
     }
 
     /**
@@ -92,6 +92,16 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
         val gameCopy = gson.fromJson(jsonString, ZoolorettoGameState::class.java) // Deserialization
 
         return gameCopy
+    }
+
+    companion object{
+        fun deepZoolorettoCopy(toCopy : ZoolorettoGameState) : ZoolorettoGameState {
+            val gson = Gson()
+            val jsonString = gson.toJson(toCopy) // Serialization
+            val gameCopy = gson.fromJson(jsonString, ZoolorettoGameState::class.java) // Deserialization
+
+            return gameCopy
+        }
     }
 
 }

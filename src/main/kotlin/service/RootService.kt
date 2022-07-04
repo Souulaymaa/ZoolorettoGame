@@ -1,7 +1,6 @@
 package service
 
 import entity.ZoolorettoGame
-
 import entity.*
 import view.Refreshable
 
@@ -44,4 +43,3 @@ class RootService {
     }
 }
 
->>>>>>> main
