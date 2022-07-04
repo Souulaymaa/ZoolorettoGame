@@ -2,9 +2,7 @@ package entity
 
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotSame
-import kotlin.test.assertTrue
 
 /**
  * Test class for [Enclosure]
@@ -40,15 +38,5 @@ class EnclosureTest {
         assertEquals( enclosure1.vendingStalls[1], v2)
         assertEquals( enclosure1.vendingStalls[2], v3)
         assertNotSame( enclosure1.vendingStalls[2], v1)
-    }
-
-    /**
-     * checking if setting and getting the value of "isBarn" work
-     */
-    @Test
-    fun testBarn(){
-        assertFalse(enclosure1.isBarn)
-        enclosure1.isBarn = true
-        assertTrue(enclosure1.isBarn)
     }
 }

@@ -9,7 +9,6 @@ package entity
 data class DeliveryTruck(val maxSize: Int = 3) {
 
     val tilesOnTruck = arrayListOf<Tile>()
-
     init {
         require(tilesOnTruck.size in 0..3) { "Size of tiles must be 0-3. Size was " + tilesOnTruck.size }
     }

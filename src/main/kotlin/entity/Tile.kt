@@ -6,3 +6,7 @@ package entity
  *
  */
 abstract class Tile
+
+    fun toString() : String{
+        throw NotImplementedError()
+    }
