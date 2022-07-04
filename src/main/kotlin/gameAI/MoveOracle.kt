@@ -43,8 +43,10 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         }
          */
 
-        for(deliveryTuck in deliveryTrucks){
-            moves.add(AddTileToTruck(deliveryTuck))
+        for(deliveryTruck in deliveryTrucks){
+            if(deliveryTruck.tilesOnTruck.size < deliveryTruck.size) {
+                moves.add(AddTileToTruck(deliveryTruck))
+            }
         }
 
         return moves
