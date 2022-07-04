@@ -1,9 +1,6 @@
 package service
 
-import entity.Animal
-import entity.Enclosure
-import entity.Player
-import entity.Species
+import entity.*
 
 class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
     /**
@@ -12,8 +9,26 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      */
     fun determineScore(player : Player) : Int {
         var score = calculateBarnScore(player)
+        val vendingStallCount = ArrayList<VendingStall>()
         player.playerEnclosure.forEach {
             score += calcuateEnclosureScore(it)
+            for(enclosure in player.playerEnclosure){
+                for (vendingStall in enclosure.vendingStalls){
+                    vendingStallCount.add(vendingStall)
+                }
+            }
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
+            score += 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING2))){
+            score += 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING3))){
+            score += 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING4))){
+            score += 2
         }
         return score
     }
@@ -54,13 +69,14 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * in the stall spaces that are associated with the enclosure, he scores no points for the enclosure
      */
     private fun calcuateEnclosureScore(enclosure: Enclosure) : Int {
-        var score = enclosure.vendingStalls.size * 2
+
+        var score = 0
 
         if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.first
         }
         //enclosure.maxAnimalSlots -1 instead of enclosure.animalTiles.size -1 !
-        else if (enclosure.animalTiles.size - 1 == enclosure.maxAnimalSlots) {
+        else if (enclosure.animalTiles.size == enclosure.maxAnimalSlots - 1) {
             score += enclosure.pointValues.second
         }
         else if (enclosure.vendingStalls.size != 0) {
@@ -72,6 +88,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         }
         return score
     }
+
 
     /**
      * This method calculate the score in the player's barn
