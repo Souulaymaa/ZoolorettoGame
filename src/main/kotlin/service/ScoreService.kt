@@ -12,12 +12,14 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         val vendingStallCount = ArrayList<VendingStall>()
         player.playerEnclosure.forEach {
             score += calculateEnclosureScore(it)
-            for(enclosure in player.playerEnclosure){
-                for (vendingStall in enclosure.vendingStalls){
-                    vendingStallCount.add(vendingStall)
-                }
+        }
+
+        for(enclosure in player.playerEnclosure){
+            for (vendingStall in enclosure.vendingStalls){
+                vendingStallCount.add(vendingStall)
             }
         }
+
         if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
             score += 2
         }
