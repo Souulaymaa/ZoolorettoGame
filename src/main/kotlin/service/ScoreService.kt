@@ -19,7 +19,6 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
                 vendingStallCount.add(vendingStall)
             }
         }
-
         if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
             score += 2
         }
