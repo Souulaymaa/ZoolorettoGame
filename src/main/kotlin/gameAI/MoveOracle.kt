@@ -15,7 +15,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
     /**
      * Function, that returns all current allowed moves for a given [ZoolorettoGameState] in the constructor of the
-     * class and the current player.
+     * class and the current player. This method is the main method of this class, and only it should be called.
      *
      * Unions all truck related moves with all money moves.
      *
@@ -127,7 +127,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @return Array list containing one move or no move at all depending on outcome
      * the move within the Array List is the ExpandZoo() move itself.
      */
-    private fun expandZooMove() : ArrayList<Move> {
+    fun expandZooMove() : ArrayList<Move> {
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
         val currentPlayer = zoolorettoGame.currentGameState.players.peek()
@@ -150,7 +150,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * function that
      * @return list of all moves a player can make with "DiscardTile" action.
      */
-    private fun discardTileMoves(): ArrayList<Move>
+    fun discardTileMoves(): ArrayList<Move>
     {
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
@@ -169,7 +169,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * function to determine if the player has a tile in their Barn, which would enable the "DiscardTile" action
      * @return set of Tiles that can be discarded
      */
-    private fun discardablePlayerTiles(currentPlayer: Player) :  Set<Tile>{
+    fun discardablePlayerTiles(currentPlayer: Player) :  Set<Tile>{
         val zoolorettoGame = rootService.zoolorettoGame
         val discardableTiles = mutableSetOf<Tile>()
         checkNotNull(zoolorettoGame)
@@ -194,7 +194,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     /**
      * function that returns a list of all move combination a player can make with "PurchaseTile" action
      */
-    private fun purchaseTileMoves(): ArrayList<Move>
+    fun purchaseTileMoves(): ArrayList<Move>
     {
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
@@ -301,7 +301,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     /**
      * function that returns all possible choices for moving a tile from the barn to the enclosure.
      */
-    private fun allMoveTileFromBarnToEnclosure(): List<Move>{
+    fun allMoveTileFromBarnToEnclosure(): List<Move>{
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
         val currentPlayer = zoolorettoGame.currentGameState.players.peek()
@@ -338,7 +338,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     /**
      * function that returns all the possible choices for moving a vending stall from an enclosure to the barn.
      */
-    private fun allMoveVendingStallEnclosureToBarn(): List<Move>{
+    fun allMoveVendingStallEnclosureToBarn(): List<Move>{
         val zoolorettoGame = rootService.zoolorettoGame
         checkNotNull(zoolorettoGame)
         val currentPlayer = zoolorettoGame.currentGameState.players.peek()
@@ -381,7 +381,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * function that returns all the possible choices for moving a vending stall from an enclosure
      * to another enclosure
      */
-    private fun allMoveVendingStallEnclosureToEnclosure(): List<Move>{
+    fun allMoveVendingStallEnclosureToEnclosure(): List<Move>{
         val combinations = possibleVendingStallEnclosureToEnclosureMoves()
         val moveList = ArrayList<Move>()
         for((sourceEnclosure, enclosures) in combinations){
@@ -423,7 +423,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param currentPlayer Parameter to fit the [ExchangeAllTilesBarnToEnclosure] cases
      * @return List of all possible move combinations as Move type
      */
-    private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
+    fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
                                                     currentPlayer: Player): ArrayList<Move>
      {
         val moveList = ArrayList<Move>()
