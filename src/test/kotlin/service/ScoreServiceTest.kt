@@ -86,6 +86,9 @@ internal class ScoreServiceTest {
         player2.playerEnclosure[1].animalTiles.clear()
         player2.playerEnclosure[1].vendingStalls.clear()
 
+        player2.playerEnclosure[1].animalTiles.clear()
+        player2.playerEnclosure[1].vendingStalls.clear()
+
         //first Enclosure
         player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[0])
         player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[1])
