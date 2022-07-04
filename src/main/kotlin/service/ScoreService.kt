@@ -8,7 +8,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * @return a score of the player
      */
     fun determineScore(player : Player) : Int {
-        var score = calculateBarnScore(player)
+        var score = 0
         val vendingStallCount = ArrayList<VendingStall>()
         player.playerEnclosure.forEach {
             score += calculateEnclosureScore(it)
@@ -32,6 +32,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         if (vendingStallCount.contains(VendingStall(StallType.VENDING4))){
             score += 2
         }
+        score += calculateBarnScore(player)
         return score
     }
 
@@ -51,7 +52,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         val sortedPoints: MutableMap<Player, Int> = LinkedHashMap()
         points.entries.sortedBy { it.value }.forEach { sortedPoints[it.key] = it.value }
 
-        return points
+        return sortedPoints
     }
 
     /**
@@ -101,7 +102,26 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      */
     private fun calculateBarnScore(player: Player) : Int {
         //you must also check here the vending stall type like above or do it with lists as well like you did with animals
-        var score = player.barn.vendingStalls.size * 2
+        var score = 0
+        val vendingStallCount = ArrayList<VendingStall>()
+        for (vendingStall in player.barn.vendingStalls){
+            vendingStallCount.add(vendingStall)
+        }
+
+
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
+            score -= 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING2))){
+            score -= 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING3))){
+            score -= 2
+        }
+        if (vendingStallCount.contains(VendingStall(StallType.VENDING4))){
+            score -= 2
+        }
+
         val flamingoList = arrayListOf<Animal>()
         val pandaList = arrayListOf<Animal>()
         val kamelList = arrayListOf<Animal>()
@@ -133,9 +153,9 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         animalList.add(leopardList)
         animalList.forEach {
             if (it.isNotEmpty()) {
-                score += 2
+                score -= 2
             }
         }
-        return -1 * score
+        return score
     }
 }
