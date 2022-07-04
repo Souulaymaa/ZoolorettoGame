@@ -34,11 +34,10 @@ internal class ScoreServiceTest {
 
         //first enclosure is filled with flamingos and the one vending stall space it has --> score must be equal to 10.
         //first enclosure gets score of 8 and player has also one vending stall type + 2.
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[0])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[1])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[2])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[3])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[4])
+
+        for(i in 0..4){
+            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[i])
+        }
         player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls[0])
 
         assertEquals(10, scoreService.determineScore(player1))
@@ -90,10 +89,9 @@ internal class ScoreServiceTest {
         player2.playerEnclosure[1].vendingStalls.clear()
 
         //first Enclosure
-        player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[0])
-        player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[1])
-        player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[2])
-        player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[3])
+        for(i in 0..3){
+            player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[i])
+        }
 
         //second Enclosure
         player2.playerEnclosure[1].animalTiles.add(TileLists.chimpanzees[0])
@@ -102,17 +100,14 @@ internal class ScoreServiceTest {
         player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[1])
 
         //third Enclosure
-        player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[0])
-        player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[1])
-        player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[2])
-        player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[3])
+        for (i in 0..3){
+            player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[i])
+        }
 
-        //expansion Enclosure
-        player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[0])
-        player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[1])
-        player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[2])
-        player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[3])
-        player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[4])
+        //expansion
+        for(i in 0..4){
+            player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[i])
+        }
         player2.playerEnclosure[3].vendingStalls.add(TileLists.vendingStalls[1])
 
         //barn
@@ -155,11 +150,9 @@ internal class ScoreServiceTest {
 
         //first enclosure is filled with flamingos and the one vending stall space it has --> score must be equal to 10.
         //first enclosure gets score of 8 and player has also one vending stall type + 2.
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[0])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[1])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[2])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[3])
-        player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[4])
+        for (i in 0..4){
+            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[i])
+        }
         player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls[0])
 
         //player2 enclosures are initialized here
