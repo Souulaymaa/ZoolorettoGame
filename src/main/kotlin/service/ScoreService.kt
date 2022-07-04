@@ -11,7 +11,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         var score = calculateBarnScore(player)
         val vendingStallCount = ArrayList<VendingStall>()
         player.playerEnclosure.forEach {
-            score += calcuateEnclosureScore(it)
+            score += calculateEnclosureScore(it)
             for(enclosure in player.playerEnclosure){
                 for (vendingStall in enclosure.vendingStalls){
                     vendingStallCount.add(vendingStall)
@@ -68,24 +68,20 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * d) If a player has an enclosure with two or more empty spaces and no vending stall
      * in the stall spaces that are associated with the enclosure, he scores no points for the enclosure
      */
-    private fun calcuateEnclosureScore(enclosure: Enclosure) : Int {
+    private fun calculateEnclosureScore(enclosure: Enclosure) : Int {
 
         var score = 0
 
         if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.first
         }
-        //enclosure.maxAnimalSlots -1 instead of enclosure.animalTiles.size -1 !
         else if (enclosure.animalTiles.size == enclosure.maxAnimalSlots - 1) {
             score += enclosure.pointValues.second
         }
         else if (enclosure.vendingStalls.size != 0) {
             score += enclosure.animalTiles.size
         }
-        else if (enclosure.animalTiles.size - 2 == enclosure.maxAnimalSlots)
-        {
-            score += 0
-        }
+
         return score
     }
 
@@ -102,6 +98,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * Example: Claus has 3 elephants in his barn and receives 2 minus points for them.
      */
     private fun calculateBarnScore(player: Player) : Int {
+        //you must also check here the vending stall type like above or do it with lists as well like you did with animals
         var score = player.barn.vendingStalls.size * 2
         val flamingoList = arrayListOf<Animal>()
         val pandaList = arrayListOf<Animal>()

@@ -35,7 +35,6 @@ internal class ScoreServiceTest {
         player1.playerEnclosure.add(Enclosure(4, 2, 1, Pair(5, 4),false))
         player1.playerEnclosure.add(Enclosure(6, 1, 0, Pair(10, 6),false))
         player1.playerEnclosure.add(Enclosure(5, 1, 1, Pair(9, 5),false))
-        player1.playerEnclosure.add(Enclosure(POSITIVE_INFINITY.toInt(), POSITIVE_INFINITY.toInt(), 0, Pair(0, 0),true))
 
         //first enclosure is filled with flamingos and the one vending stall space it has --> score must be equal to 10.
         //first enclosure gets score of 8 and player has also one vending stall type + 2.
@@ -53,8 +52,6 @@ internal class ScoreServiceTest {
         player2.playerEnclosure.add(Enclosure(4, 2, 1, Pair(5, 4),false))
         player2.playerEnclosure.add(Enclosure(6, 1, 0, Pair(10, 6),false))
         player2.playerEnclosure.add(Enclosure(5, 1, 1, Pair(9, 5),false))
-        player2.playerEnclosure.add(Enclosure(POSITIVE_INFINITY.toInt(), POSITIVE_INFINITY.toInt(), 0, Pair(0, 0),true))
-
 
 
         //second enclosure of second player has only 2 kangaroos but full vending stall spaces therefor
@@ -95,9 +92,9 @@ internal class ScoreServiceTest {
         player2.playerEnclosure[3].vendingStalls.add(TileLists.vendingStalls[1])
 
         //barn
-        player2.playerEnclosure[4].animalTiles.add(TileLists.zebras[5])
-        player2.playerEnclosure[4].animalTiles.add(TileLists.camels[0])
-        player2.playerEnclosure[4].animalTiles.add(TileLists.camels[1])
+        player2.barn.animalTiles.add(TileLists.zebras[5])
+        player2.barn.animalTiles.add(TileLists.camels[0])
+        player2.barn.animalTiles.add(TileLists.camels[1])
 
         //score must be equal to 16. for the details please check the example in Zooloretto PDF.
         assertEquals(16, scoreService.determineScore(player2))
@@ -108,11 +105,11 @@ internal class ScoreServiceTest {
         player1.playerEnclosure[0].vendingStalls.clear()
 
         //3 types of animals and 1 vendingstall in barn score must be = -8
-        player1.playerEnclosure[4].animalTiles.add(TileLists.zebras[5])
-        player1.playerEnclosure[4].animalTiles.add(TileLists.camels[0])
-        player1.playerEnclosure[4].animalTiles.add(TileLists.camels[1])
-        player1.playerEnclosure[4].animalTiles.add(TileLists.flamingos[1])
-        player1.playerEnclosure[4].vendingStalls.add(TileLists.vendingStalls[0])
+        player1.barn.animalTiles.add(TileLists.zebras[5])
+        player1.barn.animalTiles.add(TileLists.camels[0])
+        player1.barn.animalTiles.add(TileLists.camels[1])
+        player1.barn.animalTiles.add(TileLists.flamingos[1])
+        player1.barn.vendingStalls.add((TileLists.vendingStalls[0]))
 
         //score must be equal to -8
         assertEquals(-8, scoreService.determineScore(player1))
