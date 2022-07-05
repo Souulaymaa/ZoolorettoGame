@@ -17,6 +17,7 @@ class ScoreService(private val rootService: RootService) : AbstractRefreshingSer
         player.playerEnclosure.forEach {
             score += calculateEnclosureScore(it)
         }
+        player.score = score
         return score
     }
 
@@ -39,6 +40,36 @@ class ScoreService(private val rootService: RootService) : AbstractRefreshingSer
         return points
     }
 
+    /**
+     * this method determines the winner of the zooloretto game.
+     * We sort the players in descending order of the score.
+     * Then we put all players with the same score in a draw list (the first player is always in draw list).
+     * If there are more than one player in draw list, then we sort draw list in descending order of the coins.
+     * If the first two players have the same coins, the return null, and it is tied.
+     * If not, then return the first player in draw list.
+     *
+     * @return null, when tied, or a player, when there is only one winner
+     */
+    fun determineWinner(): Player? {
+        val game = rootService.zoolorettoGame!!.currentGameState
+        require(game.players.size in 2..5) { "there must be from two to five players!" }
+
+        val playerList = game.players.toMutableList()
+        val drawList = arrayListOf<Player>()
+
+        playerList.sortedByDescending { it.score }
+
+        playerList.forEach {
+            if (it.score == playerList[0].score) {
+                drawList.add(it)
+            }
+        }
+        if (drawList.size > 1) {
+            drawList.sortedByDescending { it.coins }
+            if (drawList[0].coins == drawList[1].coins) return null
+        }
+        return drawList[0]
+    }
     /**
      * This method calculate the score in an enclosure
      *
