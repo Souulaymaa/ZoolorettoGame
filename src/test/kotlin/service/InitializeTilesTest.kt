@@ -25,13 +25,13 @@ class InitializeTilesTest {
         //println(game.tileStack.drawStack)
 
         val speciesList = listOf(Species.Z, Species.S, Species.U, Species.P, Species.L, Species.K, Species.F, Species.E)
-        for(t in game.tileStack.drawStack){
-            for(s in speciesList){
-                if(t.equals(Animal(type = Type.OFFSPRING, species = s, hasChild = false))){
-                    throw java.lang.IllegalArgumentException("Type = Offspring!")
-                }
-            }
-        }
+//        for(t in game.tileStack.drawStack){
+//            for(s in speciesList){
+//                if(t.equals(Animal(type = Type.OFFSPRING, species = s, hasChild = false))){
+//                    throw java.lang.IllegalArgumentException("Type = Offspring!")
+//                }
+//            }
+//        }
 
         assertEquals(2, game.players.size)
         assertEquals(72, game.tileStack.drawStack.size)
