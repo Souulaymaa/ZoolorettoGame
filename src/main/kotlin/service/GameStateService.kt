@@ -94,5 +94,21 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
         val clone = ois.readObject() as ZoolorettoGameState
         return clone
     }
+    companion object{
+        fun deepZoolorettoCopy(toCopy : ZoolorettoGameState) : ZoolorettoGameState {
+            // Serialize
+            val bos = ByteArrayOutputStream()
+            val oos = ObjectOutputStream(bos)
+            oos.writeObject(toCopy)
+            oos.flush()
+
+            // deserialize
+            val bytes = bos.toByteArray()
+            val bis = ByteArrayInputStream(bytes)
+            val ois = ObjectInputStream(bis)
+            val clone = ois.readObject() as ZoolorettoGameState
+            return clone
+        }
+    }
 
 }
