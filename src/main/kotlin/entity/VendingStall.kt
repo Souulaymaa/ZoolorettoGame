@@ -1,5 +1,7 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Represents vending stall in the game
  * Implements an interface Tile
@@ -7,8 +9,7 @@ package entity
  */
 
 
-data class VendingStall (val stall: StallType):Tile(){
-
+data class VendingStall (val stall: StallType):Tile(), Serializable {
     override fun toString(): String {
         return stall.toString()
     }
