@@ -17,7 +17,7 @@ class DiscardTileTest {
 
     @BeforeTest
     fun setup(){
-        zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+        zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
     }
 
     /**

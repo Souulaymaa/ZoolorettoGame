@@ -14,5 +14,15 @@ class ZoolorettoGameStateMockups {
             TileStackForTwoPlayers.tileStack,
             DeliveryTrucks.deliveryTrucksForTwoPlayers
         )
+
+        fun twoPlayersZoolorettoGameStateFactory(): ZoolorettoGameState {
+            return ZoolorettoGameState(
+                false,
+                false,
+                PlayerQueues.twoHumanPlayers,
+                TileStackForTwoPlayers.tileStack,
+                DeliveryTrucks.deliveryTrucksForTwoPlayers
+            )
+        }
     }
 }
