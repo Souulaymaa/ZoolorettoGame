@@ -22,25 +22,6 @@ class ScoreService(private val rootService: RootService) : AbstractRefreshingSer
     }
 
     /**
-     * Calculates the ranking of players.
-     * @return a sorted map of all player with the score of each player
-     */
-    fun determineHighscore (players: List<Player>): Map<Player, Int> {
-        require(players.size in 2 .. 5)
-
-        val points = mutableMapOf<Player, Int>()
-
-        for (i in players.indices){
-            points[players[i]] = determineScore(players[i])
-        }
-
-        val sortedPoints: MutableMap<Player, Int> = LinkedHashMap()
-        points.entries.sortedBy { it.value }.forEach { sortedPoints[it.key] = it.value }
-
-        return points
-    }
-
-    /**
      * this method determines the winner of the zooloretto game.
      * We sort the players in descending order of the score.
      * Then we put all players with the same score in a draw list (the first player is always in draw list).
