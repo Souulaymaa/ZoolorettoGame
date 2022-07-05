@@ -39,6 +39,8 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * Calculates the ranking of players.
      * @return a sorted map of all player with the score of each player
      */
+
+    //please change this method to determine winner
     fun determineHighscore (players: List<Player>): Map<Player, Int> {
         require(players.size in 2 .. 5)
 
