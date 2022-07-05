@@ -257,10 +257,11 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for(animalTile in currentPlayer.barn.animalTiles){
             val enclosures: MutableList<Enclosure> = mutableListOf()
             for(enclosure in currentPlayer.playerEnclosure){
-                if((animalTile.species == enclosure.animalTiles[0].species &&
-                            enclosure.animalTiles.size < enclosure.maxAnimalSlots) || (enclosure.animalTiles.size == 0)){
+                if (enclosure.animalTiles.isEmpty() ) {
                     enclosures.add(enclosure)
-
+                }else if ((animalTile.species == enclosure.animalTiles[0].species &&
+                            enclosure.animalTiles.size < enclosure.maxAnimalSlots)) {
+                    enclosures.add(enclosure)
                 }
             }
             possibleMoves[animalTile] = enclosures
