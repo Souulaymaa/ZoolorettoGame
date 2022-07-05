@@ -4,7 +4,6 @@ import entity.Difficulty
 import entity.Enclosure
 import entity.Player
 import gamemockup.ZoolorettoGameStateMockups
-import gamemockup.util.PlayerQueues.Companion.player2
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.Test
 
@@ -16,13 +15,15 @@ internal class ScoreServiceTest {
 
     private val gameInstance = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
     var rootService = RootService()
-    val player1 = gameInstance.players.poll()
-    val player2 = gameInstance.players.poll()
+
+
     /**
      * test if determineScore function calculates the score of each player correctly.
      */
     @Test
-    fun determineScoreOfFirstPlayer() {
+    fun determineScoreOfPlayer() {
+        val player1 = gameInstance.players.poll()
+        val player2 = gameInstance.players.poll()
 
         val scoreService = rootService.scoreService
 
@@ -58,13 +59,8 @@ internal class ScoreServiceTest {
 
         //score must be equal to -8
         assertEquals(-8, scoreService.determineScore(player1))
-    }
 
-    @Test
-    fun determineScoreOfSecondPlayer(){
-
-        val scoreService = rootService.scoreService
-
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
         //player2 enclosures are initialized here
         player2.playerEnclosure.add(Enclosure(5, 1, 2, Pair(8, 5),false))
         player2.playerEnclosure.add(Enclosure(4, 2, 1, Pair(5, 4),false))
