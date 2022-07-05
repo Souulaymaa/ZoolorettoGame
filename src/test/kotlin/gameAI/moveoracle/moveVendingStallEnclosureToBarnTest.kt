@@ -1,5 +1,6 @@
 package gameAI.moveoracle
 
+import entity.ZoolorettoGame
 import gameAI.MoveOracle
 import gamemockup.ZoolorettoGameStateMockups
 import org.junit.jupiter.api.Test
@@ -7,6 +8,7 @@ import kotlin.test.assertEquals
 
 class moveVendingStallEnclosureToBarnTest {
     private val gameInstance = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+    private val zooGame = ZoolorettoGame(1f, gameInstance)
     var moveOracle = MoveOracle(gameInstance)
     private val player1 = gameInstance.players.peek()
 
@@ -16,6 +18,8 @@ class moveVendingStallEnclosureToBarnTest {
     @Test
     fun allMoveVendingStallEnclosureToBarnInsufficientCoinsTest(){
         player1.coins = 0
+        moveOracle.rootService.zoolorettoGame = zooGame
+        moveOracle.rootService.currentGame = gameInstance
         val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
         assertEquals(0, moveList.size)
     }
@@ -26,6 +30,8 @@ class moveVendingStallEnclosureToBarnTest {
     @Test
     fun allMoveVendingStallEnclosureToBarnNoVendingStallsTest(){
         player1.coins = 3
+        moveOracle.rootService.zoolorettoGame = zooGame
+        moveOracle.rootService.currentGame = gameInstance
         val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
         assertEquals(0, moveList.size)
     }

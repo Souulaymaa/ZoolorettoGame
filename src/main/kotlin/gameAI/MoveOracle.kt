@@ -7,7 +7,7 @@ import service.RootService
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
     private val currentGameStateCopy : ZoolorettoGameState
-    private val rootService = RootService()
+    val rootService = RootService()
 
     init {
         this.currentGameStateCopy = GameStateService.deepZoolorettoCopy(currentGameState)
