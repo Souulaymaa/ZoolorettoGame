@@ -479,8 +479,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         check(source.animalTiles.size <= destination.maxAnimalSlots &&
               destination.animalTiles.size <= source.maxAnimalSlots)
 
-        val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        zooGame.undoStack.add(copyCurrentGame)
+       // val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+       // zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
 
