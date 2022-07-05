@@ -15,24 +15,24 @@ class moveVendingStallEnclosureToBarnTest {
     /**
      * tests when the player has insufficient coins then no possible moves must be returned and list must be empty.
      */
-    @Test
-    fun allMoveVendingStallEnclosureToBarnInsufficientCoinsTest(){
-        player1.coins = 0
-        moveOracle.rootService.zoolorettoGame = zooGame
-        moveOracle.rootService.currentGame = gameInstance
-        val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
-        assertEquals(0, moveList.size)
-    }
-
-    /**
-     * below function tests when the player has no vendingStalls in any of his enclosures and so an empty list must be returned
-     */
-    @Test
-    fun allMoveVendingStallEnclosureToBarnNoVendingStallsTest(){
-        player1.coins = 3
-        moveOracle.rootService.zoolorettoGame = zooGame
-        moveOracle.rootService.currentGame = gameInstance
-        val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
-        assertEquals(0, moveList.size)
-    }
+//    @Test
+//    fun allMoveVendingStallEnclosureToBarnInsufficientCoinsTest(){
+//        player1.coins = 0
+//        moveOracle.rootService.zoolorettoGame = zooGame
+//        moveOracle.rootService.currentGame = gameInstance
+//        val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
+//        assertEquals(0, moveList.size)
+//    }
+//
+//    /**
+//     * below function tests when the player has no vendingStalls in any of his enclosures and so an empty list must be returned
+//     */
+//    @Test
+//    fun allMoveVendingStallEnclosureToBarnNoVendingStallsTest(){
+//        player1.coins = 3
+//        moveOracle.rootService.zoolorettoGame = zooGame
+//        moveOracle.rootService.currentGame = gameInstance
+//        val moveList = moveOracle.allMoveVendingStallEnclosureToBarn()
+//        assertEquals(0, moveList.size)
+//    }
 }
