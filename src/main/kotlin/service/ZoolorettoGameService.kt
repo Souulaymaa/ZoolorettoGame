@@ -71,7 +71,8 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         // round tiles
         for(tile in tiles){
             if(tile in offspringTiles){
-                offspringStack.add(tile)}}
+                offspringStack.add(tile)
+                animalTiles.remove(tile)}}
 
         //square tiles
         repeat(tiles.size-(15+offspringTiles.size)){
@@ -135,9 +136,13 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      */
 
     fun endGame(){
-        TODO("endGame commented")
-        //rootService.zoolorettoGame = null
+        for(player in players){
+            rootService.scoreService.determineScore(player)
+        }
+        rootService.scoreService.determineWinner()
+        this.onAllRefreshables { refreshAfterGameEnd() }
     }
+
 
 
     /**
