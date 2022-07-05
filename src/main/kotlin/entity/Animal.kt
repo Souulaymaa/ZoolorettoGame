@@ -1,5 +1,7 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Represents an animal on a tile in the game
  * Implements an interface Tile
@@ -8,4 +10,4 @@ package entity
  */
 
 
-data class Animal (val type: Type, val species: Species, var hasChild: Boolean = false):Tile()
+data class Animal (val type: Type, val species: Species, var hasChild: Boolean = false):Tile(), Serializable

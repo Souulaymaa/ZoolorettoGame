@@ -1,11 +1,13 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Enum to distinguish between 4 possible stall types:
  * vending1, vending2, vending3 and vending4.
  */
 
-enum class StallType {
+enum class StallType: Serializable {
     VENDING1,
     VENDING2,
     VENDING3,

@@ -10,6 +10,7 @@ import kotlin.test.*
 class GameStateServiceTest {
     private val rootService = RootService()
     private val gameStateService = GameStateService(rootService)
+    private val tile = Animal(Type.FEMALE, Species.F)
 
     // deliveryTrucks is needed for the constructor of ZoolorettoGameState
     private val deliveryTruck1 = DeliveryTruck()
@@ -37,14 +38,16 @@ class GameStateServiceTest {
             players = players, tileStack = tileStack,
             deliveryTrucks = deliveryTrucks
         )
+        zoolorettoGameState.tileStack.drawStack.add(tile)
 
         // Creates a copy of the zoolorettoGameState
         val gameCopy = gameStateService.deepZoolorettoCopy(zoolorettoGameState)
 
         // Ensures that zoolorettoGameState and it's copy are equal by checking the equality of the different attributes.
-        assertEquals(zoolorettoGameState.players.peek(), gameCopy.players.peek())
+        assertEquals(zoolorettoGameState.players, gameCopy.players)
         assertEquals(zoolorettoGameState.deliveryTrucks, gameCopy.deliveryTrucks)
         assertEquals(zoolorettoGameState.tileStack, gameCopy.tileStack)
+        assertEquals(zoolorettoGameState.tileStack.drawStack[0], gameCopy.tileStack.drawStack[0])
 
         // Ensures that zoolorettoGameState and it's copy have different references by checking the inequality
         //of the references of each attribute.
@@ -107,8 +110,8 @@ class GameStateServiceTest {
         checkNotNull(savedGame)
 
         // Ensures that the saved game and the loaded game are equal but have different references.
-        assertEquals(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
-        assertNotSame(game.currentGameState.players.peek(), savedGame.currentGameState.players.peek())
+        assertEquals(game.currentGameState.players, savedGame.currentGameState.players)
+        assertNotSame(game.currentGameState.players, savedGame.currentGameState.players)
     }
 
 }

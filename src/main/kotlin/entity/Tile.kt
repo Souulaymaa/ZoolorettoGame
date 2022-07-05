@@ -1,8 +1,10 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Interface for a tile in the game Zooloretto
  * Classes Animal, Coin and VendingStall implement this interface
  *
  */
-abstract class Tile
+abstract class Tile: Serializable

@@ -1,12 +1,14 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Class represents the DeliveryTrack
  *
- * @param size has the fixe value 3
- * @param tilesOnTruck is an Array with 0..3 Tiles
+ * @param maxSize has the fixe value 3
+ * @property tilesOnTruck is an Array with 0..3 Tiles
  */
-data class DeliveryTruck(val maxSize: Int = 3) {
+data class DeliveryTruck(val maxSize: Int = 3): Serializable {
 
     val tilesOnTruck = arrayListOf<Tile>()
 
