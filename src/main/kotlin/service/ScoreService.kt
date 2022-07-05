@@ -2,60 +2,54 @@ package service
 
 import entity.*
 
-class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
+/**
+ * service layer class to calculate the score of each player and gives back a high score list.
+ *
+ * @param rootService
+ */
+class ScoreService(private val rootService: RootService) : AbstractRefreshingService() {
     /**
      * Calculates the player's score
      * @return a score of the player
      */
     fun determineScore(player : Player) : Int {
-        var score = 0
-        val vendingStallCount = ArrayList<VendingStall>()
+        var score = calculateBarnScore(player) + calculateVendingStalls(player)
         player.playerEnclosure.forEach {
             score += calculateEnclosureScore(it)
         }
-
-        for(enclosure in player.playerEnclosure){
-            for (vendingStall in enclosure.vendingStalls){
-                vendingStallCount.add(vendingStall)
-            }
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
-            score += 2
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING2))){
-            score += 2
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING3))){
-            score += 2
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING4))){
-            score += 2
-        }
-        score += calculateBarnScore(player)
+        player.score = score
         return score
     }
 
     /**
-     * Calculates the ranking of players.
-     * @return a sorted map of all player with the score of each player
+     * this method determines the winner of the zooloretto game.
+     * We sort the players in descending order of the score.
+     * Then we put all players with the same score in a draw list (the first player is always in draw list).
+     * If there are more than one player in draw list, then we sort draw list in descending order of the coins.
+     * If the first two players have the same coins, the return null, and it is tied.
+     * If not, then return the first player in draw list.
+     *
+     * @return null, when tied, or a player, when there is only one winner
      */
+    fun determineWinner(): Player? {
+        val game = rootService.zoolorettoGame!!.currentGameState
 
-    //please change this method to determine winner
-    fun determineHighscore (players: List<Player>): Map<Player, Int> {
-        require(players.size in 2 .. 5)
+        val playerList = game.players.toMutableList()
+        val drawList = arrayListOf<Player>()
 
-        val points = mutableMapOf<Player, Int>()
+        playerList.sortedByDescending { it.score }
 
-        for (i in players.indices){
-            points[players[i]] = determineScore(players[i])
+        playerList.forEach {
+            if (it.score == playerList[0].score) {
+                drawList.add(it)
+            }
         }
-
-        val sortedPoints: MutableMap<Player, Int> = LinkedHashMap()
-        points.entries.sortedBy { it.value }.forEach { sortedPoints[it.key] = it.value }
-
-        return sortedPoints
+        if (drawList.size > 1) {
+            drawList.sortedByDescending { it.coins }
+            if (drawList[0].coins == drawList[1].coins) return null
+        }
+        return drawList[0]
     }
-
     /**
      * This method calculate the score in an enclosure
      *
@@ -73,22 +67,19 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * in the stall spaces that are associated with the enclosure, he scores no points for the enclosure
      */
     private fun calculateEnclosureScore(enclosure: Enclosure) : Int {
-
         var score = 0
 
         if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.first
         }
-        else if (enclosure.animalTiles.size == enclosure.maxAnimalSlots - 1) {
+        else if (enclosure.animalTiles.size + 1 == enclosure.maxAnimalSlots) {
             score += enclosure.pointValues.second
         }
         else if (enclosure.vendingStalls.size != 0) {
             score += enclosure.animalTiles.size
         }
-
         return score
     }
-
 
     /**
      * This method calculate the score in the player's barn
@@ -102,26 +93,29 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
      * Example: Claus has 3 elephants in his barn and receives 2 minus points for them.
      */
     private fun calculateBarnScore(player: Player) : Int {
-        //you must also check here the vending stall type like above or do it with lists as well like you did with animals
         var score = 0
-        val vendingStallCount = ArrayList<VendingStall>()
-        for (vendingStall in player.barn.vendingStalls){
-            vendingStallCount.add(vendingStall)
-        }
 
+        val vendingStall1 = arrayListOf<VendingStall>()
+        val vendingStall2 = arrayListOf<VendingStall>()
+        val vendingStall3 = arrayListOf<VendingStall>()
+        val vendingStall4 = arrayListOf<VendingStall>()
 
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING1))){
-            score -= 2
+        player.barn.vendingStalls.forEach {
+            if (it == VendingStall(StallType.VENDING1)) {
+                vendingStall1.add(VendingStall(StallType.VENDING1))
+            }
+            else if (it == (VendingStall(StallType.VENDING2))) {
+                vendingStall2.add(VendingStall(StallType.VENDING2))
+            }
+            else if (it == (VendingStall(StallType.VENDING3))) {
+                vendingStall3.add(VendingStall(StallType.VENDING3))
+            }
+            else {
+                vendingStall4.add(VendingStall(StallType.VENDING4))
+            }
         }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING2))){
-            score -= 2
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING3))){
-            score -= 2
-        }
-        if (vendingStallCount.contains(VendingStall(StallType.VENDING4))){
-            score -= 2
-        }
+        val vendingStallList = arrayListOf(vendingStall1, vendingStall2, vendingStall3, vendingStall4)
+        vendingStallList.forEach { if (it.isNotEmpty()) score -= 2 }
 
         val flamingoList = arrayListOf<Animal>()
         val pandaList = arrayListOf<Animal>()
@@ -143,20 +137,40 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
                 Species.L -> leopardList.add(it)
             }
         }
-        val animalList : ArrayList<List<Animal>> = arrayListOf()
-        animalList.add(flamingoList)
-        animalList.add(pandaList)
-        animalList.add(kamelList)
-        animalList.add(schimpanseList)
-        animalList.add(kaenguruList)
-        animalList.add(elefantList)
-        animalList.add(zebraList)
-        animalList.add(leopardList)
+        val animalList = arrayListOf(flamingoList, pandaList, kamelList, schimpanseList, kaenguruList,
+            elefantList, zebraList, leopardList)
         animalList.forEach {
             if (it.isNotEmpty()) {
                 score -= 2
             }
         }
+        return score
+    }
+    private fun calculateVendingStalls(player: Player) : Int {
+        var score = 0
+        val vendingStall1 = arrayListOf<VendingStall>()
+        val vendingStall2 = arrayListOf<VendingStall>()
+        val vendingStall3 = arrayListOf<VendingStall>()
+        val vendingStall4 = arrayListOf<VendingStall>()
+
+        player.playerEnclosure.forEach {
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING1))) {
+                vendingStall1.add(VendingStall(StallType.VENDING1))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING2))) {
+                vendingStall2.add(VendingStall(StallType.VENDING2))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING3))) {
+                vendingStall3.add(VendingStall(StallType.VENDING3))
+            }
+            if (it.vendingStalls.contains(VendingStall(StallType.VENDING4))) {
+                vendingStall4.add(VendingStall(StallType.VENDING4))
+            }
+        }
+
+        val vendingStallList = arrayListOf(vendingStall1, vendingStall2, vendingStall3, vendingStall4)
+        vendingStallList.forEach { if (it.isNotEmpty()) score += 2 }
+
         return score
     }
 }
