@@ -14,10 +14,8 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
 
     var tiles : ArrayList<Tile> = ArrayList(116)
     var animalTiles : ArrayList<Animal> = ArrayList(104)
+    var offspringTiles : ArrayList<Animal> = ArrayList(16)
     var vendingStalls : ArrayList<VendingStall> = ArrayList(12)
-    var coins : ArrayList<Coin> = arrayListOf(Coin(), Coin(), Coin(), Coin(), Coin(), Coin(),
-                                              Coin(), Coin(), Coin(), Coin(), Coin(), Coin()
-    )
     var players = listOf<Player>()
 
 
@@ -26,13 +24,15 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      */
     private fun initialiseTiles(){
         // initialise Animal tiles
-        repeat(13){
-            for(type in Type.values()){
-                for(specie in Species.values()){
-                    animalTiles.add(Animal(type, specie))
-                }
-            }
+
+        for(specie in Species.values()){
+            repeat(2){animalTiles.add(Animal(Type.MALE, specie))}
+            repeat(2){animalTiles.add(Animal(Type.FEMALE, specie)) }
+            repeat(2){animalTiles.add(Animal(Type.OFFSPRING, specie))
+                offspringTiles.add(Animal(Type.OFFSPRING, specie))}
+            repeat(7){animalTiles.add(Animal(Type.NONE, specie))}
         }
+
         // initialise vending stalls
         repeat(3){
             for (vendings in StallType.values()){
@@ -40,6 +40,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             }
         }
 
+        //using the private method setTiles to define the number of tiles needed
         repeat(setTiles()){
             tiles.add(animalTiles.removeFirst())
         }
@@ -47,7 +48,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             tiles.add(vendingStalls.removeFirst())
         }
         repeat(12){
-            tiles.add(coins.removeFirst())
+            tiles.add(Coin())
         }
         tiles.shuffle(Random(123))
 
@@ -62,8 +63,15 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         val draw = game.currentGameState.tileStack.drawStack
         val end = game.currentGameState.tileStack.endStack
         val tileStack = TileStack(draw, end)
+        val offspringStack = Stack<Tile>()
         initialiseTiles()
-        repeat(tiles.size-15){
+        // round tiles
+        for(tile in tiles){
+            if(tile in offspringTiles){
+                offspringStack.add(tile)}}
+
+        //square tiles
+        repeat(tiles.size-(15+offspringTiles.size)){
             draw.add(tiles.removeFirst())
         }
         repeat(15){
@@ -90,7 +98,8 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         // checking the number of players to determine the number of delivery trucks
         if (playerList.size == 2){
             gameState = ZoolorettoGameState(false, false, playerQueue, TileStack(Stack(), Stack()),
-               deliveryTrucks)
+                deliveryTrucks)
+            gameState.bank = 26
         } else{
             var i = playerList.size - 3
             while (i-- > 0) {
@@ -98,6 +107,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             }
             gameState = ZoolorettoGameState(false, false, playerQueue, TileStack(Stack(), Stack()),
                 deliveryTrucks)
+            gameState.bank = 30-(2*playerList.size)
         }
         rootService.zoolorettoGame = ZoolorettoGame(1.52f , gameState)
         initialiseTileStack()
@@ -119,17 +129,11 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
 
     /**
      * finishes the game
-     *//*
-    fun endGame(){
-        for(player in players){
-            rootService.scoreService.determineScore(player)
-        }
-        rootService.scoreService.determineHighscore()
-        this.onAllRefreshables { refreshAfterGameEnd() }
-    }
-*/
+     */
+
     fun endGame(){
         TODO("endGame commented")
+        //rootService.zoolorettoGame = null
     }
 
 
