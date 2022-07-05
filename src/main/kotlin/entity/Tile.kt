@@ -8,3 +8,7 @@ import java.io.Serializable
  *
  */
 abstract class Tile: Serializable
+
+    fun toString() : String{
+        throw NotImplementedError()
+    }

@@ -11,3 +11,8 @@ import java.io.Serializable
 
 
 data class Animal (val type: Type, val species: Species, var hasChild: Boolean = false):Tile(), Serializable
+{
+    override fun toString(): String {
+        return species.toString()
+    }
+}
