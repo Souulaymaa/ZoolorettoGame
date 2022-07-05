@@ -4,6 +4,7 @@ import entity.ZoolorettoGameState
 import gamemockup.twoplayers.TileStackForTwoPlayers
 import gamemockup.util.PlayerQueues
 import gamemockup.util.DeliveryTrucks
+import gamemockup.util.EmptyEnclosures.Companion.emptyEnclosureDefaultFactory
 
 class ZoolorettoGameStateMockups {
     companion object{
@@ -13,9 +14,15 @@ class ZoolorettoGameStateMockups {
             PlayerQueues.twoHumanPlayers,
             TileStackForTwoPlayers.tileStack,
             DeliveryTrucks.deliveryTrucksForTwoPlayers
+
         )
 
         fun twoPlayersZoolorettoGameStateFactory(): ZoolorettoGameState {
+
+
+            for(p in PlayerQueues.twoHumanPlayers){
+                p.playerEnclosure.addAll(emptyEnclosureDefaultFactory())
+            }
             return ZoolorettoGameState(
                 false,
                 false,
