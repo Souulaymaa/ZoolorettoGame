@@ -439,8 +439,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         check(tempList.size <= source.maxAnimalSlots) {"This enclosure is too small!"}
 
-        val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-        zooGame.undoStack.add(copyCurrentGame)
+       // val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+       // zooGame.undoStack.add(copyCurrentGame)
 
         player = game.players.poll()
         player.coins--
