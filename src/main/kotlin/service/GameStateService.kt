@@ -1,13 +1,8 @@
 package service
 
 import entity.*
-import java.io.BufferedReader
-import java.io.File
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.Paths
-import com.google.gson.Gson
-
+import com.google.gson.internal.LinkedTreeMap
+import java.io.*
 
 /**
  * Class to load and save Zooloretto as well as load [Tile] to [TileStack]
@@ -23,33 +18,27 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * @return Deserialized [ZoolorettoGame] Object
      */
     fun loadState() : ZoolorettoGame?{
-        return loadFromJSON<ZoolorettoGame>(zoolorettoFileName)
+        return load<ZoolorettoGame>(zoolorettoFileName)
     }
 
     /**
      * Save [ZoolorettoGameState] to file as a JSON String
      */
     fun saveState() {
-        save(rootService.zoolorettoGame?.currentGameState, zoolorettoFileName)
+        save(rootService.zoolorettoGame, zoolorettoFileName)
     }
 
     /**
      * Generic function to load something from a JSON stored in the file [fileName].
      *
-     * It is used for [GameStateService.loadHighscore] and [GameStateService.loadGame]
+     * It is used for [GameStateService.loadHighScore] and [GameStateService.loadState]
      */
-    private inline fun <reified T> loadFromJSON(fileName: String): T? {
-        val gson = Gson()
-        val reader: BufferedReader
-        try {
-            reader = Files.newBufferedReader(Paths.get(fileName))
-        } catch (e: IOException) {
-            return null
-        } catch (e:SecurityException){
-            return null
-        }
-        reader.close()
-        return gson.fromJson(fileName, T::class.java)
+    private inline fun <reified T> load(fileName: String): T? {
+        // deserialize
+        val fis = FileInputStream(fileName)
+        val ois = ObjectInputStream(fis)
+        val loadedObject= ois.readObject() as T
+        return loadedObject
     }
 
 
@@ -57,16 +46,20 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      * Private function to save the object [obj] to a JSON string in the file [fileName]
      */
     private fun <T> save(obj : T, fileName: String){
-        val gson = Gson()
-        val json = gson.toJson(obj)
-        val file = File(fileName)
-        file.writeText(json)
+        // Serialize
+        val fos = FileOutputStream(fileName)
+        val oos = ObjectOutputStream(fos)
+        oos.writeObject(obj)
+        oos.flush()
+
+
+
     }
 
     /**
      * Save [RootService.highscore] to a file as JSON string
      */
-    fun saveHighscore() {
+    fun saveHighScore() {
         save(rootService.highscore, highscoreFileName)
     }
 
@@ -75,9 +68,10 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      *
      * @return Returns the highscore list or null if the file does not exist yet.
      */
-    fun loadHighscore() : List<Pair<String, Double>>? {
-        return loadFromJSON<List<Pair<String, Double>>>(highscoreFileName)
+    fun loadHighScore() : MutableList<Pair<String, Double>>? {
+        return load(highscoreFileName)
     }
+
     /**
      * Function to create a deep copy of [ZoolorettoGameState] object without
      * any references to the object's properties.
@@ -87,20 +81,33 @@ class GameStateService(private val rootService: RootService) : AbstractRefreshin
      */
 
     fun deepZoolorettoCopy(toCopy : ZoolorettoGameState) : ZoolorettoGameState {
-        val gson = Gson()
-        val jsonString = gson.toJson(toCopy) // Serialization
-        val gameCopy = gson.fromJson(jsonString, ZoolorettoGameState::class.java) // Deserialization
+        // Serialize
+        val bos = ByteArrayOutputStream()
+        val oos = ObjectOutputStream(bos)
+        oos.writeObject(toCopy)
+        oos.flush()
 
-        return gameCopy
+        // deserialize
+        val bytes = bos.toByteArray()
+        val bis = ByteArrayInputStream(bytes)
+        val ois = ObjectInputStream(bis)
+        val clone = ois.readObject() as ZoolorettoGameState
+        return clone
     }
-
     companion object{
         fun deepZoolorettoCopy(toCopy : ZoolorettoGameState) : ZoolorettoGameState {
-            val gson = Gson()
-            val jsonString = gson.toJson(toCopy) // Serialization
-            val gameCopy = gson.fromJson(jsonString, ZoolorettoGameState::class.java) // Deserialization
+            // Serialize
+            val bos = ByteArrayOutputStream()
+            val oos = ObjectOutputStream(bos)
+            oos.writeObject(toCopy)
+            oos.flush()
 
-            return gameCopy
+            // deserialize
+            val bytes = bos.toByteArray()
+            val bis = ByteArrayInputStream(bytes)
+            val ois = ObjectInputStream(bis)
+            val clone = ois.readObject() as ZoolorettoGameState
+            return clone
         }
     }
 

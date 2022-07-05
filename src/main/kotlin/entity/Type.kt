@@ -1,11 +1,13 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Enum to distinguish between the 4 possible genders of the animals in Zooloretto:
  * female, male, neutral and offspring
  */
 
-enum class Type {
+enum class Type: Serializable {
     MALE,
     FEMALE,
     NONE,

@@ -7,7 +7,7 @@ import entity.*
  *
  * @param rootService
  */
-class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
+class ScoreService(private val rootService: RootService) : AbstractRefreshingService() {
     /**
      * Calculates the player's score
      * @return a score of the player

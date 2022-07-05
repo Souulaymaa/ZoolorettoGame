@@ -585,8 +585,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         if (target is VendingStall) {
             check(player.barn.vendingStalls.contains(target))
-            val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            zooGame.undoStack.add(copyCurrentGame)
+            //val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+            //zooGame.undoStack.add(copyCurrentGame)
 
             player = game.players.poll()
             player.barn.vendingStalls.remove(target)
@@ -599,8 +599,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         }
         else if (target is Animal) {
             check(player.barn.animalTiles.contains(target))
-            val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
-            zooGame.undoStack.add(copyCurrentGame)
+            //val copyCurrentGame = rootService.gameStateService.deepZoolorettoCopy(game)
+            //zooGame.undoStack.add(copyCurrentGame)
 
             player = game.players.poll()
             player.barn.animalTiles.remove(target)
