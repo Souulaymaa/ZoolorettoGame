@@ -22,9 +22,10 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     fun determineAllCurrentAllowedMoves() : List<Move> {
         val allCurrentAllowedMoves = ArrayList<Move>()
 
-        allCurrentAllowedMoves.addAll(determineAllTruckRelatedMoves())
-        allCurrentAllowedMoves.addAll(determineAllMoneyMoves())
-
+        if(!currentGameStateCopy.players.peek().passed) {
+            allCurrentAllowedMoves.addAll(determineAllTruckRelatedMoves())
+            allCurrentAllowedMoves.addAll(determineAllMoneyMoves())
+        }
         return allCurrentAllowedMoves
     }
 
@@ -35,14 +36,14 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      *
      * @return ArrayList of either add-tile-to-truck-moves or add-take-truck-moves
      */
-    private fun determineAllTruckRelatedMoves() : List<Move>{
-        val currentPlayerTruckTaken = currentGameStateCopy.paused
+     fun determineAllTruckRelatedMoves() : List<Move>{
+        val possibleMoneyMoves = arrayListOf<Move>()
 
-        return if(currentPlayerTruckTaken){
-            determineAddTileToTruckMoves()
-        } else{
-            determineAllTakeTruckMoves()
-        }
+        val addTileToTruckMoves = determineAddTileToTruckMoves()
+        val takeTruckMoves = determineAllTakeTruckMoves()
+        possibleMoneyMoves.addAll(addTileToTruckMoves)
+        possibleMoneyMoves.addAll(takeTruckMoves)
+        return possibleMoneyMoves
     }
 
     /**
@@ -52,19 +53,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * The function iterates over all delivery trucks and creates new [AddTileToTruck] moves
      * and returns them as a list.
      */
-    fun determineAddTileToTruckMoves() : List<AddTileToTruck>{
+    private fun determineAddTileToTruckMoves() : List<AddTileToTruck>{
         val moves = mutableListOf<AddTileToTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
-
-
-        /** Might be useful, if the AddTileToTruck will be changed
-        val nextTile = if(tileStack.drawStack.isNotEmpty()){
-        tileStack.drawStack.firstElement()
-        }
-        else{
-        tileStack.endStack.firstElement()
-        }
-         */
 
         for(deliveryTruck in deliveryTrucks){
             if(deliveryTruck.tilesOnTruck.size < deliveryTruck.maxSize) {
@@ -81,7 +72,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruck] move
      * and returns all moves afterwards as a list.
      */
-    fun determineAllTakeTruckMoves() : List<TakeTruck>{
+    private fun determineAllTakeTruckMoves() : List<TakeTruck>{
         val moves = mutableListOf<TakeTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
@@ -90,7 +81,6 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                 moves.add(TakeTruck(deliveryTuck))
             }
         }
-
         return moves
     }
 
@@ -176,7 +166,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * function to determine if the player has a tile in their Barn, which would enable the "DiscardTile" action
      * @return set of Tiles that can be discarded
      */
-    fun discardablePlayerTiles(currentPlayer: Player) :  Set<Tile>{
+    private fun discardablePlayerTiles(currentPlayer: Player) :  Set<Tile>{
         val discardableTiles = mutableSetOf<Tile>()
 
         if(currentPlayer.coins < 2){
