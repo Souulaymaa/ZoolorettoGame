@@ -3,7 +3,6 @@ package service
 import entity.*
 import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
-import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -32,16 +31,17 @@ class ExchTilesEnclosureToBarnTest {
         checkNotNull(game)
         val player1 = game.players.peek()
         player1.playerEnclosure.add(enclosure1)
+        for(animals in TileLists.flamingos){
+            game.players.peek().playerEnclosure.get(0).animalTiles.add(animals)
+        }
+        player1.barn.animalTiles.add(Animal(Type.NONE,Species.S))
         val initialEnclosureSize = player1.playerEnclosure[0].animalTiles.size
         val initialBarnSize = player1.barn.animalTiles.size
-
-        assertDoesNotThrow {
             rootService.playerActionService.exchangeAllTiles(
                 player1.playerEnclosure[0],
-            player1,
+                player1,
                 Animal(Type.NONE,Species.S)
             )
-        }
         for(animal in player1.barn.animalTiles){
             assertEquals(Species.F,animal.species)
         }
@@ -67,11 +67,11 @@ class ExchTilesEnclosureToBarnTest {
         checkNotNull(game)
         val player1 = game.players.peek()
         player1.playerEnclosure.add(Enclosure(1,1,1, Pair(1,1),false))
-        //player1.playerEnclosure.get(0).animalTiles.add(Animal(Type.NONE,Species.S))
+        player1.playerEnclosure.get(0).animalTiles.add(Animal(Type.NONE,Species.S))
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.L))
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.L))
 
-        assertThrows<java.lang.IllegalArgumentException> { rootService.playerActionService.exchangeAllTiles(
+        assertThrows<IllegalStateException> { rootService.playerActionService.exchangeAllTiles(
             player1.playerEnclosure[0],
             player1,
             Animal(Type.NONE,Species.L)
@@ -107,4 +107,30 @@ class ExchTilesEnclosureToBarnTest {
         }
     }
 
+    /**
+     * tests if an offspring will be created when two [Animal]s are getting exchanged from the barn into the enclosure
+     * which can have a child together
+     */
+  /*  @Test
+    fun testBaby(){
+        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
+            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
+        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+        val game = rootService.currentGame
+        checkNotNull(game)
+        val player1 = game.players.peek()
+        player1.playerEnclosure.add(enclosure1)
+        player1.barn.animalTiles.add(Animal(Type.FEMALE,Species.S))
+        player1.barn.animalTiles.add(Animal(Type.MALE,Species.S))
+
+        val initialBarnSize = player1.barn.animalTiles.size
+        player1.playerEnclosure[0].animalTiles.add(Animal(Type.FEMALE,Species.U))
+
+        rootService.playerActionService.exchangeAllTiles(
+            player1.playerEnclosure[0],
+            player1,
+            Animal(Type.FEMALE,Species.S)
+        )
+        assertEquals(initialBarnSize + 1,player1.playerEnclosure[0].animalTiles.size)
+    }*/
 }
