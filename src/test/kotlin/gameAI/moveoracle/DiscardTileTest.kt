@@ -41,7 +41,7 @@ class DiscardTileTest {
 
         //Bugs: no usage of the root service
         //Does not loop trough barn
-        assertEquals(3, moveList.size)
+        assertEquals(2, moveList.size)
     }
 
     @Test
