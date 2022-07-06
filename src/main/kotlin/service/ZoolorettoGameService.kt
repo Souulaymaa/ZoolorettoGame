@@ -136,7 +136,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      */
 
     fun endGame(){
-        for(player in players){
+        for(player in rootService.zoolorettoGame!!.currentGameState.players){
             rootService.scoreService.determineScore(player)
         }
         rootService.scoreService.determineWinner()
