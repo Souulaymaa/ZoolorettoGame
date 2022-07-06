@@ -4,16 +4,11 @@ import entity.*
 import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.twoplayers.TileStackForTwoPlayers
 import gamemockup.util.DeliveryTrucks
-import gamemockup.util.PlayerQueues
-import gamemockup.util.PlayerQueues.Companion.player1
-import gamemockup.util.PlayerQueues.Companion.player2
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.Test
 
 import org.junit.jupiter.api.Assertions.*
-import java.lang.Double.POSITIVE_INFINITY
 import java.util.*
-import kotlin.test.assertFails
 
 internal class ScoreServiceTest {
 
@@ -125,13 +120,13 @@ internal class ScoreServiceTest {
     fun determineWinner() {
         val player1 = Player("sanad", Difficulty.HUMAN)
         val player2 = Player("mathias", Difficulty.HUMAN)
-        val twotestPlayers : Queue<Player> = LinkedList(listOf(
+        val twoTestPlayer : Queue<Player> = LinkedList(listOf(
             player1, player2
         ))
         val twoPlayerZoolorettoGameState = ZoolorettoGameState(
             false,
             false,
-            twotestPlayers,
+            twoTestPlayer,
             TileStackForTwoPlayers.tileStack,
             DeliveryTrucks.deliveryTrucksForTwoPlayers
         )
