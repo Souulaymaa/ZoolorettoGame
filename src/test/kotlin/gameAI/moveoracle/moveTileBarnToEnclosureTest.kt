@@ -87,17 +87,14 @@ class moveTileBarnToEnclosureTest {
 
 
         //no possible move here
-        for (i in 0..3){
-            player1.playerEnclosure[0].vendingStalls.add(vendingStall)
-        }
+        player1.playerEnclosure[0].vendingStalls.add(vendingStall)
+
 
         //one possible move from barn to enclosure1 available
         player1.playerEnclosure[1].vendingStalls.add(vendingStall)
 
         //no possible move here
-        for (i in 0..5){
-            player1.playerEnclosure[2].vendingStalls.add((vendingStall))
-        }
+        player1.playerEnclosure[2].vendingStalls.add((vendingStall))
 
         val moveOracle = MoveOracle(zoolorettoGameState!!)
 
