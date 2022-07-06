@@ -30,7 +30,7 @@ class InitializeTilesTest {
         //println(zoolorettoGameService.players.size)
         println(zoolorettoGameService.coins.size)
         zoolorettoGameService.createZoolorettoGame(activePlayer, false)
-        println(zoolorettoGameService.coins.size)
+        //println(zoolorettoGameService.coins.size)
         val game = rootService.zoolorettoGame!!.currentGameState
 
         //println(game.players.size)
