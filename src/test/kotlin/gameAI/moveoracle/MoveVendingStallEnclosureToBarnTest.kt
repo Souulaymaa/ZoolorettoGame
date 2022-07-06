@@ -8,7 +8,7 @@ import kotlin.test.BeforeTest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-class moveVendingStallEnclosureToBarnTest {
+class MoveVendingStallEnclosureToBarnTest {
     var zoolorettoGameState: ZoolorettoGameState? = null
     private val vendingStall = TileLists.vendingStalls().first()
 
