@@ -25,15 +25,12 @@ class InitializeTilesTest {
     @Test
     fun initializeTileStack5PlayersTest(){
         val rootService = RootService()
-        //println(game.currentGameState.players.size)
         val zoolorettoGameService = rootService.zoolorettoGameService
-        //println(zoolorettoGameService.players.size)
         println(zoolorettoGameService.coins.size)
+
         zoolorettoGameService.createZoolorettoGame(activePlayer, false)
-        //println(zoolorettoGameService.coins.size)
         val game = rootService.zoolorettoGame!!.currentGameState
 
-        //println(game.players.size)
         var counter = 0
         for(t in game.tileStack.drawStack){
             if(t.equals(Animal(Type.NONE,Species.E))){
@@ -105,30 +102,12 @@ class InitializeTilesTest {
 
         //nur Ausgabe der Tiles
         println(game.tileStack.drawStack)
-        var mCounter = 0
-        var fCounter = 0
+
         val speciesList = listOf(Species.Z, Species.S, Species.U, Species.P, Species.L, Species.K, Species.F, Species.E)
         for(t in game.tileStack.drawStack){
             for(s in speciesList){
-                if(t.equals(Animal(type = Type.MALE, species = s, hasChild = false))){
-                    mCounter++
-                }
-                if(t.equals(Animal(type = Type.FEMALE, species = s, hasChild = false))){
-                    fCounter++
-                }
                 if(t.equals(Animal(type = Type.OFFSPRING, species = s, hasChild = false))){
                     throw java.lang.IllegalArgumentException("Type = Offspring!")
-                }
-            }
-        }
-
-        for(t in game.tileStack.endStack){
-            for(s in speciesList){
-                if(t.equals(Animal(type = Type.MALE, species = s, hasChild = false))){
-                    mCounter++
-                }
-                if(t.equals(Animal(type = Type.FEMALE, species = s, hasChild = false))){
-                    fCounter++
                 }
             }
         }
@@ -186,7 +165,6 @@ class InitializeTilesTest {
         assertEquals(64, game.tileStack.drawStack.size)
         assertEquals(5, counter)
         assertEquals(15, game.tileStack.endStack.size)
-        assertEquals(10, mCounter)
-        assertEquals(10, fCounter)
+
     }
 }
