@@ -1,10 +1,10 @@
 package service
 
 import entity.*
-import java.io.InputStream
 import java.io.File
+import java.io.InputStream
 import java.util.*
-import kotlin.collections.ArrayList
+
 
 /**
  * Class to create a new game and initialise the tiles
@@ -12,7 +12,7 @@ import kotlin.collections.ArrayList
 
 class ZoolorettoGameService(private val rootService: RootService) : AbstractRefreshingService() {
 
-    var tiles : ArrayList<Tile> = ArrayList(116)
+    var tiles : ArrayList<Tile> = ArrayList(128)
     var animalTiles : ArrayList<Animal> = ArrayList(104)
     var offspringTiles : ArrayList<Animal> = ArrayList(16)
     var vendingStalls : ArrayList<VendingStall> = ArrayList(12)
@@ -22,67 +22,6 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
     var players = listOf<Player>()
 
 
-    /**
-     * initialises the tiles according to the number of players
-     */
-    private fun initialiseTiles(){
-        // initialise Animal tiles
-
-            for(specie in Species.values()){
-                repeat(2){animalTiles.add(Animal(Type.MALE, specie))}
-                repeat(2){animalTiles.add(Animal(Type.FEMALE, specie)) }
-                repeat(2){animalTiles.add(Animal(Type.OFFSPRING, specie))
-                                offspringTiles.add(Animal(Type.OFFSPRING, specie))}
-                repeat(7){animalTiles.add(Animal(Type.NONE, specie))}
-        }
-
-        // initialise vending stalls
-        repeat(3){
-            for (vendings in StallType.values()){
-                vendingStalls.add(VendingStall(vendings))
-            }
-        }
-
-        //using the private method setTiles to define the number of tiles needed
-        repeat(setTiles()){
-            tiles.add(animalTiles.removeFirst())
-        }
-        repeat(12){
-            tiles.add(vendingStalls.removeFirst())
-        }
-        repeat(12){
-            tiles.add(coins.removeFirst())
-        }
-        tiles.shuffle(Random(123))
-
-    }
-
-    /**
-     * initialises the tile stacks using the tiles initialised in [initialiseTiles]
-     */
-    fun initialiseTileStack() : TileStack{
-        val game = rootService.zoolorettoGame
-        checkNotNull(game)
-        val draw = game.currentGameState.tileStack.drawStack
-        val end = game.currentGameState.tileStack.endStack
-        val tileStack = TileStack(draw, end)
-        val offspringStack = Stack<Tile>()
-        initialiseTiles()
-        // round tiles
-        for(tile in tiles){
-            if(tile in offspringTiles){
-                offspringStack.add(tile)
-                animalTiles.remove(tile)}}
-
-        //square tiles
-        repeat(tiles.size-(15+offspringTiles.size)){
-            draw.add(tiles.removeFirst())
-        }
-        repeat(15){
-            end.add(tiles.removeFirst())
-        }
-        return tileStack
-    }
 
     /**
      * Creates a new game with the help of [createPlayer]
@@ -119,14 +58,89 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
     }
 
     /**
+     * initialises the tiles according to the number of players
+     */
+    private fun initialiseTiles(){
+        // initialise Animal tiles
+
+        for(specie in Species.values()){
+            repeat(2){animalTiles.add(Animal(Type.MALE, specie))}
+            repeat(2){animalTiles.add(Animal(Type.FEMALE, specie)) }
+            repeat(2){animalTiles.add(Animal(Type.OFFSPRING, specie))}
+            repeat(2){offspringTiles.add(Animal(Type.OFFSPRING, specie))}
+            repeat(7){animalTiles.add(Animal(Type.NONE, specie))}
+        }
+
+        // initialise vending stalls
+        repeat(3){
+            for (vendings in StallType.values()){
+                vendingStalls.add(VendingStall(vendings))
+            }
+        }
+
+        //using the private method setTiles to define the number of tiles needed
+        repeat(setTiles()){
+            tiles.add(animalTiles.removeFirst())
+        }
+        repeat(12){
+            tiles.add(vendingStalls.removeFirst())
+        }
+        repeat(12){
+            tiles.add(coins.removeFirst())
+        }
+        tiles.shuffle(Random(123))
+
+
+
+    }
+
+    /**
+     * initialises the tile stacks using the tiles initialised in [initialiseTiles]
+     */
+    fun initialiseTileStack() : TileStack{
+        val game = rootService.zoolorettoGame
+        checkNotNull(game)
+        val draw = game.currentGameState.tileStack.drawStack
+        val end = game.currentGameState.tileStack.endStack
+        val tileStack = TileStack(draw, end)
+        val offspringStack = Stack<Tile>()
+        initialiseTiles()
+        println(tiles.size)
+        // round tiles
+        val toRemove: ArrayList<Tile> = ArrayList()
+        for (tile in tiles) {
+            if (tile in offspringTiles) {
+                toRemove.add(tile)
+                offspringStack.add(tile)
+            }
+        }
+        tiles.removeAll(toRemove)
+        println(tiles.size)
+
+        //square tiles
+        repeat(tiles.size-15){
+            draw.add(tiles.removeFirst())
+        }
+        println(draw.size)
+        repeat(15){
+            end.add(tiles.removeFirst())
+        }
+        println(end.size)
+
+        return tileStack
+    }
+
+    /**
      * returns the number of tiles according to the number of players
      */
     private fun setTiles() : Int {
-        return when(players.size){
+        val game = rootService.zoolorettoGame
+        checkNotNull(game)
+        return when(game.currentGameState.players.size){
             5 -> 104
-            4 -> 93
-            3 -> 82
-            2 -> 79
+            4 -> 91
+            3 -> 78
+            2 -> 65
             else -> throw IllegalArgumentException("Number of players to be created is not between 2 and 5.")
         }
     }
