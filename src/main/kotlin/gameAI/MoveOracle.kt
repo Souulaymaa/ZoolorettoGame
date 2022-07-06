@@ -170,9 +170,6 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for(tile in currentPlayer.barn.animalTiles){
             discardableTiles.add(tile)
         }
-        for(tile in currentPlayer.barn.vendingStalls){
-            discardableTiles.add(tile)
-        }
         return discardableTiles
     }
 
@@ -200,43 +197,46 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @return map of player to tiles
      */
     private fun purchasableOtherPlayerTiles(currentPlayer: Player) : Map<Player, Set<Tile>>{
-        val purchasableTiles : HashMap<Player, Set<Tile>> = HashMap()
+        val purchasableTiles : HashMap<Player, MutableSet<Tile>> = HashMap()
+        val neededSpecies = mutableSetOf<Species>()
+
+        //Initialize the MutableMap
+        for(otherPlayer in currentGameStateCopy.players){
+            if(currentPlayer != otherPlayer){
+                purchasableTiles[otherPlayer] = HashSet<Tile>()
+            }
+        }
 
 
         if(currentPlayer.coins < 2){
             return purchasableTiles
         }
-        for(player in currentGameStateCopy.players){
-            val tileSet = mutableSetOf<Tile>()
-            if(currentPlayer == player) {
-                continue                                             //skips the current player using continue
-            }
-            for (enclosure in player.playerEnclosure) {
-                if (!enclosure.isBarn) {
-                    continue                                         //skips all enclosures of player that is not barn
-                }
-                for (tile in enclosure.animalTiles) {
-                    tileSet.add(tile)
-                }
-                for (tile in enclosure.vendingStalls) {
-                    tileSet.add(tile)
+
+        //Find all species the currentPlayer might need
+        //Only add those where the enclosures are not full yet
+        for(enclosure in currentPlayer.playerEnclosure){
+            val enclosureIsNotFull = enclosure.animalTiles.size < enclosure.maxAnimalSlots
+            if(enclosureIsNotFull){
+                for (tile in enclosure.animalTiles){
+                    neededSpecies.add(tile.species)
                 }
             }
-            for(tile in tileSet){
-                var found = false
-                for(enclosure in currentPlayer.playerEnclosure){
-                    if(tile == enclosure.animalTiles[0]){
-                        found = true
-                        continue
-                    }
-                }
-                if(!found){
-                    tileSet.remove(tile)
-                }
-            }
-            purchasableTiles[player] = tileSet
         }
-    return purchasableTiles
+
+        //Loop all other player's barn
+        for(otherPlayer in currentGameStateCopy.players){
+            if(otherPlayer == currentPlayer){
+                continue
+            }
+
+            for (tile in otherPlayer.barn.animalTiles){
+                if(tile.species in neededSpecies){
+                    purchasableTiles[otherPlayer]?.add(tile)
+                }
+            }
+        }
+
+        return purchasableTiles
     }
 
 
