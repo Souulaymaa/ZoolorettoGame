@@ -5,7 +5,7 @@ import gameAI.moves.*
 import service.GameStateService
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
-    private val currentGameStateCopy : ZoolorettoGameState
+     val currentGameStateCopy : ZoolorettoGameState
 
     init {
         this.currentGameStateCopy = GameStateService.deepZoolorettoCopy(currentGameState)
@@ -393,7 +393,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param currentPlayer Parameter to fit the [ExchangeAllTilesBarnToEnclosure] cases
      * @return List of all possible move combinations as Move type
      */
-    fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
+    private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
                                                     currentPlayer: Player): ArrayList<Move>
      {
         val moveList = ArrayList<Move>()
@@ -421,13 +421,16 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param player the player containing the barn
      */
     private fun createMovesForEachSpeciesInBarn(enclosure: Enclosure,
-                                                player: Player): List<ExchangeAllTilesBarnToEnclosure>{
+                                                player: Player): ArrayList<ExchangeAllTilesBarnToEnclosure>{
         val speciesMap = player.barn.animalTiles.groupBy { it.species }
 
         val outList = arrayListOf<ExchangeAllTilesBarnToEnclosure>()
 
         for ((species, tiles) in speciesMap){
-            outList.add(ExchangeAllTilesBarnToEnclosure(enclosure, player, species))
+            if(tiles.size <= enclosure.maxAnimalSlots && enclosure.animalTiles[0].species != species){
+                outList.add(ExchangeAllTilesBarnToEnclosure(enclosure, player, species))
+            }
+
         }
         return outList
     }
@@ -451,6 +454,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for (j in 0 until playerEnclosureAndBarn.size){
             //Enclosure of the current iteration
             val sourceEnclosure : Enclosure = playerEnclosureAndBarn[j]
+            if(sourceEnclosure.animalTiles.isEmpty()){
+                continue
+            }
             val swapTargets = ArrayList<Enclosure>()
 
             //Now find all possible swaps
@@ -461,6 +467,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                 }
 
                 val targetEnclosure : Enclosure = playerEnclosureAndBarn[k]
+                if(targetEnclosure.animalTiles.isEmpty()){
+                    continue
+                }
 
                 if(eligibleToSwap(sourceEnclosure, targetEnclosure)){
                     swapTargets.add(targetEnclosure)
@@ -484,12 +493,14 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @return true if enclosures are compatible, false otherwise
      */
     private fun eligibleToSwap(source : Enclosure, target :Enclosure): Boolean {
-        val targetEnclosureHasEnoughSlots = target.maxAnimalSlots <= source.animalTiles.size
-        val sourceEnclosureHasEnoughSlots = source.maxAnimalSlots <= target.animalTiles.size
+        val targetEnclosureHasEnoughSlots = if (source.isBarn) true
+        else target.maxAnimalSlots >= source.animalTiles.size
+        val sourceEnclosureHasEnoughSlots = if (target.isBarn) true
+        else source.maxAnimalSlots >= target.animalTiles.size
 
         var sameAnimalSpecies = false
 
-        if(source.animalTiles.isNotEmpty() && target.animalTiles.isNotEmpty()){
+        if(!source.isBarn && ! target.isBarn){
             val sourceSpecies = source.animalTiles[0].species
             val targetSpecies = target.animalTiles[0].species
 
