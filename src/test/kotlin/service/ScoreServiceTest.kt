@@ -11,6 +11,6 @@ internal class ScoreServiceTest {
     }
 
     @Test
-    fun determineHighscore() {
+    fun determineWinner() {
     }
 }
