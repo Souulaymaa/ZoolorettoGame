@@ -11,11 +11,11 @@ class DetermineExchangeAllTileMovesTest {
     private val zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
     private val moveOracle = MoveOracle(zoolorettoGameState)
 
-    private val flamingo = TileLists.flamingos.first()
-    private val camel = TileLists.camels.first()
-    private val chimpanzee = TileLists.chimpanzees.first()
-    private val kangaroo = TileLists.kangaroos.first()
-    private val panda = TileLists.pandas.first()
+    private val flamingo = TileLists.flamingos().first()
+    private val camel = TileLists.camels().first()
+    private val chimpanzee = TileLists.chimpanzees().first()
+    private val kangaroo = TileLists.kangaroos().first()
+    private val panda = TileLists.pandas().first()
 
     @Test
     fun testExchangeAllTiles(){

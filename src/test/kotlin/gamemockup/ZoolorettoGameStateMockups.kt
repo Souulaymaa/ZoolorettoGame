@@ -8,27 +8,18 @@ import gamemockup.util.EmptyEnclosures.Companion.emptyEnclosureDefaultFactory
 
 class ZoolorettoGameStateMockups {
     companion object{
-        val twoPlayersZoolorettoGameState = ZoolorettoGameState(
-            false,
-            false,
-            PlayerQueues.twoHumanPlayers,
-            TileStackForTwoPlayers.tileStack,
-            DeliveryTrucks.deliveryTrucksForTwoPlayers
-
-        )
-
         fun twoPlayersZoolorettoGameStateFactory(): ZoolorettoGameState {
+            val playerQueues = PlayerQueues.twoHumanPlayers()
 
-
-            for(p in PlayerQueues.twoHumanPlayers){
+            for(p in playerQueues){
                 p.playerEnclosure.addAll(emptyEnclosureDefaultFactory())
             }
             return ZoolorettoGameState(
                 false,
                 false,
-                PlayerQueues.twoHumanPlayers,
-                TileStackForTwoPlayers.tileStack,
-                DeliveryTrucks.deliveryTrucksForTwoPlayers
+                playerQueues,
+                TileStackForTwoPlayers.getTileStack(),
+                DeliveryTrucks.deliveryTrucksForTwoPlayers()
             )
         }
     }

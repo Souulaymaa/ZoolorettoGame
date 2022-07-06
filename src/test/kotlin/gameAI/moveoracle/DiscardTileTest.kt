@@ -27,9 +27,9 @@ class DiscardTileTest {
     fun threeTiles(){
         //Fill player1s barn with three Tiles
         val player1 = zoolorettoGameState!!.players.peek()
-        val flamingo = TileLists.flamingos.first()
-        val chimpanzee = TileLists.chimpanzees.first()
-        val vendingStall = TileLists.vendingStalls.first()
+        val flamingo = TileLists.flamingos().first()
+        val chimpanzee = TileLists.chimpanzees().first()
+        val vendingStall = TileLists.vendingStalls().first()
 
         player1.barn.animalTiles.add(flamingo)
         player1.barn.animalTiles.add(chimpanzee)
@@ -48,9 +48,9 @@ class DiscardTileTest {
     fun noMoney(){
         //Fill player1s barn with three Tiles
         val player1 = zoolorettoGameState!!.players.peek()
-        val flamingo = TileLists.flamingos.first()
-        val chimpanzee = TileLists.chimpanzees.first()
-        val vendingStall = TileLists.vendingStalls.first()
+        val flamingo = TileLists.flamingos().first()
+        val chimpanzee = TileLists.chimpanzees().first()
+        val vendingStall = TileLists.vendingStalls().first()
 
         player1.barn.animalTiles.add(flamingo)
         player1.barn.animalTiles.add(chimpanzee)

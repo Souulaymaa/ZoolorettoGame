@@ -19,12 +19,17 @@ class PlayerQueues {
         val hardBot5 = Player("hardbot5", Difficulty.HARD)
 
 
-        val twoHumanPlayers : Queue<Player> = LinkedList(listOf(
-            player1, player2
-        ))
+        fun twoHumanPlayers() : Queue<Player> {
+            return LinkedList(listOf(
+                Player("player1", Difficulty.HUMAN),
+                Player("player2", Difficulty.HUMAN)
+            ))
+        }
 
-        val oneHumanOneBot : Queue<Player> = LinkedList(listOf(
-            player1, hardBot1
-        ))
+        fun oneHumanOneBot() : Queue<Player> {
+            return LinkedList(listOf(
+                player1, hardBot1
+            ))
+        }
     }
 }

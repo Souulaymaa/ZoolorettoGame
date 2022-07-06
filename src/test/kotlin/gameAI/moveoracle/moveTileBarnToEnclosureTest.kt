@@ -10,9 +10,9 @@ import kotlin.test.assertEquals
 
 class moveTileBarnToEnclosureTest {
     var zoolorettoGameState : ZoolorettoGameState? = null
-    private val flamingo = TileLists.flamingos.first()
-    private val chimpanzee = TileLists.chimpanzees.first()
-    private val vendingStall = TileLists.vendingStalls.first()
+    private val flamingo = TileLists.flamingos().first()
+    private val chimpanzee = TileLists.chimpanzees().first()
+    private val vendingStall = TileLists.vendingStalls().first()
 
     @BeforeTest
     fun setup(){
