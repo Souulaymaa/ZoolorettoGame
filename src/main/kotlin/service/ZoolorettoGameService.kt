@@ -115,17 +115,17 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             }
         }
         tiles.removeAll(toRemove)
-        println(tiles.size)
+        //println(tiles.size)
 
         //square tiles
         repeat(tiles.size-15){
             draw.add(tiles.removeFirst())
         }
-        println(draw.size)
+        //println(draw.size)
         repeat(15){
             end.add(tiles.removeFirst())
         }
-        println(end.size)
+        //println(end.size)
 
         return tileStack
     }
