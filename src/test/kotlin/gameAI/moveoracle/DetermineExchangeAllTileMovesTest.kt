@@ -6,6 +6,9 @@ import gamemockup.util.TileLists
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+/**
+ * Class to test the [MoveOracle.determineExchangeAllTileMoves] function.
+ */
 class DetermineExchangeAllTileMovesTest {
 
     private val zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
@@ -17,6 +20,9 @@ class DetermineExchangeAllTileMovesTest {
     private val kangaroo = TileLists.kangaroos().first()
     private val panda = TileLists.pandas().first()
 
+    /**
+     * Checks the functionality of ExchangeAllTilesMoves
+     */
     @Test
     fun testExchangeAllTiles(){
         val player = moveOracle.currentGameStateCopy.players.peek()
@@ -38,6 +44,9 @@ class DetermineExchangeAllTileMovesTest {
 
     }
 
+    /**
+     * Checks the functionality of exchangeAllTilesMoves with empty enclosures.
+     */
     @Test
     fun testExchangeAllTilesWithEmptyEnclosures(){
         val player = moveOracle.currentGameStateCopy.players.peek()
