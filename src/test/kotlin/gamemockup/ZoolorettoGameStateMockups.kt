@@ -22,5 +22,22 @@ class ZoolorettoGameStateMockups {
                 DeliveryTrucks.deliveryTrucksForTwoPlayers()
             )
         }
+
+        //TODO: CAUTION WE USE A TileStackForTwoPlayers even though we have three players
+        //Only usable for ExpandZooTest, correct later if needed anywhere else!!!!!
+        fun threePlayersZoolorettoGameStateFactory(): ZoolorettoGameState {
+            val playerQueues = PlayerQueues.twoHumanPlayers()
+
+            for(p in playerQueues){
+                p.playerEnclosure.addAll(emptyEnclosureDefaultFactory())
+            }
+            return ZoolorettoGameState(
+                false,
+                false,
+                playerQueues,
+                TileStackForTwoPlayers.getTileStack(),
+                DeliveryTrucks.deliveryTrucksForTwoPlayers()
+            )
+        }
     }
 }

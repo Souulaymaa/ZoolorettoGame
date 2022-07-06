@@ -122,22 +122,37 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      *function that determines whether Expand Zoo money action is feasible or not
      * @return Array list containing one move or no move at all depending on outcome
      * the move within the Array List is the ExpandZoo() move itself.
+     *
+     * TODO: check if two players or more are playing
      */
     fun expandZooMove() : ArrayList<Move> {
         val currentPlayer = currentGameStateCopy.players.peek()
-        val moveList = ArrayList<Move>()
 
         if(currentPlayer.coins < 3){
-            return moveList
+            return arrayListOf()
         }
+
+        //Check if all enclosures are full
+        var allEnclosuresAreFull = true
         for (enclosure in currentPlayer.playerEnclosure){
-            if (enclosure.animalTiles.isEmpty()){
-                return moveList
+            val enclosureIsNotFull = enclosure.animalTiles.size < enclosure.maxAnimalSlots
+
+            if (enclosureIsNotFull){
+                allEnclosuresAreFull = false
             }
         }
-        val expandZoo = ExpandZoo()
-        moveList.add(expandZoo)
-        return moveList
+
+        if(allEnclosuresAreFull && currentGameStateCopy.players.size == 2 && currentPlayer.playerEnclosure.size < 5)
+        {
+            return arrayListOf(ExpandZoo())
+        }
+        else if(allEnclosuresAreFull && currentGameStateCopy.players.size > 2 && currentPlayer.playerEnclosure.size < 4)
+        {
+            return arrayListOf(ExpandZoo())
+        }
+        else{
+            return arrayListOf()
+        }
     }
 
     /**
