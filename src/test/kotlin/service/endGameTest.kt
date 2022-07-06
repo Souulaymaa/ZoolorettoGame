@@ -29,8 +29,8 @@ class EndGameTest {
             false,
             false,
             twoTestPlayer,
-            TileStackForTwoPlayers.tileStack,
-            DeliveryTrucks.deliveryTrucksForTwoPlayers
+            TileStackForTwoPlayers.getTileStack(),
+            DeliveryTrucks.deliveryTrucksForTwoPlayers()
         )
 
         val rootService = RootService()
@@ -46,7 +46,7 @@ class EndGameTest {
         p1.playerEnclosure.add(Enclosure(5, 1, 1, Pair(9, 5), false))
 
         //add one tile to player 0
-        p1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[0])
+        p1.playerEnclosure[0].animalTiles.add(TileLists.flamingos()[0])
 
         //player2 enclosures are initialized here
         p2.playerEnclosure.add(Enclosure(5, 1, 2, Pair(8, 5), false))
@@ -55,9 +55,9 @@ class EndGameTest {
         p2.playerEnclosure.add(Enclosure(5, 1, 1, Pair(9, 5), false))
 
         //barn
-        p2.barn.animalTiles.add(TileLists.zebras[5])
-        p2.barn.animalTiles.add(TileLists.camels[0])
-        p2.barn.animalTiles.add(TileLists.camels[1])
+        p2.barn.animalTiles.add(TileLists.zebras()[5])
+        p2.barn.animalTiles.add(TileLists.camels()[0])
+        p2.barn.animalTiles.add(TileLists.camels()[1])
 
         rootService.zoolorettoGame!!.currentGameState.players.add(p1)
         rootService.zoolorettoGame!!.currentGameState.players.add(p2)

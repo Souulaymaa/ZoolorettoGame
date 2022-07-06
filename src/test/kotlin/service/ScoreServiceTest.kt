@@ -17,7 +17,7 @@ internal class ScoreServiceTest {
      */
     @Test
     fun determineScoreOfPlayer() {
-        val gameInstance = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+        val gameInstance = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
         val zooGame = ZoolorettoGame(1f, gameInstance)
         val rootService = RootService()
         val player1 = gameInstance.players.poll()
@@ -35,9 +35,9 @@ internal class ScoreServiceTest {
         //first enclosure gets score of 8 and player has also one vending stall type + 2.
 
         for(i in 0..4){
-            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[i])
+            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos()[i])
         }
-        player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls[0])
+        player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls()[0])
 
         assertEquals(10, scoreService.determineScore(player1))
 
@@ -46,11 +46,11 @@ internal class ScoreServiceTest {
         player1.playerEnclosure[0].vendingStalls.clear()
 
         //3 types of animals and 1 vendingstall in barn score must be = -8
-        player1.barn.animalTiles.add(TileLists.zebras[5])
-        player1.barn.animalTiles.add(TileLists.camels[0])
-        player1.barn.animalTiles.add(TileLists.camels[1])
-        player1.barn.animalTiles.add(TileLists.flamingos[1])
-        player1.barn.vendingStalls.add((TileLists.vendingStalls[0]))
+        player1.barn.animalTiles.add(TileLists.zebras()[5])
+        player1.barn.animalTiles.add(TileLists.camels()[0])
+        player1.barn.animalTiles.add(TileLists.camels()[1])
+        player1.barn.animalTiles.add(TileLists.flamingos()[1])
+        player1.barn.vendingStalls.add((TileLists.vendingStalls()[0]))
 
         //score must be equal to -8
         assertEquals(-8, scoreService.determineScore(player1))
@@ -67,10 +67,10 @@ internal class ScoreServiceTest {
         //enclosure gets score of 2(one point for each animal) however, player has two vending stall from
         //same type and therefor only 2 extra
         //total score must be equal to 4
-        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos[0])
-        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos[1])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[0])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[0])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos()[0])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos()[1])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[0])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[0])
 
         assertEquals(4, scoreService.determineScore(player2))/////
         assertEquals(4, player2.score)
@@ -84,30 +84,30 @@ internal class ScoreServiceTest {
 
         //first Enclosure
         for(i in 0..3){
-            player2.playerEnclosure[0].animalTiles.add(TileLists.elephants[i])
+            player2.playerEnclosure[0].animalTiles.add(TileLists.elephants()[i])
         }
 
         //second Enclosure
-        player2.playerEnclosure[1].animalTiles.add(TileLists.chimpanzees[0])
-        player2.playerEnclosure[1].animalTiles.add(TileLists.chimpanzees[1])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[4])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[1])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.chimpanzees()[0])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.chimpanzees()[1])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[4])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[1])
 
         //third Enclosure
         for (i in 0..3){
-            player2.playerEnclosure[2].animalTiles.add(TileLists.pandas[i])
+            player2.playerEnclosure[2].animalTiles.add(TileLists.pandas()[i])
         }
 
         //expansion
         for(i in 0..4){
-            player2.playerEnclosure[3].animalTiles.add(TileLists.zebras[i])
+            player2.playerEnclosure[3].animalTiles.add(TileLists.zebras()[i])
         }
-        player2.playerEnclosure[3].vendingStalls.add(TileLists.vendingStalls[1])
+        player2.playerEnclosure[3].vendingStalls.add(TileLists.vendingStalls()[1])
 
         //barn
-        player2.barn.animalTiles.add(TileLists.zebras[5])
-        player2.barn.animalTiles.add(TileLists.camels[0])
-        player2.barn.animalTiles.add(TileLists.camels[1])
+        player2.barn.animalTiles.add(TileLists.zebras()[5])
+        player2.barn.animalTiles.add(TileLists.camels()[0])
+        player2.barn.animalTiles.add(TileLists.camels()[1])
 
         //score must be equal to 16. for the details please check the example in Zooloretto PDF.
         assertEquals(16, scoreService.determineScore(player2))
@@ -127,8 +127,8 @@ internal class ScoreServiceTest {
             false,
             false,
             twoTestPlayer,
-            TileStackForTwoPlayers.tileStack,
-            DeliveryTrucks.deliveryTrucksForTwoPlayers
+            TileStackForTwoPlayers.getTileStack(),
+            DeliveryTrucks.deliveryTrucksForTwoPlayers()
         )
 
         val rootService = RootService()
@@ -146,9 +146,9 @@ internal class ScoreServiceTest {
         //first enclosure is filled with flamingos and the one vending stall space it has --> score must be equal to 10.
         //first enclosure gets score of 8 and player has also one vending stall type + 2.
         for (i in 0..4){
-            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos[i])
+            player1.playerEnclosure[0].animalTiles.add(TileLists.flamingos()[i])
         }
-        player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls[0])
+        player1.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls()[0])
 
         //player2 enclosures are initialized here
         player2.playerEnclosure.add(Enclosure(5, 1, 2, Pair(8, 5),false))
@@ -158,10 +158,10 @@ internal class ScoreServiceTest {
         //enclosure gets score of 2(one point for each animal) however, player has two vending stall from
         //same type and therefor only 2 extra
         //total score must be equal to 4
-        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos[0])
-        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos[1])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[0])
-        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls[0])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos()[0])
+        player2.playerEnclosure[1].animalTiles.add(TileLists.kangaroos()[1])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[0])
+        player2.playerEnclosure[1].vendingStalls.add(TileLists.vendingStalls()[0])
 
         checkNotNull(rootService.zoolorettoGame)
 
@@ -180,9 +180,9 @@ internal class ScoreServiceTest {
         player2.playerEnclosure[1].vendingStalls.clear()
 
         for (i in 0..4){
-            player2.playerEnclosure[0].animalTiles.add(TileLists.flamingos[i])
+            player2.playerEnclosure[0].animalTiles.add(TileLists.flamingos()[i])
         }
-        player2.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls[0])
+        player2.playerEnclosure[0].vendingStalls.add(TileLists.vendingStalls()[0])
         scoreService.determineScore(player1)
         scoreService.determineScore(player2)
         assertEquals(null, scoreService.determineWinner())
