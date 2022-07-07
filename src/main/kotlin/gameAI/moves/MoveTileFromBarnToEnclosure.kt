@@ -8,7 +8,7 @@ import service.RootService
 
 class MoveTileFromBarnToEnclosure(val source: Player, val destination: Enclosure, val tile: Tile) : Move {
     override fun performMove(rootService: RootService) {
-        super.performMove(rootService)
+        rootService.playerActionService.moveOneTile(source,destination,tile)
     }
 
     override fun toHintString(): String {

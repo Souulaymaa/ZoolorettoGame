@@ -182,7 +182,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for ((player, purchasableTiles) in combinations) {
             for (tile in purchasableTiles) {
-                moveList.add(PurchaseTile(player, tile))
+                TODO("CREATE MOVE INSTANCES WITH NEW PARAMETERS")
             }
         }
         return moveList
@@ -318,7 +318,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
         val moveList = ArrayList<Move>()
         for(enclosure in possibleEnclosures){
-            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer))
+            for(vendingstall in enclosure.vendingStalls){
+                moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer, vendingstall))
+            }
         }
         return moveList
     }

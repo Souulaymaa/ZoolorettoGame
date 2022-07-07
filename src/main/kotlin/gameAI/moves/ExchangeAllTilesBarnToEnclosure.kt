@@ -1,8 +1,6 @@
 package gameAI.moves
 
-import entity.Enclosure
-import entity.Player
-import entity.Species
+import entity.*
 import gameAI.Move
 import service.RootService
 
@@ -10,6 +8,7 @@ class ExchangeAllTilesBarnToEnclosure(val source : Enclosure, val destination: P
 
 
     override fun performMove(rootService: RootService) {
+        rootService.playerActionService.exchangeAllTiles(source, destination, Animal(Type.NONE, species))
     }
 
     override fun toHintString(): String {

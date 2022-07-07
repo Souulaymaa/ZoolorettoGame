@@ -7,6 +7,7 @@ import service.RootService
 class AddTileToTruck(val truck: DeliveryTruck) : Move {
 
     override fun performMove(rootService: RootService) {
+        rootService.playerActionService.addTile(truck)
     }
 
     override fun toHintString(): String {

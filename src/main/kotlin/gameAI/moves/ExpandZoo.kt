@@ -6,7 +6,7 @@ import service.RootService
 class ExpandZoo : Move {
 
     override fun performMove(rootService: RootService) {
-        super.performMove(rootService)
+        rootService.playerActionService.expandZoo()
     }
 
     override fun toHintString(): String {

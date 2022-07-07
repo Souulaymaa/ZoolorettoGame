@@ -7,6 +7,7 @@ import service.RootService
 class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destination: Enclosure) : Move {
 
     override fun performMove(rootService: RootService) {
+        rootService
     }
 
     override fun toHintString(): String {
