@@ -1,21 +1,16 @@
 package gameAI.moves
 
 import entity.Enclosure
-import entity.ZoolorettoGameState
 import gameAI.Move
+import service.RootService
 
-class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destination: Enclosure, currentGameState: ZoolorettoGameState) : Move {
+class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destination: Enclosure) : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
     }
 
     override fun toHintString(): String {
         return "Exchange ${source.animalTiles[0].toString()} from Enclosure  ${source.pointValues.toString()} " +
                 "Points with ${destination.animalTiles[0].toString()}"
-    }
-
-    override fun calculateScore() : Int{
-        throw NotImplementedError()
     }
 }

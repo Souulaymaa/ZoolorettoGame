@@ -1,19 +1,15 @@
 package gameAI.moves
 
-import entity.ZoolorettoGameState
 import gameAI.Move
+import service.RootService
 
-class ExpandZoo(currentGameState: ZoolorettoGameState) : Move {
+class ExpandZoo : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
+        super.performMove(rootService)
     }
 
     override fun toHintString(): String {
         return "Expand Zoo"
-    }
-
-    override fun calculateScore() : Int{
-        throw NotImplementedError()
     }
 }

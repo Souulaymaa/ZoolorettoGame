@@ -1,19 +1,19 @@
 package gameAI.moves
 
-import entity.DeliveryTruck
+import entity.*
 import gameAI.Move
 import service.RootService
 
-class AddTileToTruck(val truck: DeliveryTruck) : Move {
+class TakeTruckAndPlaceTiles(private val truck: DeliveryTruck) : Move {
 
     override fun performMove(rootService: RootService) {
     }
 
     override fun toHintString(): String {
-        if (truck.tilesOnTruck.isEmpty()){
-            return "Add drawn Tile to empty Truck"
-        }
         return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
-
     }
+
+//    override fun toHintString(): String {
+//        return "move tile to Enclosure with ${destination.pointValues.toString()} Points"
+//    }
 }

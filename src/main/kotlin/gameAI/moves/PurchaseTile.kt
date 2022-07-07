@@ -2,21 +2,15 @@ package gameAI.moves
 
 import entity.Player
 import entity.Tile
-import entity.ZoolorettoGameState
 import gameAI.Move
+import service.RootService
 
-class PurchaseTile(val player: Player, val tile: Tile, currentGameState: ZoolorettoGameState) : Move {
+class PurchaseTile(val player: Player, val tile: Tile) : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
     }
 
     override fun toHintString(): String {
         return "Buy $tile from barn of player ${player.playerName}."
     }
-
-    override fun calculateScore() : Int{
-        throw NotImplementedError()
-    }
-
 }

@@ -2,21 +2,15 @@ package gameAI.moves
 
 import entity.Enclosure
 import entity.Player
-import entity.ZoolorettoGameState
 import gameAI.Move
+import service.RootService
 
-class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Player, currentGameState: ZoolorettoGameState) : Move {
+class MoveVendingStallEnclosureToBarn(val source: Enclosure, val destination: Player) : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
     }
 
     override fun toHintString(): String {
         return "move VendingStall from Enclosure with ${source.pointValues.toString()} Points to barn"
     }
-
-    override fun calculateScore() : Int{
-        throw NotImplementedError()
-    }
-
 }
