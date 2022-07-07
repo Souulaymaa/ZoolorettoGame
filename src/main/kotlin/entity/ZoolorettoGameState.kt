@@ -14,7 +14,7 @@ import java.util.*
  */
 data class ZoolorettoGameState(
     var paused: Boolean = false, var roundDisc: Boolean = false, val players: Queue<Player>,
-    val tileStack: TileStack, val deliveryTrucks: MutableList<DeliveryTruck>
+    var tileStack: TileStack, val deliveryTrucks: MutableList<DeliveryTruck>
 ): Serializable {
     var bank = 0
     init {
