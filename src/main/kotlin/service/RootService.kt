@@ -16,7 +16,7 @@ class RootService {
     val playerActionService = PlayerActionService(this)
     val aiService = AIService(this)
     val gameStateService = GameStateService(this)
-    val scoreService = ScoreService()
+    val scoreService = ScoreService(this)
 
     var highscore = mutableListOf<Pair<String, Double>>()
     var currentGame: ZoolorettoGameState? = null
