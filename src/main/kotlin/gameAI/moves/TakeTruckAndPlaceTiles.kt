@@ -14,7 +14,19 @@ class TakeTruckAndPlaceTiles(private val truck: DeliveryTruck) : Move {
         rootService.playerActionService.takeTruck(truck)
 
         for (tile in currentPlayer.chosenTruck!!.tilesOnTruck){
-            TODO("COUNT POSSIBLE DESTINATIONS FOR THE TILES")
+            if (tile is Coin) {
+                continue
+            }
+            if (tile is Animal){
+                for (enclosure in currentPlayer.playerEnclosure){
+                    if (enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles[0].species == tile.species){
+                        rootService.playerActionService.placeTileFromTruck(enclosure)
+                    }
+                }
+            }
+            else{
+                rootService.playerActionService.placeTileFromTruck(currentPlayer)
+            }
         }
     }
 
