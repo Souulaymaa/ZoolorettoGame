@@ -2,11 +2,12 @@ package gameAI.moves
 
 import entity.DeliveryTruck
 import gameAI.Move
+import service.RootService
 
 class AddTileToTruck(val truck: DeliveryTruck) : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
+        rootService.playerActionService.addTile(truck)
     }
 
     override fun toHintString(): String {
@@ -16,5 +17,4 @@ class AddTileToTruck(val truck: DeliveryTruck) : Move {
         return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
 
     }
-
 }

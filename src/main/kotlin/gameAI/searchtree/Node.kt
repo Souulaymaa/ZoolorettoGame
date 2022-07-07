@@ -23,7 +23,13 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
     val aiScore : Int = calculateScore()
 
     private fun calculateScore(): Int {
-        TODO("Implement score function")
+        val moveOracle = MoveOracle(zoolorettoGameState)
+        val allowedMoves = moveOracle.determineAllCurrentAllowedMoves()
+
+        for (move in allowedMoves){
+
+        }
+        return 0
     }
 
     /**

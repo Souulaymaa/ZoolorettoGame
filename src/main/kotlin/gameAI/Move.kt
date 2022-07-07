@@ -1,8 +1,9 @@
 package gameAI
 
-interface Move {
+import service.RootService
 
-    fun performMove(){}
+interface Move {
+    fun performMove(rootService: RootService) {}
 
     fun toHintString() : String{
         throw NotImplementedError()

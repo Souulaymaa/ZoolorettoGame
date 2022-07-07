@@ -63,25 +63,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             }
         }
 
+
         return moves
     }
 
     /**
-     * Function, that determines all possible [TakeTruck] moves.
+     * Function, that determines all possible [TakeTruckAndPlaceTiles] moves.
      *
-     * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruck] move
+     * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruckAndPlaceTiles] move
      * and returns all moves afterwards as a list.
      */
-    private fun determineAllTakeTruckMoves() : List<TakeTruck>{
-        val moves = mutableListOf<TakeTruck>()
-        val deliveryTrucks = currentGameStateCopy.deliveryTrucks
-
-        for(deliveryTuck in deliveryTrucks){
-            if(deliveryTuck.tilesOnTruck.isNotEmpty()){
-                moves.add(TakeTruck(deliveryTuck))
-            }
-        }
-        return moves
+    private fun determineAllTakeTruckMoves() : ArrayList<Move>{
+        return arrayListOf<Move>()
     }
 
     private fun determineAllMoneyMoves() : List<Move> {
@@ -189,7 +182,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for ((player, purchasableTiles) in combinations) {
             for (tile in purchasableTiles) {
-                moveList.add(PurchaseTile(player, tile))
+                TODO("CREATE MOVE INSTANCES WITH NEW PARAMETERS")
             }
         }
         return moveList
@@ -325,7 +318,9 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
         val moveList = ArrayList<Move>()
         for(enclosure in possibleEnclosures){
-            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer))
+            for(vendingstall in enclosure.vendingStalls){
+                moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer, vendingstall))
+            }
         }
         return moveList
     }

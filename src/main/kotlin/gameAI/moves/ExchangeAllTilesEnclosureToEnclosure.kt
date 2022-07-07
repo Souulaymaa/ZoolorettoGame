@@ -2,11 +2,12 @@ package gameAI.moves
 
 import entity.Enclosure
 import gameAI.Move
+import service.RootService
 
 class ExchangeAllTilesEnclosureToEnclosure(val source : Enclosure, val destination: Enclosure) : Move {
 
-    override fun performMove() {
-        super.performMove()
+    override fun performMove(rootService: RootService) {
+        rootService
     }
 
     override fun toHintString(): String {
