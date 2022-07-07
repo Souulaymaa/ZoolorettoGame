@@ -1,10 +1,13 @@
 package gameAI.searchtree
 
 import entity.Player
+import entity.ZoolorettoGame
 import entity.ZoolorettoGameState
 import gameAI.Move
 import gameAI.MoveOracle
 import service.GameStateService
+import service.PlayerActionService
+import service.RootService
 import kotlin.collections.ArrayList
 
 /**
@@ -55,6 +58,7 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
                 movesTakenPlusOne.add(move)
 
                 val child = Node(copy, aiPlayer, movesTakenPlusOne)
+                this.children.add(child)
 
                 //Perform recursion
                 child.createChildren(level -1)
@@ -66,6 +70,9 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
      * Function that should execute Moves on a ZoolorettoGameState, might be using Move's performMove method
      */
     private fun performMove(zoolorettoGameState: ZoolorettoGameState, move: Move){
-        TODO("Lookup how PlayerActionService works as soon as services are pushed on main")
+        val rootService = RootService()
+        rootService.zoolorettoGame = ZoolorettoGame(1.0f, zoolorettoGameState)
+
+        move.performMove(rootService)
     }
 }
