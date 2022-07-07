@@ -174,13 +174,10 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      * returns a [TileStack] created from a file in the format txt to which [path] is the path.
      */
     fun loadTileStackFromFile(path : String) : TileStack {
-        val game = rootService.zoolorettoGame
-        checkNotNull(game)
-
         var coins : String; var vendingStalls : String; var animals : String
         val result : ArrayList<Tile> = ArrayList()
-        val draw = game.currentGameState.tileStack.drawStack
-        val end = game.currentGameState.tileStack.endStack
+        val draw = Stack<Tile>()
+        val end = Stack<Tile>()
         val tileStack = TileStack(draw, end)
 
         val reader : InputStream = File(path).inputStream()
@@ -200,8 +197,13 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             }
 
         }
-        for(i in 1..lines.size-16){draw.add(result.removeFirst())}
-        for(j in lines.size-15.. lines.size){end.add(result.removeFirst())}
+
+        for(i in 1..lines.size - 16){
+            draw.add(result.removeFirst())
+        }
+        for(i in lines.size - 14..lines.size){
+            end.add(result.removeFirst())
+        }
         return tileStack
     }
 
