@@ -16,4 +16,8 @@ class ExchangeAllTilesBarnToEnclosure(val source : Enclosure, val destination: P
         return "Exchange all ${species.toString()} from Barn with all animals in" +
                 " Enclosure with ${source.pointValues.toString()} Points"
     }
+
+    override fun calculateScore() : Int{
+        throw NotImplementedError()
+    }
 }

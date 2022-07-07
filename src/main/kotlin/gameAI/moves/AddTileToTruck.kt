@@ -17,4 +17,8 @@ class AddTileToTruck(val truck: DeliveryTruck) : Move {
 
     }
 
+    override fun calculateScore() : Int{
+        throw NotImplementedError()
+    }
+
 }

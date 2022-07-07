@@ -63,6 +63,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             }
         }
 
+
         return moves
     }
 
@@ -72,15 +73,22 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruck] move
      * and returns all moves afterwards as a list.
      */
-    private fun determineAllTakeTruckMoves() : List<TakeTruck>{
-        val moves = mutableListOf<TakeTruck>()
+    private fun determineAllTakeTruckMoves() : ArrayList<Move>{
+        val moves = ArrayList<Move>()
+        val possibleTrucks = mutableListOf<DeliveryTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
-        for(deliveryTuck in deliveryTrucks){
-            if(deliveryTuck.tilesOnTruck.isNotEmpty()){
-                moves.add(TakeTruck(deliveryTuck))
+        for(deliveryTruck in deliveryTrucks){
+            if(deliveryTruck.tilesOnTruck.isNotEmpty()){
+                possibleTrucks.add(deliveryTruck)
             }
         }
+
+        for (truck in possibleTrucks){
+            moves.add(TakeTruck(truck, currentGameStateCopy))
+        }
+
+        // make tree from this move where it has only the "tile to barn" and "tile to enclosure" moves as children
         return moves
     }
 
@@ -134,11 +142,11 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
 
         if(allEnclosuresAreFull && currentGameStateCopy.players.size == 2 && currentPlayer.playerEnclosure.size < 5)
         {
-            return arrayListOf(ExpandZoo())
+            return arrayListOf(ExpandZoo(currentGameStateCopy))
         }
         else if(allEnclosuresAreFull && currentGameStateCopy.players.size > 2 && currentPlayer.playerEnclosure.size < 4)
         {
-            return arrayListOf(ExpandZoo())
+            return arrayListOf(ExpandZoo(currentGameStateCopy))
         }
         else{
             return arrayListOf()
@@ -189,7 +197,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for ((player, purchasableTiles) in combinations) {
             for (tile in purchasableTiles) {
-                moveList.add(PurchaseTile(player, tile))
+                moveList.add(PurchaseTile(player, tile, currentGameStateCopy))
             }
         }
         return moveList
@@ -293,7 +301,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for((tile,enclosures) in combinations){
             for(enclosure in enclosures){
-                moveList.add(MoveTileFromBarnToEnclosure(currentPlayer, enclosure, tile))
+                moveList.add(MoveTileFromBarnToEnclosure(currentPlayer, enclosure, tile, currentGameStateCopy))
             }
         }
         return moveList
@@ -325,7 +333,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
         val moveList = ArrayList<Move>()
         for(enclosure in possibleEnclosures){
-            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer))
+            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer, currentGameStateCopy))
         }
         return moveList
     }
@@ -363,7 +371,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for((sourceEnclosure, enclosures) in combinations){
             for(targetEnclosure in enclosures){
-                moveList.add(MoveVendingStallEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
+                moveList.add(MoveVendingStallEnclosureToEnclosure(sourceEnclosure, targetEnclosure, currentGameStateCopy))
             }
         }
         return moveList
@@ -410,7 +418,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                 } else if (targetEnclosure.isBarn) {
                     moveList.addAll(createMovesForEachSpeciesInBarn(sourceEnclosure, currentPlayer))
                 } else {
-                    moveList.add(ExchangeAllTilesEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
+                    moveList.add(ExchangeAllTilesEnclosureToEnclosure(sourceEnclosure, targetEnclosure, currentGameStateCopy))
                 }
             }
         }

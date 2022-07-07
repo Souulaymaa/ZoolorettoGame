@@ -12,4 +12,8 @@ class DiscardTile(private val target : Tile) : Move {
     override fun toHintString(): String {
         return "Discard Tile $target from Barn."
     }
+
+    override fun calculateScore() : Int{
+        throw NotImplementedError()
+    }
 }
