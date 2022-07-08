@@ -58,7 +58,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
         for(i in 0 until deliveryTrucks.size){
-            var deliveryTruck = deliveryTrucks[i]
+            val deliveryTruck = deliveryTrucks[i]
             if(deliveryTruck.tilesOnTruck.size < deliveryTruck.maxSize) {
                 moves.add(AddTileToTruck(i))
             }
@@ -77,36 +77,30 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val playerEnclosures = currentGameStateCopy.players.peek().playerEnclosure
         val currentPlayer = currentGameStateCopy.players.peek()
 
-        val nonEmptyTrucks = ArrayList<DeliveryTruck>()
-        val notEmptyNorFullEnclosures = ArrayList<Enclosure>()
-        val emptyEnclosures = ArrayList<Enclosure>()
+        val indexedTrucks = currentGameStateCopy.deliveryTrucks.mapIndexed( {index,deliveryTruck -> Pair(index,deliveryTruck)})
+        val indexedEncloures = playerEnclosures.mapIndexed( {index, enclosure -> Pair(index, enclosure) })
 
-        //determine all trucks containing 1 or more Tiles.
-        for (truck in currentGameStateCopy.deliveryTrucks){
-            if(truck.tilesOnTruck.isNotEmpty()){
-                nonEmptyTrucks.add(truck)
-            }
+        val notEmptyNorFullEnclosures = indexedEncloures.filter {
+            val enclosure = it.second
+            enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles.size < enclosure.maxAnimalSlots
+        }
+        val emptyEnclosures = indexedEncloures.filter {
+            it.second.animalTiles.isEmpty()
         }
 
-        //determine not-Empty Nor Full Enclosures, also determine empty enclosures in player zoo
-        for (enclosure in playerEnclosures){
-            if (enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles.size < enclosure.maxAnimalSlots){
-                notEmptyNorFullEnclosures.add(enclosure)
-            }else if(enclosure.animalTiles.isEmpty()){
-                emptyEnclosures.add(enclosure)
-            }
-        }
 
-        var maxScore = 0
-        val chosenTruck : DeliveryTruck = DeliveryTruck()
+        val nonEmptyTrucks = indexedTrucks.filter { it.second.tilesOnTruck.isNotEmpty() }
+
+        var maxScore = -1
+        var chosenTruckPair : Pair<Int, DeliveryTruck> = Pair(-1, DeliveryTruck())
         //chooses the best truck to be taken
-        for (dTruck in nonEmptyTrucks){
+        for (indexedTruckPair in nonEmptyTrucks){
             val animalList = ArrayList<Animal>()
             val vendingList = ArrayList<VendingStall>()
             var score = 0
             //adds tile in animal lists or vendingStall lists.
             //also increments score when coin tile is found
-            for(tile in dTruck.tilesOnTruck){
+            for(tile in indexedTruckPair.second.tilesOnTruck){
                 when (tile) {
                     is Animal -> {
                         animalList.add(tile)
@@ -120,36 +114,37 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                     }
                 }
             }
+
             //increments score when AnimalTile has same species as one of the enclosures.
             //if no similar species were found, and at the same time there is an empty enclosure in list
             //the score will also increase
-            for(tile in animalList){
-                var foundSameSpecies = false
-                for (enclosure in notEmptyNorFullEnclosures){
-                    if (tile.species == enclosure.animalTiles[0].species){
-                        foundSameSpecies = true
-                        score ++
-                    }
+            for(animal in animalList){
+                val enclosuresWithSameSpecies = notEmptyNorFullEnclosures.filter {
+                    it.second.animalTiles[0].species == animal.species
                 }
-                if(!foundSameSpecies && emptyEnclosures.isNotEmpty()){
+
+                if (enclosuresWithSameSpecies.isNotEmpty()){
+                    score++
+                }
+                else if (emptyEnclosures.isNotEmpty()){
                     score++
                 }
             }
-            for(tile in vendingList){
-                for (enclosure in notEmptyNorFullEnclosures){
-                    if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
-                        score ++
-                    }
-                }
-            }
+            //TODO: Consider vending stalls for optimal take truck if there is some spare time
+//            for(tile in vendingList){
+//                for (enclosure in notEmptyNorFullEnclosures){
+//                    if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
+//                        score ++
+//                    }
+//                }
+//            }
             if (maxScore <= score){
                 maxScore = score
-                chosenTruck.tilesOnTruck = dTruck.tilesOnTruck
-
+                chosenTruckPair = indexedTruckPair
             }
         }
-        if (chosenTruck.tilesOnTruck.isNotEmpty()){
-            moves.add(TakeTruckAndPlaceTiles(chosenTruck))
+        if (chosenTruckPair.second.tilesOnTruck.isNotEmpty()){
+            moves.add(TakeTruckAndPlaceTiles(chosenTruckPair.first))
         }
         return moves
     }
