@@ -8,7 +8,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      val currentGameStateCopy : ZoolorettoGameState
 
     init {
-        this.currentGameStateCopy = GameStateService.deepZoolorettoCopy(currentGameState)
+        this.currentGameStateCopy = currentGameState
     }
 
     /**

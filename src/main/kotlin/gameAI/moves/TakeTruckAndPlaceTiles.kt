@@ -7,9 +7,9 @@ import service.RootService
 class TakeTruckAndPlaceTiles(private val truck: DeliveryTruck) : Move {
 
     override fun performMove(rootService: RootService) {
-        val currentGame = rootService.currentGame
+        val currentGame = rootService.zoolorettoGame
         checkNotNull(currentGame)
-        val currentPlayer = currentGame.players.peek()
+        val currentPlayer = currentGame.currentGameState.players.peek()
 
         rootService.playerActionService.takeTruck(truck)
 

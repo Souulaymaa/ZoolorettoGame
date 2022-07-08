@@ -60,7 +60,7 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
                 val child = Node(copy, aiPlayer, movesTakenPlusOne)
                 this.children.add(child)
 
-                //Perform recursion
+                //Perform recursion, consider using a try catch here
                 child.createChildren(level -1)
             }
         }
@@ -69,9 +69,9 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
     /**
      * Function that should execute Moves on a ZoolorettoGameState, might be using Move's performMove method
      */
-    private fun performMove(zoolorettoGameState: ZoolorettoGameState, move: Move){
+    private fun performMove(copy: ZoolorettoGameState, move: Move){
         val rootService = RootService()
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f, zoolorettoGameState)
+        rootService.zoolorettoGame = ZoolorettoGame(1.0f, copy)
 
         move.performMove(rootService)
     }
