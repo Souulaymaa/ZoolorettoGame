@@ -8,20 +8,18 @@ import java.util.*
 class TileStackForTwoPlayers{
     companion object{
         // TileStack without zebras and elephants
-        val tileStack : TileStack
-
-        init {
+        fun getTileStack() : TileStack  {
             //List containing all tiles for a game with two players
             val allTilesForTwoPlayers = mutableListOf<Tile>()
 
-            allTilesForTwoPlayers.addAll(TileLists.flamingos)
-            allTilesForTwoPlayers.addAll(TileLists.camels)
-            allTilesForTwoPlayers.addAll(TileLists.chimpanzees)
-            allTilesForTwoPlayers.addAll(TileLists.kangaroos)
-            allTilesForTwoPlayers.addAll(TileLists.pandas)
-            allTilesForTwoPlayers.addAll(TileLists.leopards)
-            allTilesForTwoPlayers.addAll(TileLists.coins)
-            allTilesForTwoPlayers.addAll(TileLists.vendingStalls)
+            allTilesForTwoPlayers.addAll(TileLists.flamingos())
+            allTilesForTwoPlayers.addAll(TileLists.camels())
+            allTilesForTwoPlayers.addAll(TileLists.chimpanzees())
+            allTilesForTwoPlayers.addAll(TileLists.kangaroos())
+            allTilesForTwoPlayers.addAll(TileLists.pandas())
+            allTilesForTwoPlayers.addAll(TileLists.leopards())
+            allTilesForTwoPlayers.addAll(TileLists.coins())
+            allTilesForTwoPlayers.addAll(TileLists.vendingStalls())
 
             allTilesForTwoPlayers.shuffle(Random((42)))
 
@@ -37,7 +35,7 @@ class TileStackForTwoPlayers{
             //Add all spare tiles to gameStack
             gameStack.addAll(allTilesForTwoPlayers)
 
-            tileStack = TileStack(gameStack, endgameStack)
+            return TileStack(gameStack, endgameStack)
         }
     }
 }
