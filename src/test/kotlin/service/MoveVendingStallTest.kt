@@ -38,30 +38,30 @@ class MoveVendingStallTest {
         assertEquals(player.coins, 2)
         player.passed = true
         assertThrows<IllegalArgumentException> { rootService.playerActionService.
-        moveVendingStall(player.playerEnclosure[0], player.playerEnclosure[1]) }
+        moveVendingStall(0, 1) }
 
         //in this case the player has no coins.
         player.passed = false
         player.coins = 0
         assertThrows<IllegalArgumentException> { rootService.playerActionService.
-        moveVendingStall(player.playerEnclosure[0], player.playerEnclosure[1]) }
+        moveVendingStall(0, 1) }
 
         //in this case the player has enough coins and didn't pass, but the second enclosure is full
         player.coins = 2
         player.playerEnclosure[1].vendingStalls.add(vendingStall1)
         player.playerEnclosure[1].vendingStalls.add(vendingStall2)
         assertThrows<IllegalArgumentException> { rootService.playerActionService.
-        moveVendingStall(player.playerEnclosure[0], player.playerEnclosure[1]) }
+        moveVendingStall(0, 1) }
 
         //in this case the second enclosure is not full, but the first is empty
         player.playerEnclosure[1].vendingStalls.removeFirst()
         player.playerEnclosure[0].vendingStalls.clear()
         assertThrows<IllegalArgumentException> { rootService.playerActionService.
-        moveVendingStall(player.playerEnclosure[0], player.playerEnclosure[1]) }
+        moveVendingStall(0, 1) }
 
         //this is the case, when everything is all right
         player.playerEnclosure[0].vendingStalls.add(vendingStall1)
-        rootService.playerActionService.moveVendingStall(player.playerEnclosure[0], player.playerEnclosure[1])
+        rootService.playerActionService.moveVendingStall(0, 1)
         assertFalse(player.playerEnclosure[0].vendingStalls.contains(vendingStall1))
         assertTrue { player.playerEnclosure[1].vendingStalls.contains(vendingStall1) }
         assertEquals(player.coins, 1)
