@@ -1,10 +1,12 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Enum to distinguish between 4 difficulty levels: EASY, MEDIUM, HARD, HUMAN
  */
 
-enum class Difficulty {
+enum class Difficulty : Serializable {
     EASY,
     MEDIUM,
     HARD,

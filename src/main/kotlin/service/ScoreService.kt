@@ -7,7 +7,7 @@ import entity.*
  *
  * @param rootService
  */
-class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
+class ScoreService(private val rootService: RootService) : AbstractRefreshingService() {
     /**
      * Calculates the player's score
      * @return a score of the player
@@ -17,28 +17,39 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
         player.playerEnclosure.forEach {
             score += calculateEnclosureScore(it)
         }
+        player.score = score
         return score
     }
 
     /**
-     * Calculates the ranking of players.
-     * @return a sorted map of all player with the score of each player
+     * this method determines the winner of the zooloretto game.
+     * We sort the players in descending order of the score.
+     * Then we put all players with the same score in a draw list (the first player is always in draw list).
+     * If there are more than one player in draw list, then we sort draw list in descending order of the coins.
+     * If the first two players have the same coins, the return null, and it is tied.
+     * If not, then return the first player in draw list.
+     *
+     * @return null, when tied, or a player, when there is only one winner
      */
-    fun determineHighscore (players: List<Player>): Map<Player, Int> {
-        require(players.size in 2 .. 5)
+    fun determineWinner(): Player? {
+        val game = rootService.zoolorettoGame!!.currentGameState
 
-        val points = mutableMapOf<Player, Int>()
+        val playerList = game.players.toMutableList()
+        val drawList = arrayListOf<Player>()
 
-        for (i in players.indices){
-            points[players[i]] = determineScore(players[i])
+        playerList.sortedByDescending { it.score }
+
+        playerList.forEach {
+            if (it.score == playerList[0].score) {
+                drawList.add(it)
+            }
         }
-
-        val sortedPoints: MutableMap<Player, Int> = LinkedHashMap()
-        points.entries.sortedBy { it.value }.forEach { sortedPoints[it.key] = it.value }
-
-        return points
+        if (drawList.size > 1) {
+            drawList.sortedByDescending { it.coins }
+            if (drawList[0].coins == drawList[1].coins) return null
+        }
+        return drawList[0]
     }
-
     /**
      * This method calculate the score in an enclosure
      *
@@ -127,7 +138,7 @@ class ScoreService(val rootService: RootService) : AbstractRefreshingService() {
             }
         }
         val animalList = arrayListOf(flamingoList, pandaList, kamelList, schimpanseList, kaenguruList,
-                                     elefantList, zebraList, leopardList)
+            elefantList, zebraList, leopardList)
         animalList.forEach {
             if (it.isNotEmpty()) {
                 score -= 2

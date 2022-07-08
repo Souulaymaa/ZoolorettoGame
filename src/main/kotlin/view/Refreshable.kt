@@ -36,6 +36,6 @@ interface Refreshable {
     /**
      * perform refreshes after game ends
      */
-    fun refreshAfterGameEnd(results: List<Pair<String,Double>>) {}
+    fun refreshAfterGameEnd() {}
 }
 
