@@ -9,7 +9,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class MoveTileBarnToEnclosureTest {
-    var zoolorettoGameState : ZoolorettoGameState? = null
+    var zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
+    val moveOracle = MoveOracle(zoolorettoGameState)
     private val flamingo = TileLists.flamingos().first()
     private val chimpanzee = TileLists.chimpanzees().first()
     private val vendingStall = TileLists.vendingStalls().first()
@@ -24,7 +25,6 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun allMoveTileFromBarnToEnclosureInsufficientCoinsTest(){
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
         val player1 = zoolorettoGameState!!.players.peek()
         player1.coins = 0
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()
@@ -36,7 +36,6 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun allMoveTileFromBarnToEnclosureEmptyBarnTest(){
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
         val player1 = zoolorettoGameState!!.players.peek()
         player1.coins = 3
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()

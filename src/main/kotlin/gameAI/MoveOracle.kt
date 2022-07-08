@@ -57,9 +57,10 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moves = mutableListOf<AddTileToTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
-        for(deliveryTruck in deliveryTrucks){
+        for(i in 0 until deliveryTrucks.size){
+            var deliveryTruck = deliveryTrucks[i]
             if(deliveryTruck.tilesOnTruck.size < deliveryTruck.maxSize) {
-                moves.add(AddTileToTruck(deliveryTruck))
+                moves.add(AddTileToTruck(i))
             }
         }
         return moves
@@ -106,13 +107,17 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             //adds tile in animal lists or vendingStall lists.
             //also increments score when coin tile is found
             for(tile in dTruck.tilesOnTruck){
-                if(tile is Animal){
-                    animalList.add(tile)
-                }else if (tile is VendingStall){
-                    vendingList.add(tile)
-                }else{
-                    // tile is coin
-                    score ++
+                when (tile) {
+                    is Animal -> {
+                        animalList.add(tile)
+                    }
+                    is VendingStall -> {
+                        vendingList.add(tile)
+                    }
+                    else -> {
+                        // tile is coin
+                        score ++
+                    }
                 }
             }
             //increments score when AnimalTile has same species as one of the enclosures.
@@ -324,14 +329,16 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         if (currentPlayer.barn.animalTiles.size == 0 && currentPlayer.barn.vendingStalls.size == 0){
             return possibleMoves
         }
+        val playerEnclosure = currentPlayer.playerEnclosure
         for(animalTile in currentPlayer.barn.animalTiles){
             val enclosures: MutableList<Enclosure> = mutableListOf()
-            for(enclosure in currentPlayer.playerEnclosure){
-                if (enclosure.animalTiles.isEmpty() ) {
-                    enclosures.add(enclosure)
-                }else if ((animalTile.species == enclosure.animalTiles[0].species &&
-                            enclosure.animalTiles.size < enclosure.maxAnimalSlots)) {
-                    enclosures.add(enclosure)
+
+            for(i in 0..currentPlayer.playerEnclosure.size){
+                if (playerEnclosure[i].animalTiles.isEmpty() ) {
+                    enclosures.add(playerEnclosure[i])
+                }else if ((animalTile.species == playerEnclosure[i].animalTiles[0].species &&
+                            playerEnclosure[i].animalTiles.size < playerEnclosure[i].maxAnimalSlots)) {
+                    enclosures.add(playerEnclosure[i])
                 }
             }
             possibleMoves[animalTile] = enclosures
