@@ -1,16 +1,18 @@
 package gameAI.moves
 
-import entity.Enclosure
 import gameAI.Move
 import service.RootService
 
-class MoveVendingStallEnclosureToEnclosure(val source: Enclosure, val destination: Enclosure) : Move {
+class MoveVendingStallEnclosureToEnclosure(val sourceIndex: Int, val destinationIndex: Int) : Move {
 
     override fun performMove(rootService: RootService) {
-        rootService.playerActionService.moveVendingStall(source, destination)
+        rootService.playerActionService.moveVendingStall(sourceIndex, destinationIndex)
     }
-    override fun toHintString(): String {
+    override fun toHintString(rootService: RootService): String {
+        val source = rootService.zoolorettoGame!!.currentGameState.players.peek().playerEnclosure[sourceIndex]
+        val destination = rootService.zoolorettoGame!!.currentGameState.players.peek().playerEnclosure[destinationIndex]
+
         return "move vending stall from Enclosure with ${source.pointValues.toString()} Points to Enclosure with " +
-                "${source.pointValues.toString()} Points"
+                "${destination.pointValues.toString()} Points"
     }
 }

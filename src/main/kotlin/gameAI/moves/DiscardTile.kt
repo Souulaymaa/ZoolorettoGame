@@ -10,7 +10,7 @@ class DiscardTile(private val target : Tile) : Move {
         rootService.playerActionService.discardTile(target)
     }
 
-    override fun toHintString(): String {
+    override fun toHintString(rootService: RootService): String {
         return "Discard Tile $target from Barn."
     }
 }

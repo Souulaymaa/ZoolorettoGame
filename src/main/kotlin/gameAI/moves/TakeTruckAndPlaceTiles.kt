@@ -4,66 +4,85 @@ import entity.*
 import gameAI.Move
 import service.RootService
 
-class TakeTruckAndPlaceTiles(private val truck: DeliveryTruck) : Move {
+class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
 
     override fun performMove(rootService: RootService) {
         val currentGame = rootService.zoolorettoGame
         checkNotNull(currentGame)
         val currentPlayer = currentGame.currentGameState.players.peek()
 
-        rootService.playerActionService.takeTruck(truck)
+        rootService.playerActionService.takeTruck(truckIndex)
 
-        //Concurrent Modification Exception removing tiles from tilesOnTruck, while iterating.....
-        for (tile in currentPlayer.chosenTruck!!.tilesOnTruck){
-            if (tile is Coin) {
-                continue
-            }
-            else if (tile is Animal){
-                putAnimalInEnclosureOrBarn(rootService, currentPlayer, tile)
-            }
-            else if (tile is VendingStall){
-                putVendingStallInEnclosureOrBarn(rootService, currentPlayer)
-            }
+        val tilesOnTruck =currentPlayer.chosenTruck!!.tilesOnTruck
+
+        for(i in 0..tilesOnTruck.size){
+            putInGoodDestination(rootService, tilesOnTruck[i])
+        }
+
+    }
+
+    private fun putInGoodDestination(rootService: RootService, tile: Tile) {
+        if(tile is Animal){
+            putInGoodDestinationAnimal(rootService, tile)
+        }
+        else if (tile is VendingStall){
+            putInGoodDestinationVendingStall(rootService)
         }
     }
 
-    private fun putAnimalInEnclosureOrBarn(rootService: RootService, currentPlayer : Player, tile: Animal){
-        val nonFullEnclosures = currentPlayer.playerEnclosure.filter { it.animalTiles.size < it.maxAnimalSlots }
-        val emptyEnclosures = currentPlayer.playerEnclosure.filter { it.animalTiles.isEmpty() }
+    private fun putInGoodDestinationAnimal(rootService: RootService, tile: Animal ){
+        val currentPlayer = rootService.zoolorettoGame!!.currentGameState.players.peek()
+        val enclosures = currentPlayer.playerEnclosure
 
-        //Let's see if we can find an enclosure that is not full and has the same species inside
-        for (enclosure in nonFullEnclosures){
-            if (enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles[0].species == tile.species){
-                rootService.playerActionService.placeTileFromTruck(enclosure)
-                return
-            }
+        val indexedEnclosures = enclosures.mapIndexed { index, enclosure ->
+            Pair<Int, Enclosure>(index, enclosure)
         }
 
-        //If there was no return it seems that either have empty enclosures
-        if (emptyEnclosures.isNotEmpty()){
-            rootService.playerActionService.placeTileFromTruck(emptyEnclosures[0])
-            return
+        val emptyEnclosures = indexedEnclosures.filter { it.second.animalTiles.isEmpty() }
+        val notFullEnclosures = indexedEnclosures.filter { it.second.animalTiles.size < it.second.maxAnimalSlots }
+        val notFullEnclosuresWithSameSpecies = notFullEnclosures.filter { it.second.animalTiles[0].species == tile.species }
+
+        if (notFullEnclosuresWithSameSpecies.isNotEmpty()){
+            //We have a compatible (those with animals and same type) enclosure that's not full
+            val targetIndex = notFullEnclosuresWithSameSpecies.first().first //returns pair<index,enc> and then index
+            rootService.playerActionService.placeTileFromTruck(targetIndex)
+        }
+        else if(emptyEnclosures.isNotEmpty()){
+            //We have not compatible enclosures but at least one empty
+            val targetIndex = emptyEnclosures.first().first //returns pair<index,enc> and then index
+            rootService.playerActionService.placeTileFromTruck(targetIndex)
         }
         else{
-            //All Enclosures are full, so we have to place it in the barn
-            rootService.playerActionService.placeTileFromTruck(currentPlayer)
+            //We have no place for the tile at all... Therefore, it goes in the barn
+            rootService.playerActionService.placeTileFromTruck()
         }
     }
-    private fun putVendingStallInEnclosureOrBarn(rootService: RootService, currentPlayer : Player){
-        val nonFullEnclosures = currentPlayer.playerEnclosure.filter { it.vendingStalls.size < it.maxVendingStalls }
 
-        //Place it in the first enclosure where we have some empty space
-        for (enclosure in nonFullEnclosures){
-            rootService.playerActionService.placeTileFromTruck(enclosure)
-            return
+    private fun putInGoodDestinationVendingStall(rootService: RootService){
+        val currentPlayer = rootService.zoolorettoGame!!.currentGameState.players.peek()
+        val enclosures = currentPlayer.playerEnclosure
+
+        val indexedEnclosures = enclosures.mapIndexed { index, enclosure ->
+            Pair<Int, Enclosure>(index, enclosure)
         }
 
-        //No enclosure found then place it in the barn
-        rootService.playerActionService.placeTileFromTruck(currentPlayer)
+        val notFullEnclosures = indexedEnclosures.filter { it.second.vendingStalls.size < it.second.maxVendingStalls }
+        val maximumAnimalEnclosure = notFullEnclosures.maxByOrNull { it.second.animalTiles.size }
+
+        if (maximumAnimalEnclosure != null){
+            //We've got at least an enclosure to put at
+            val targetIndex = maximumAnimalEnclosure.first
+            rootService.playerActionService.placeTileFromTruck(targetIndex)
+        }
+        else{
+            //All enclosures must be full here
+            rootService.playerActionService.placeTileFromTruck()
+        }
     }
 
-    override fun toHintString(): String {
-        return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
+    override fun toHintString(rootService: RootService): String {
+        //return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
+        return "TODO" //TODO
     }
 
 //    override fun toHintString(): String {

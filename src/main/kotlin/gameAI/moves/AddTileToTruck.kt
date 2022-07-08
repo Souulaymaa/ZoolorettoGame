@@ -1,16 +1,17 @@
 package gameAI.moves
 
-import entity.DeliveryTruck
 import gameAI.Move
 import service.RootService
 
-class AddTileToTruck(val truck: DeliveryTruck) : Move {
+class AddTileToTruck(val truckIndex: Int) : Move {
 
     override fun performMove(rootService: RootService) {
-        rootService.playerActionService.addTile(truck)
+        rootService.playerActionService.addTile(truckIndex)
     }
 
-    override fun toHintString(): String {
+    override fun toHintString(rootService: RootService): String {
+        val trucks = rootService.zoolorettoGame!!.currentGameState.deliveryTrucks
+        val truck = trucks[truckIndex]
         if (truck.tilesOnTruck.isEmpty()){
             return "Add drawn Tile to empty Truck"
         }

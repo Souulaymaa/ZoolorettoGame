@@ -5,7 +5,7 @@ import service.RootService
 interface Move {
     fun performMove(rootService: RootService) {}
 
-    fun toHintString() : String{
+    fun toHintString(rootService: RootService) : String{
         throw NotImplementedError()
     }
 
