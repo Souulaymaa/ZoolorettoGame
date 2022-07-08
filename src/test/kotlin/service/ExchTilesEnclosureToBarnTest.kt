@@ -47,10 +47,7 @@ class ExchTilesEnclosureToBarnTest {
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.S))
         val initialEnclosureSize = player1.playerEnclosure[0].animalTiles.size
         val initialBarnSize = player1.barn.animalTiles.size
-            rootService.playerActionService.exchangeAllTiles(
-                player1.playerEnclosure[0],
-                player1,
-                Animal(Type.NONE,Species.S)
+            rootService.playerActionService.exchangeAllTiles(0, Animal(Type.NONE,Species.S)
             )
         for(animal in player1.barn.animalTiles){
             assertEquals(Species.F,animal.species)
@@ -83,10 +80,7 @@ class ExchTilesEnclosureToBarnTest {
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.L))
 
         assertThrows<IllegalStateException> { rootService.playerActionService.exchangeAllTiles(
-            player1.playerEnclosure[0],
-            player1,
-            Animal(Type.NONE,Species.L)
-            )
+            0, Animal(Type.NONE,Species.L))
         }
     }
 
@@ -109,12 +103,8 @@ class ExchTilesEnclosureToBarnTest {
             game.players.peek().playerEnclosure[0].animalTiles.add(animals)
         }
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.S))
-        assertThrows<IllegalStateException> {
-            rootService.playerActionService.exchangeAllTiles(
-                player1.playerEnclosure[0],
-                player1,
-                Animal(Type.NONE,Species.K)
-            )
+        assertThrows<IllegalArgumentException> {
+            rootService.playerActionService.exchangeAllTiles(0, Animal(Type.NONE,Species.K))
         }
     }
 
@@ -136,11 +126,7 @@ class ExchTilesEnclosureToBarnTest {
         player1.barn.animalTiles.add(Animal(Type.MALE,Species.S))
         val initialBarnSize = player1.barn.animalTiles.size
         player1.playerEnclosure[0].animalTiles.add(Animal(Type.FEMALE,Species.U))
-        rootService.playerActionService.exchangeAllTiles(
-            player1.playerEnclosure[0],
-            player1,
-            player1.barn.animalTiles[0]
-        )
+        rootService.playerActionService.exchangeAllTiles(0, player1.barn.animalTiles[0])
         assertEquals(initialBarnSize + 1,player1.playerEnclosure[0].animalTiles.size)
     }
 }
