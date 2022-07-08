@@ -1,9 +1,11 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Enum to distinguish between game species (animals are called with letters)
  */
-enum class Species {
+enum class Species: Serializable {
     F,
     P,
     K,

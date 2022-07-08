@@ -1,5 +1,7 @@
 package entity
 
+import java.io.Serializable
+
 /**
  * Represents the Player of the Zooloretto game
  *
@@ -14,7 +16,7 @@ package entity
  */
 data class Player(
     val playerName: String, val botSkillLevel: Difficulty
-){
+): Serializable {
     var playerEnclosure: MutableList<Enclosure> = mutableListOf()
     var barn = Enclosure(104, 12, 0, Pair(0,0), true)
     var passed: Boolean = false
