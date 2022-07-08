@@ -390,14 +390,12 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
 
         player = game.players.poll()
         player.coins--
+        game.bank++
         player.barn.animalTiles.removeAll(tempList.toSet())
         player.barn.animalTiles.addAll(source.animalTiles)
         source.animalTiles.clear()
         source.animalTiles.addAll(tempList)
-
-        source.animalTiles.forEach {
-            checkAndAddNewBabyWithoutBonusCoins(player, it, source)
-        }
+        checkAndAddNewBabyWithoutBonusCoins(player, source)
         game.players.add(player)
 
         zooGame.redoStack.clear()
@@ -437,14 +435,8 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         destination.animalTiles.clear()
         destination.animalTiles.addAll(tempAnimalTiles)
 
-        source.animalTiles.forEach {
-            checkAndAddNewBabyWithoutBonusCoins(player, it, source)
-        }
-        destination.animalTiles.forEach {
-            checkAndAddNewBabyWithoutBonusCoins(player, it, destination)
-        }
-
         player.coins--
+        game.bank++
         game.players.add(player)
 
         zooGame.redoStack.clear()
@@ -620,7 +612,7 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
             } else {
                 enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
             }
-            //Offspring stack --
+            rootService.zoolorettoGameService.offspringTiles.remove(Animal(Type.OFFSPRING, animal.species))
         }
     }
 
@@ -632,15 +624,22 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
      * @param animal the animal, that we want to check, if it becomes a baby or not
      * @param enclosure the enclosure, that we want to check in it
      */
-    private fun checkAndAddNewBabyWithoutBonusCoins(player: Player, animal: Animal, enclosure: Enclosure) {
-        if (checkForNewBaby(animal, enclosure)) {
-            if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
-                player.barn.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
-            } else if (enclosure.animalTiles.size < enclosure.maxAnimalSlots) {
-                enclosure.animalTiles.add(Animal(Type.OFFSPRING, animal.species))
+    private fun checkAndAddNewBabyWithoutBonusCoins(player: Player, enclosure: Enclosure) {
+        val tempList = arrayListOf<Animal>()
+        enclosure.animalTiles.forEach {
+            if (checkForNewBaby(it, enclosure)) {
+                tempList.add(Animal(Type.OFFSPRING, it.species))
             }
-            //Offspring Stack --
         }
+        tempList.forEach {
+            if (enclosure.animalTiles.size < enclosure.maxAnimalSlots) {
+                enclosure.animalTiles.add(it)
+            }
+            else if (enclosure.animalTiles.size == enclosure.maxAnimalSlots) {
+                player.barn.animalTiles.add(it)
+            }
+        }
+        rootService.zoolorettoGameService.offspringTiles.removeAll(tempList.toSet())
     }
 
     /**
