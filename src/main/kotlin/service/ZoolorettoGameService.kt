@@ -11,7 +11,7 @@ import java.util.*
 
 class ZoolorettoGameService(private val rootService: RootService) : AbstractRefreshingService() {
 
-    var tiles: ArrayList<Tile> = ArrayList(116)
+    var tiles: ArrayList<Tile> = ArrayList(128)
     var animalTiles: ArrayList<Animal> = ArrayList(104)
     var offspringTiles: ArrayList<Animal> = ArrayList(16)
     var vendingStalls: ArrayList<VendingStall> = ArrayList(12)
