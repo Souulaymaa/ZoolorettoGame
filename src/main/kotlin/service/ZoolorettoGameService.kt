@@ -198,13 +198,14 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
                 animals = line
                 result.add(stringToAnimal(animals))
             }
-
         }
+        require(rootService.zoolorettoGame!!.currentGameState.players.size == numberOfPlayers){
+            "the number pf players given is not compatible with the file"}
 
-        for (i in 1..lines.size - 16) {
+        repeat(result.size-15) {
             draw.add(result.removeFirst())
         }
-        for (i in lines.size - 14..lines.size) {
+        repeat(15) {
             end.add(result.removeFirst())
         }
         return tileStack

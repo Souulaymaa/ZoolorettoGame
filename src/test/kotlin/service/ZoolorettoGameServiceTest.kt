@@ -134,10 +134,13 @@ class ZoolorettoGameServiceTest {
      */
     @Test
     fun testLoadTileStackFromFile1(){
-        rootServiceThree.zoolorettoGameService.createGameWithFile(players,false)
+        // create a game
+        rootServiceThree.zoolorettoGameService.createZoolorettoGame(players, false)
         // Apply reading method to get a tilestack from file
         tileStackFromFile = rootServiceThree.zoolorettoGameService.loadTileStackFromFile(
             "src/test/kotlin/service/ZoolorettoFameServiceAnimalsFromFile.txt")
+        // make the tileStack created with our method the game's tileStack
+        rootServiceThree.zoolorettoGame!!.currentGameState.tileStack = tileStackFromFile
 
         // Checks the number of lines in the file
         assertEquals(16, tileStackFromFile.drawStack.size)
@@ -150,8 +153,8 @@ class ZoolorettoGameServiceTest {
      */
     @Test
     fun testLoadTileStackFromFile2(){
-        rootServiceThree.zoolorettoGameService.createGameWithFile(players2,false)
         // we created a game with three players but the files indicates there should only be two
+        rootServiceThree.zoolorettoGameService.createZoolorettoGame(players2, false)
         assertFailsWith<IllegalArgumentException>{
             tileStackFromFile = rootServiceThree.zoolorettoGameService.loadTileStackFromFile(
                 "src/test/kotlin/service/ZoolorettoFameServiceAnimalsFromFile.txt")}
@@ -161,10 +164,13 @@ class ZoolorettoGameServiceTest {
      */
     @Test
     fun testLoadTileStackFromFile3(){
-        rootServiceThree.zoolorettoGameService.createGameWithFile(players,false)
+        // create a game
+        rootServiceThree.zoolorettoGameService.createZoolorettoGame(players, false)
         // Apply reading method to get a tilestack from file
         tileStackFromFile = rootServiceThree.zoolorettoGameService.loadTileStackFromFile(
             "src/test/kotlin/service/ZoolorettoFameServiceAnimalsFromFile.txt")
+
+        rootServiceThree.zoolorettoGame!!.currentGameState.tileStack = tileStackFromFile
 
         for (i in 1..9)  {tileStack.drawStack.add(Coin())}
         tileStack.drawStack.add(VendingStall(StallType.VENDING1))
