@@ -4,6 +4,7 @@ import entity.*
 import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -13,8 +14,16 @@ import kotlin.test.assertEquals
  */
 class ExchTilesEnclosureToBarnTest {
     //rootservice and an enclosure to test with
-    private val rootService = RootService()
-    private val enclosure1 = Enclosure(11,1,4,Pair(1,1),false)
+    val rootService = RootService()
+    private val deliveryTruck1 = DeliveryTruck(3)
+    private val deliveryTruck2 = DeliveryTruck(3)
+    private val deliveryTruck3 = DeliveryTruck(3)
+    private val player1 = Player("player1", Difficulty.HUMAN)
+    private val player2 = Player("player2", Difficulty.HUMAN)
+    private val player3 = Player("player3", Difficulty.HUMAN)
+    private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
+    private val deliveryTrucks = mutableListOf<DeliveryTruck>()
+    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2, player3))
 
     /**
      * Test case for an exchange under normal conditions where it has to work
@@ -24,15 +33,16 @@ class ExchTilesEnclosureToBarnTest {
      */
     @Test
     fun testExchangeEnclosureToBarn(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player1 = game.players.peek()
-        player1.playerEnclosure.add(enclosure1)
-        for(animals in TileLists.flamingos){
-            game.players.peek().playerEnclosure.get(0).animalTiles.add(animals)
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player1 = game.currentGameState.players.peek()
+        player1.playerEnclosure.add(Enclosure(11,1,1,Pair(1,1),false))
+        for(animals in TileLists.flamingos()){
+            player1.playerEnclosure.get(0).animalTiles.add(animals)
         }
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.S))
         val initialEnclosureSize = player1.playerEnclosure[0].animalTiles.size
@@ -61,8 +71,8 @@ class ExchTilesEnclosureToBarnTest {
     @Test
     fun testNoSpace(){
         rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory())
+        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
         val game = rootService.currentGame
         checkNotNull(game)
         val player1 = game.players.peek()
@@ -87,14 +97,14 @@ class ExchTilesEnclosureToBarnTest {
     @Test
     fun testWrongAnimal(){
         rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
+            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory())
+        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
         val game = rootService.currentGame
         checkNotNull(game)
         val player1 = game.players.peek()
-        player1.playerEnclosure.add(enclosure1)
+        player1.playerEnclosure.add(Enclosure(11,1,1,Pair(1,1),false))
 
-        for(animals in TileLists.flamingos){
+        for(animals in TileLists.flamingos()){
             game.players.peek().playerEnclosure[0].animalTiles.add(animals)
         }
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.S))
@@ -111,26 +121,25 @@ class ExchTilesEnclosureToBarnTest {
      * tests if an offspring will be created when two [Animal]s are getting exchanged from the barn into the enclosure
      * which can have a child together
      */
-  /*  @Test
+    @Test
     fun testBaby(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player1 = game.players.peek()
-        player1.playerEnclosure.add(enclosure1)
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player1 = game.currentGameState.players.peek()
+        player1.playerEnclosure.add(Enclosure(11,1,1,Pair(1,1),false))
         player1.barn.animalTiles.add(Animal(Type.FEMALE,Species.S))
         player1.barn.animalTiles.add(Animal(Type.MALE,Species.S))
-
         val initialBarnSize = player1.barn.animalTiles.size
         player1.playerEnclosure[0].animalTiles.add(Animal(Type.FEMALE,Species.U))
-
         rootService.playerActionService.exchangeAllTiles(
             player1.playerEnclosure[0],
             player1,
-            Animal(Type.FEMALE,Species.S)
+            player1.barn.animalTiles[0]
         )
         assertEquals(initialBarnSize + 1,player1.playerEnclosure[0].animalTiles.size)
-    }*/
+    }
 }
