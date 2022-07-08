@@ -24,7 +24,6 @@ class PlaceTileFromTruckEnclosureTest {
     private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2))
     private val vendingStall = VendingStall(StallType.VENDING1)
     private val enclosure2 = Enclosure(4, 2, 1, Pair(5, 4), false)
-    private val deliveryTruck1 = DeliveryTruck(3)
 
 
     /**
@@ -35,22 +34,23 @@ class PlaceTileFromTruckEnclosureTest {
         //create a game
         val rootService = RootService()
         val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+
         val game = ZoolorettoGame(1.50f, gameState)
         rootService.zoolorettoGame = game
         val playerAction = rootService.playerActionService
         //give player a truck with a vending stall and an enclosure
         val currentPlayer = game.currentGameState.players.peek()
-        deliveryTruck1.tilesOnTruck.add(vendingStall)
-        deliveryTruck1.tilesOnTruck.add(vendingStall)
+        deliveryTrucks[0].tilesOnTruck.add(vendingStall)
+        deliveryTrucks[0].tilesOnTruck.add(vendingStall)
         currentPlayer.playerEnclosure.add(enclosure2)
         //take truck
-        playerAction.takeTruck(deliveryTruck1)
+        playerAction.takeTruck(0)
         //place the vending stalls in the enclosure
-        playerAction.placeTileFromTruck(enclosure2)
+        playerAction.placeTileFromTruck(0)
         assertEquals(vendingStall, enclosure2.vendingStalls[0])
         assertEquals(1, currentPlayer.chosenTruck!!.tilesOnTruck.size)
         assertEquals(currentPlayer, game.currentGameState.players.peek())
-        playerAction.placeTileFromTruck(enclosure2)
+        playerAction.placeTileFromTruck(0)
         assertEquals(vendingStall, enclosure2.vendingStalls[1])
         assertEquals(0, currentPlayer.chosenTruck!!.tilesOnTruck.size)
         assertNotEquals(currentPlayer, game.currentGameState.players.peek())
@@ -72,17 +72,18 @@ class PlaceTileFromTruckEnclosureTest {
         gameState.players.peek().playerEnclosure.add(enclosure2)
         currentPlayer.playerEnclosure[0].animalTiles.add(pandaM)
         //fill truck with pandas
-        deliveryTruck1.tilesOnTruck.add(pandaF)
-        deliveryTruck1.tilesOnTruck.add(panda)
+        deliveryTrucks[0].tilesOnTruck.add(pandaF)
+        deliveryTrucks[0].tilesOnTruck.add(panda)
         //take truck
-        playerAction.takeTruck(deliveryTruck1)
+        playerAction.takeTruck(0)
+        assertEquals(currentPlayer.chosenTruck, gameState.deliveryTrucks[0])
         //place the pandas in the enclosure
-        playerAction.placeTileFromTruck(enclosure2)
+        playerAction.placeTileFromTruck(0)
         assertEquals(pandaF, enclosure2.animalTiles[1])
         assertEquals(Type.OFFSPRING, enclosure2.animalTiles[2].type)
         assertEquals(1, currentPlayer.chosenTruck!!.tilesOnTruck.size)
         assertEquals(currentPlayer, game.currentGameState.players.peek())
-        playerAction.placeTileFromTruck(enclosure2)
+        playerAction.placeTileFromTruck(0)
         assertEquals(panda, enclosure2.animalTiles[3])
         assertEquals(0, currentPlayer.chosenTruck!!.tilesOnTruck.size)
         assertNotEquals(currentPlayer, game.currentGameState.players.peek())

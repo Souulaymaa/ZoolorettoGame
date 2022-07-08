@@ -67,7 +67,6 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         val tileStack = TileStack(draw, end)
         val offspringStack = Stack<Tile>()
         initialiseTiles()
-        println(tiles.size)
         // round tiles
         val toRemove: ArrayList<Tile> = ArrayList()
         for (tile in tiles) {
