@@ -2,7 +2,6 @@ package gameAI
 
 import entity.*
 import gameAI.moves.*
-import service.GameStateService
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
      val currentGameStateCopy : ZoolorettoGameState
@@ -329,23 +328,25 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         if (currentPlayer.barn.animalTiles.size == 0 && currentPlayer.barn.vendingStalls.size == 0){
             return possibleMoves
         }
-        val playerEnclosure = currentPlayer.playerEnclosure
+        val playerEnclosures = currentPlayer.playerEnclosure
         for(animalTile in currentPlayer.barn.animalTiles){
             val enclosures: MutableList<Enclosure> = mutableListOf()
 
-            for(i in 0..currentPlayer.playerEnclosure.size){
-                if (playerEnclosure[i].animalTiles.isEmpty() ) {
-                    enclosures.add(playerEnclosure[i])
-                }else if ((animalTile.species == playerEnclosure[i].animalTiles[0].species &&
-                            playerEnclosure[i].animalTiles.size < playerEnclosure[i].maxAnimalSlots)) {
-                    enclosures.add(playerEnclosure[i])
+            for(i in 0 until currentPlayer.playerEnclosure.size){
+                val enclosure = playerEnclosures[i]
+                if (enclosure.animalTiles.isEmpty() ) {
+                    enclosures.add(enclosure)
+                }else if ((animalTile.species == enclosure.animalTiles[0].species &&
+                            enclosure.animalTiles.size < enclosure.maxAnimalSlots)) {
+                    enclosures.add(enclosure)
                 }
             }
             possibleMoves[animalTile] = enclosures
         }
         for(vendingTile in currentPlayer.barn.vendingStalls){
             val enclosures: MutableList<Enclosure> = mutableListOf()
-            for (enclosure in currentPlayer.playerEnclosure){
+            for (i in 0 until currentPlayer.playerEnclosure.size){
+                val enclosure = currentPlayer.playerEnclosure[i]
                 if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
                     enclosures.add(enclosure)
                 }
