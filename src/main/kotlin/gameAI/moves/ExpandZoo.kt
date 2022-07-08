@@ -9,7 +9,7 @@ class ExpandZoo : Move {
         rootService.playerActionService.expandZoo()
     }
 
-    override fun toHintString(): String {
+    override fun toHintString(rootService: RootService): String {
         return "Expand Zoo"
     }
 }
