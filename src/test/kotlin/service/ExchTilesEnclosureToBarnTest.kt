@@ -70,12 +70,13 @@ class ExchTilesEnclosureToBarnTest {
      */
     @Test
     fun testNoSpace(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory())
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player1 = game.players.peek()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player1 = game.currentGameState.players.peek()
         player1.playerEnclosure.add(Enclosure(1,1,1, Pair(1,1),false))
         player1.playerEnclosure.get(0).animalTiles.add(Animal(Type.NONE,Species.S))
         player1.barn.animalTiles.add(Animal(Type.NONE,Species.L))
