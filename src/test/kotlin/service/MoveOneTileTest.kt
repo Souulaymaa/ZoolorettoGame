@@ -47,7 +47,7 @@ class MoveOneTileTest {
         player1.playerEnclosure = mutableListOf(enclosure1)
         player1.barn.vendingStalls = arrayListOf(tile1)
 
-        rootService.playerActionService.moveOneTile(player1, enclosure1, tile1)
+        rootService.playerActionService.moveOneTile(0, tile1)
         assertEquals(enclosure1.vendingStalls.last(), tile1)
         assertEquals(game.players.peek(), playerTwo)
         assertEquals(player1.coins, 7)
@@ -56,19 +56,19 @@ class MoveOneTileTest {
         player2.playerEnclosure = mutableListOf(enclosure1, enclosure2)
         player2.coins = 5
         player2.barn.animalTiles = arrayListOf(tile3)
-        rootService.playerActionService.moveOneTile(player2, enclosure1, tile3)
+        rootService.playerActionService.moveOneTile(0, tile3)
         assertEquals(enclosure1.animalTiles.last(), tile3)
         assertEquals(game.players.peek(), playerThree)
         assertEquals(player2.coins, 4)
 
-        assertFailsWith<IllegalStateException>{
-            rootService.playerActionService.moveOneTile(player2,enclosure2, tile4)}
+        assertFailsWith<IllegalArgumentException>{
+            rootService.playerActionService.moveOneTile(0, tile4)}
 
         val player3 = game.players.peek()
         player3.playerEnclosure = mutableListOf(enclosure3)
         player3.coins = 4
         player3.barn.animalTiles = arrayListOf(tile4)
-        rootService.playerActionService.moveOneTile(player3, enclosure3, tile4)
+        rootService.playerActionService.moveOneTile(0, tile4)
         assertEquals(enclosure3.animalTiles.last(), tile4)
         assertEquals(game.players.peek(), player1)
         assertEquals(player3.coins, 3)

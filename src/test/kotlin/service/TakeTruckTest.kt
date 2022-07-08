@@ -43,7 +43,7 @@ class TakeTruckTest {
         val playerAction = rootService.playerActionService
         //player1 takes the first truck
         val currentPlayer = game.currentGameState.players.peek()
-        playerAction.takeTruck(game.currentGameState.deliveryTrucks[0])
+        playerAction.takeTruck(0)
         assertEquals(2, game.currentGameState.deliveryTrucks.size)
         assertEquals(deliveryTruck1, currentPlayer.chosenTruck)
         assertTrue(currentPlayer.passed)
