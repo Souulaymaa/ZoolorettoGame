@@ -419,7 +419,13 @@ class PlayerActionService(private val rootService: RootService) : AbstractRefres
         checkNotNull(zooGame)
         require(player.coins >= 1) { "You don't have enough coins!" }
         require(!player.passed) { "this player has passed!" }
-        check(player.playerEnclosure.contains(source) && player.playerEnclosure.contains(destination))
+        val sourceHash = System.identityHashCode(source)
+        val destinationHash = System.identityHashCode(destination)
+        val playerEnclosureHash = mutableListOf<Int>()
+        for(enclosure in player.playerEnclosure){
+            playerEnclosureHash.add(System.identityHashCode(enclosure))
+        }
+        check(playerEnclosureHash.contains(sourceHash) && playerEnclosureHash.contains(destinationHash))
         require(source.animalTiles.isNotEmpty() && destination.animalTiles.isNotEmpty()) { "Enclosure is full" }
         check(source.animalTiles[0].species != destination.animalTiles[0].species) { "same species!!" }
         check(source.animalTiles.size <= destination.maxAnimalSlots &&

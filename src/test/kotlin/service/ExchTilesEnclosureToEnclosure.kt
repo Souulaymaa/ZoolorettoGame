@@ -5,6 +5,7 @@ import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.util.*
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,28 +14,35 @@ import kotlin.test.assertEquals
  * Test class for [PlayerActionService.exchangeAllTiles] with source = Enclosure and destination = Enclosure
  */
 class ExchTilesEnclosureToEnclosure {
-    private val rootService = RootService()
-    private val enclosure1 = Enclosure(11,1,4,Pair(1,1),false)
-    private val enclosure2 = Enclosure(11,1,4,Pair(1,1),false)
+    private val deliveryTruck1 = DeliveryTruck(3)
+    private val deliveryTruck2 = DeliveryTruck(3)
+    private val deliveryTruck3 = DeliveryTruck(3)
+    private val player1 = Player("player1", Difficulty.HUMAN)
+    private val player2 = Player("player2", Difficulty.HUMAN)
+    private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
+    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2))
 
     /**
      * tests if the function works right when the conditions are alright to exchange the tiles between two [Enclosure]s
      */
     @Test
     fun testExchangeTiles(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player = game.players.peek()
-        player.playerEnclosure.add(enclosure1)
-        player.playerEnclosure.add(enclosure2)
-        for(animals in TileLists.flamingos){
+        val rootService = RootService()
+        val deliveryTrucks = mutableListOf<DeliveryTruck>()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player = game.currentGameState.players.peek()
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
+        for(animals in TileLists.flamingos()){
 
             player.playerEnclosure[0].animalTiles.add(animals)
         }
-        for (animals in TileLists.camels){
+        for (animals in TileLists.camels()){
             player.playerEnclosure[1].animalTiles.add(animals)
         }
         assertDoesNotThrow { rootService.playerActionService.exchangeAllTiles(
@@ -57,21 +65,23 @@ class ExchTilesEnclosureToEnclosure {
      */
     @Test
     fun testNoSpace(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player = game.players.peek()
-        player.passed = false
-        player.coins = 2
+        val rootService = RootService()
+        val deliveryTrucks = mutableListOf<DeliveryTruck>()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player = game.currentGameState.players.peek()
         player.playerEnclosure.add(Enclosure(1,1,1, Pair(1,1),false))
-        player.playerEnclosure.add(enclosure2)
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
         player.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.F))
-        for (animals in TileLists.camels){
-            game.players.peek().playerEnclosure[1].animalTiles.add(animals)
+        for (animals in TileLists.camels()){
+            player.playerEnclosure[1].animalTiles.add(animals)
         }
-
+        player.coins = 2
+        player.passed = false
         assertThrows<IllegalStateException> {
             rootService.playerActionService.exchangeAllTiles(
                 player.playerEnclosure[0],
@@ -79,7 +89,7 @@ class ExchTilesEnclosureToEnclosure {
             )
         }
     }
-
+    @AfterTest
 
     /**
      * tests if the function throws a [IllegalArgumentException] when the [Player] has no coins to perform the
@@ -87,14 +97,17 @@ class ExchTilesEnclosureToEnclosure {
      */
     @Test
     fun testNoCoins(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player = game.players.peek()
-        player.playerEnclosure.add(enclosure1)
-        player.playerEnclosure.add(enclosure2)
+        val rootService = RootService()
+        val deliveryTrucks = mutableListOf<DeliveryTruck>()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player = game.currentGameState.players.peek()
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
         player.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.U))
         player.playerEnclosure[1].animalTiles.add(Animal(Type.NONE,Species.P))
         player.coins = 0
@@ -106,21 +119,24 @@ class ExchTilesEnclosureToEnclosure {
             )
         }
     }
-
+    @AfterTest
     /**
      * tests if the function throws a [IllegalArgumentException] when the player, who wants to perform the action has
      * already taken a truck
      */
     @Test
     fun testHasChecked(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player = game.players.peek()
-        player.playerEnclosure.add(enclosure1)
-        player.playerEnclosure.add(enclosure2)
+        val rootService = RootService()
+        val deliveryTrucks = mutableListOf<DeliveryTruck>()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player = game.currentGameState.players.peek()
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
+        player.playerEnclosure.add(Enclosure(11,1,4,Pair(1,1),false))
         player.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.U))
         player.playerEnclosure[1].animalTiles.add(Animal(Type.NONE,Species.P))
         player.passed = true
@@ -138,15 +154,20 @@ class ExchTilesEnclosureToEnclosure {
      */
     @Test
     fun testTwoPlayer(){
-        rootService.zoolorettoGame = ZoolorettoGame(1.0f,
-            ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState)
-        rootService.currentGame = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameState
-        val game = rootService.currentGame
-        checkNotNull(game)
-        val player1 = game.players.poll()
-        game.players.add(player1)
-        val player2 = game.players.poll()
-        game.players.add(player2)
+        val rootService = RootService()
+        val enclosure1 = Enclosure(11,1,4,Pair(1,1),false)
+        val enclosure2 = Enclosure(11,1,4,Pair(1,1),false)
+        val deliveryTrucks = mutableListOf<DeliveryTruck>()
+        deliveryTrucks.add(0, deliveryTruck1)
+        deliveryTrucks.add(1, deliveryTruck2)
+        deliveryTrucks.add(2, deliveryTruck3)
+        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
+        val game = ZoolorettoGame(1.50f, gameState)
+        rootService.zoolorettoGame = game
+        val player1 = game.currentGameState.players.poll()
+        game.currentGameState.players.add(player1)
+        val player2 = game.currentGameState.players.poll()
+        game.currentGameState.players.add(player2)
         player1.playerEnclosure.add(enclosure1)
         player2.playerEnclosure.add(enclosure2)
         player1.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.U))
