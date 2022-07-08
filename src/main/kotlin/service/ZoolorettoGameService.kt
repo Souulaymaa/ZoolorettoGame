@@ -99,12 +99,13 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         players = List(playerList.size) {
             createPlayer(playerList[it].playerName, playerList[it].botSkillLevel)
         }
+        val shuffeledPlayers = players.toMutableList()
         // if toShuffle is true we shuffle the list
         if (toShuffle) {
-            players.toMutableList().shuffle(Random(123))
+            shuffeledPlayers.shuffle(Random(123))
         }
         // make the list a queue
-        val playerQueue: Queue<Player> = LinkedList<Player>(players)
+        val playerQueue: Queue<Player> = LinkedList<Player>(shuffeledPlayers)
         val gameState: ZoolorettoGameState
         //delivery trucks for a game with 3,4 or 5 players
         val deliveryTrucks: ArrayList<DeliveryTruck> = arrayListOf(DeliveryTruck(), DeliveryTruck(), DeliveryTruck())
