@@ -1,7 +1,6 @@
 package service
 
 import entity.*
-import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -45,10 +44,7 @@ class ExchTilesEnclosureToEnclosure {
         for (animals in TileLists.camels()){
             player.playerEnclosure[1].animalTiles.add(animals)
         }
-        assertDoesNotThrow { rootService.playerActionService.exchangeAllTiles(
-            player.playerEnclosure[0],
-            player.playerEnclosure[1]
-            )
+        assertDoesNotThrow { rootService.playerActionService.exchangeAllTiles(0,1)
         }
         for(animal in player.playerEnclosure[0].animalTiles){
             assertEquals(Species.K,animal.species)
@@ -83,10 +79,7 @@ class ExchTilesEnclosureToEnclosure {
         player.coins = 2
         player.passed = false
         assertThrows<IllegalStateException> {
-            rootService.playerActionService.exchangeAllTiles(
-                player.playerEnclosure[0],
-                player.playerEnclosure[1]
-            )
+            rootService.playerActionService.exchangeAllTiles(0,1)
         }
     }
     @AfterTest
@@ -113,10 +106,7 @@ class ExchTilesEnclosureToEnclosure {
         player.coins = 0
 
         assertThrows<IllegalArgumentException> {
-            rootService.playerActionService.exchangeAllTiles(
-                player.playerEnclosure[0],
-                player.playerEnclosure[1]
-            )
+            rootService.playerActionService.exchangeAllTiles(0,1)
         }
     }
     @AfterTest
@@ -141,43 +131,7 @@ class ExchTilesEnclosureToEnclosure {
         player.playerEnclosure[1].animalTiles.add(Animal(Type.NONE,Species.P))
         player.passed = true
         assertThrows<IllegalArgumentException> {
-            rootService.playerActionService.exchangeAllTiles(
-                player.playerEnclosure[0],
-                player.playerEnclosure[1]
-            )
-        }
-    }
-
-    /**
-     * tests if the function throws a [IllegalArgumentException] when you try to exchange the tiles with an
-     * enclosure of another player
-     */
-    @Test
-    fun testTwoPlayer(){
-        val rootService = RootService()
-        val enclosure1 = Enclosure(11,1,4,Pair(1,1),false)
-        val enclosure2 = Enclosure(11,1,4,Pair(1,1),false)
-        val deliveryTrucks = mutableListOf<DeliveryTruck>()
-        deliveryTrucks.add(0, deliveryTruck1)
-        deliveryTrucks.add(1, deliveryTruck2)
-        deliveryTrucks.add(2, deliveryTruck3)
-        val gameState = ZoolorettoGameState(false, false, playerQ, tileStack, deliveryTrucks)
-        val game = ZoolorettoGame(1.50f, gameState)
-        rootService.zoolorettoGame = game
-        val player1 = game.currentGameState.players.poll()
-        game.currentGameState.players.add(player1)
-        val player2 = game.currentGameState.players.poll()
-        game.currentGameState.players.add(player2)
-        player1.playerEnclosure.add(enclosure1)
-        player2.playerEnclosure.add(enclosure2)
-        player1.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.U))
-        player2.playerEnclosure[0].animalTiles.add(Animal(Type.NONE,Species.P))
-
-        assertThrows<IllegalStateException> {
-            rootService.playerActionService.exchangeAllTiles(
-                player1.playerEnclosure[0],
-                player2.playerEnclosure[0]
-            )
+            rootService.playerActionService.exchangeAllTiles(0,1)
         }
     }
 }
