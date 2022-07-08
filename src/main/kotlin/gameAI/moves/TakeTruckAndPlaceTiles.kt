@@ -13,6 +13,7 @@ class TakeTruckAndPlaceTiles(private val truck: DeliveryTruck) : Move {
 
         rootService.playerActionService.takeTruck(truck)
 
+        //Concurrent Modification Exception removing tiles from tilesOnTruck, while iterating.....
         for (tile in currentPlayer.chosenTruck!!.tilesOnTruck){
             if (tile is Coin) {
                 continue
