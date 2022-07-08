@@ -33,7 +33,6 @@ class ScoreService(private val rootService: RootService) : AbstractRefreshingSer
      */
     fun determineWinner(): Player? {
         val game = rootService.zoolorettoGame!!.currentGameState
-        require(game.players.size in 2..5) { "there must be from two to five players!" }
 
         val playerList = game.players.toMutableList()
         val drawList = arrayListOf<Player>()
@@ -139,7 +138,7 @@ class ScoreService(private val rootService: RootService) : AbstractRefreshingSer
             }
         }
         val animalList = arrayListOf(flamingoList, pandaList, kamelList, schimpanseList, kaenguruList,
-                                     elefantList, zebraList, leopardList)
+            elefantList, zebraList, leopardList)
         animalList.forEach {
             if (it.isNotEmpty()) {
                 score -= 2
