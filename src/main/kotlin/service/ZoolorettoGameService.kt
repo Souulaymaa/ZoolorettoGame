@@ -17,23 +17,24 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
     var offspringTiles : ArrayList<Animal> = ArrayList(16)
     var vendingStalls : ArrayList<VendingStall> = ArrayList(12)
     var coins : ArrayList<Coin> = arrayListOf(Coin(), Coin(), Coin(), Coin(), Coin(), Coin(),
-                                              Coin(), Coin(), Coin(), Coin(), Coin(), Coin()
+        Coin(), Coin(), Coin(), Coin(), Coin(), Coin()
     )
     var players = listOf<Player>()
+    var numberOfPlayers = 0 // used in loadTileFromFile
 
 
     /**
      * initialises the tiles according to the number of players
      */
     private fun initialiseTiles(){
-        // initialise Animal tiles
 
-            for(specie in Species.values()){
-                repeat(2){animalTiles.add(Animal(Type.MALE, specie))}
-                repeat(2){animalTiles.add(Animal(Type.FEMALE, specie)) }
-                repeat(2){animalTiles.add(Animal(Type.OFFSPRING, specie))
-                                offspringTiles.add(Animal(Type.OFFSPRING, specie))}
-                repeat(7){animalTiles.add(Animal(Type.NONE, specie))}
+        // initialise Animal tiles
+        for(specie in Species.values()){
+            repeat(2){animalTiles.add(Animal(Type.MALE, specie))}
+            repeat(2){animalTiles.add(Animal(Type.FEMALE, specie)) }
+            repeat(2){animalTiles.add(Animal(Type.OFFSPRING, specie))}
+            repeat(2){offspringTiles.add(Animal(Type.OFFSPRING, specie))}
+            repeat(7){animalTiles.add(Animal(Type.NONE, specie))}
         }
 
         // initialise vending stalls
@@ -54,7 +55,6 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             tiles.add(coins.removeFirst())
         }
         tiles.shuffle(Random(123))
-
     }
 
     /**
@@ -68,21 +68,30 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         val tileStack = TileStack(draw, end)
         val offspringStack = Stack<Tile>()
         initialiseTiles()
+        println(tiles.size)
         // round tiles
-        for(tile in tiles){
-            if(tile in offspringTiles){
+        val toRemove: ArrayList<Tile> = ArrayList()
+        for (tile in tiles) {
+            if (tile in offspringTiles) {
+                toRemove.add(tile)
                 offspringStack.add(tile)
-                animalTiles.remove(tile)}}
+            }
+        }
+        tiles.removeAll(toRemove)
 
         //square tiles
-        repeat(tiles.size-(15+offspringTiles.size)){
+        repeat(tiles.size-15){
             draw.add(tiles.removeFirst())
         }
+
         repeat(15){
             end.add(tiles.removeFirst())
         }
+
         return tileStack
     }
+
+
 
     /**
      * Creates a new game with the help of [createPlayer]
@@ -97,12 +106,16 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         // make the list a queue
         val playerQueue : Queue<Player> = LinkedList<Player>(players)
         val gameState : ZoolorettoGameState
+        //delivery trucks for a game with 3,4 or 5 players
         val deliveryTrucks : ArrayList<DeliveryTruck> = arrayListOf(DeliveryTruck(), DeliveryTruck(), DeliveryTruck())
+        // delivery trucks for a game with 2 players
+        val deliveryTrucksForTwo : ArrayList<DeliveryTruck> =
+            arrayListOf(DeliveryTruck(1), DeliveryTruck(2), DeliveryTruck())
 
         // checking the number of players to determine the number of delivery trucks
         if (playerList.size == 2){
             gameState = ZoolorettoGameState(false, false, playerQueue, TileStack(Stack(), Stack()),
-               deliveryTrucks)
+                deliveryTrucksForTwo)
             gameState.bank = 26
         } else{
             var i = playerList.size - 3
@@ -122,11 +135,13 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      * returns the number of tiles according to the number of players
      */
     private fun setTiles() : Int {
-        return when(players.size){
+        val game = rootService.zoolorettoGame
+        checkNotNull(game)
+        return when(game.currentGameState.players.size){
             5 -> 104
-            4 -> 93
-            3 -> 82
-            2 -> 79
+            4 -> 91
+            3 -> 78
+            2 -> 65
             else -> throw IllegalArgumentException("Number of players to be created is not between 2 and 5.")
         }
     }
@@ -134,16 +149,13 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
     /**
      * finishes the game
      */
-
     fun endGame(){
-        for(player in players){
+        for(player in rootService.zoolorettoGame!!.currentGameState.players){
             rootService.scoreService.determineScore(player)
         }
         rootService.scoreService.determineWinner()
         this.onAllRefreshables { refreshAfterGameEnd() }
     }
-
-
 
     /**
      * returns a player given their [name] and [Difficulty]
@@ -156,6 +168,43 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
         player.playerEnclosure.add(Enclosure(4, 2, 1, Pair(5,4), false))
         player.playerEnclosure.add(Enclosure(6, 1, 0, Pair(10,6), false))
         return player
+    }
+
+    /**
+     * help method to create a game for [loadTileStackFromFile]
+     */
+    fun createGameWithFile(playerList : List<Player>,  toShuffle : Boolean){
+        //create the players using the helping method
+        players = List(playerList.size) {
+            createPlayer(playerList[it].playerName, playerList[it].botSkillLevel)
+        }
+        // if toShuffle is true we shuffle the list
+        if(toShuffle){players.toMutableList().shuffle(Random(123))}
+        // make the list a queue
+        val playerQueue : Queue<Player> = LinkedList<Player>(players)
+        val gameState : ZoolorettoGameState
+        //delivery trucks for a game with 3,4 or 5 players
+        val deliveryTrucks : ArrayList<DeliveryTruck> = arrayListOf(DeliveryTruck(), DeliveryTruck(), DeliveryTruck())
+        // delivery trucks for a game with 2 players
+        val deliveryTrucksForTwo : ArrayList<DeliveryTruck> =
+            arrayListOf(DeliveryTruck(1), DeliveryTruck(2), DeliveryTruck())
+
+        // checking the number of players to determine the number of delivery trucks
+        if (playerList.size == 2){
+            gameState = ZoolorettoGameState(false, false, playerQueue, TileStack(Stack(), Stack()),
+                deliveryTrucksForTwo)
+            gameState.bank = 26
+        } else{
+            var i = playerList.size - 3
+            while (i-- > 0) {
+                deliveryTrucks.add(DeliveryTruck())
+            }
+            gameState = ZoolorettoGameState(false, false, playerQueue, TileStack(Stack(), Stack()),
+                deliveryTrucks)
+            gameState.bank = 30-(2*playerList.size)
+        }
+        rootService.zoolorettoGame = ZoolorettoGame(1.52f , gameState)
+        onAllRefreshables { refreshAfterCreateGame() }
     }
 
     /**
@@ -175,7 +224,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
 
         val lines = reader.bufferedReader().readLines()
         for(line in lines){
-            val numberOfPlayers = lines[0].toInt()
+            numberOfPlayers = lines[0].toInt()
             if (line == "C"){
                 coins = line
                 result.add(stringToCoin(coins))}
@@ -188,8 +237,15 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             }
 
         }
-        for(i in 1..lines.size-16){draw.add(result.removeFirst())}
-        for(j in lines.size-15.. lines.size){end.add(result.removeFirst())}
+        require(game.currentGameState.players.size == numberOfPlayers){"the number pf players given is not compatible with the file"}
+
+        repeat(result.size-15){
+            draw.add(result.removeFirst())
+        }
+
+        repeat(15){
+            end.add(result.removeFirst())
+        }
         return tileStack
     }
 
