@@ -514,12 +514,12 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      */
     private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Int, List<Int>>,
                                                     currentPlayer: Player): ArrayList<Move>
-     {
+    {
         val moveList = ArrayList<Move>()
 
         for ((sourceEnclosure, targetList) in combinations) {
             for (targetEnclosure in targetList) {
-                if (sourceEnclosure == 6) {
+                if (sourceEnclosure == 6) { //Might be unnecessary
                     moveList.addAll(createMovesForEachSpeciesInBarn(targetEnclosure, currentPlayer))
                 } else if (targetEnclosure == 6) {
                     moveList.addAll(createMovesForEachSpeciesInBarn(sourceEnclosure, currentPlayer))
