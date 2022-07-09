@@ -19,7 +19,7 @@ class ExchTilesEnclosureToEnclosure {
     private val player1 = Player("player1", Difficulty.HUMAN)
     private val player2 = Player("player2", Difficulty.HUMAN)
     private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
-    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2))
+    private val playerQ: LinkedList<Player> = LinkedList(listOf(player1, player2))
 
     /**
      * tests if the function works right when the conditions are alright to exchange the tiles between two [Enclosure]s

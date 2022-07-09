@@ -23,7 +23,7 @@ class ExchTilesEnclosureToBarnTest {
     private val player3 = Player("player3", Difficulty.HUMAN)
     private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
     private val deliveryTrucks = mutableListOf<DeliveryTruck>()
-    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2, player3))
+    private val playerQ: LinkedList<Player> = LinkedList(listOf(player1, player2, player3))
 
     /**
      * Test case for an exchange under normal conditions where it has to work
