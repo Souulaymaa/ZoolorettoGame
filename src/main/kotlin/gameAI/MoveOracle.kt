@@ -68,7 +68,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
     /**
      * Function, that determines all possible [TakeTruckAndPlaceTiles] moves.
      *
-     * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruckAndPlaceTiles] move
+     * The function iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruckAndPlaceTiles] move
      * and finds the best option between all available trucks to take
      */
     private fun determineTakeTruckMoves() : List<Move>{
@@ -81,13 +81,13 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                 deliveryTruck
             )
         }
-        val indexedEncloures = playerEnclosures.mapIndexed { index, enclosure -> Pair(index, enclosure) }
+        val indexedEnclosures = playerEnclosures.mapIndexed { index, enclosure -> Pair(index, enclosure) }
 
-        val notEmptyNorFullEnclosures = indexedEncloures.filter {
+        val notEmptyNorFullEnclosures = indexedEnclosures.filter {
             val enclosure = it.second
             enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles.size < enclosure.maxAnimalSlots
         }
-        val emptyEnclosures = indexedEncloures.filter {
+        val emptyEnclosures = indexedEnclosures.filter {
             it.second.animalTiles.isEmpty()
         }
 
@@ -476,8 +476,8 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for(index in possibleEnclosures){
             val enclosure = playerEnclosures[index]
-            for(vendingstall in enclosure.vendingStalls){
-                moveList.add(MoveVendingStallEnclosureToBarn(index, vendingstall))
+            for(vendingStall in enclosure.vendingStalls){
+                moveList.add(MoveVendingStallEnclosureToBarn(index, vendingStall))
             }
         }
         return moveList
