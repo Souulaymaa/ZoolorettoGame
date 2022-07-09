@@ -21,7 +21,7 @@ import kotlin.collections.ArrayList
  * @param aiPlayer Player, who triggered the search for the best move
  * @param movesTaken Movement path from a [Node] to its root node
  */
-class Node(private val zoolorettoGameState : ZoolorettoGameState, private val aiPlayer : Player, private val movesTaken: ArrayList<Move>) {
+class Node(private val zoolorettoGameState : ZoolorettoGameState, private val aiPlayer : Player, val movesTaken: ArrayList<Move>) {
     val children = mutableListOf<Node>()
     val aiScore : Int = calculateScore()
 
