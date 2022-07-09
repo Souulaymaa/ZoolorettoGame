@@ -10,6 +10,6 @@ import java.io.Serializable
  */
 data class DeliveryTruck(val maxSize: Int = 3): Serializable {
 
-    val tilesOnTruck = arrayListOf<Tile>()
+    var tilesOnTruck = arrayListOf<Tile>()
 
 }
