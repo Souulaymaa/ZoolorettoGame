@@ -11,7 +11,7 @@ import java.util.*
 
 class ZoolorettoGameService(private val rootService: RootService) : AbstractRefreshingService() {
 
-    var tiles: ArrayList<Tile> = ArrayList(116)
+    var tiles: ArrayList<Tile> = ArrayList(128)
     var animalTiles: ArrayList<Animal> = ArrayList(104)
     var offspringTiles: ArrayList<Animal> = ArrayList(16)
     var vendingStalls: ArrayList<VendingStall> = ArrayList(12)
@@ -197,13 +197,14 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
                 animals = line
                 result.add(stringToAnimal(animals))
             }
-
         }
+        require(rootService.zoolorettoGame!!.currentGameState.players.size == numberOfPlayers){
+            "the number pf players given is not compatible with the file"}
 
-        for (i in 1..lines.size - 16) {
+        repeat(result.size-15) {
             draw.add(result.removeFirst())
         }
-        for (i in lines.size - 14..lines.size) {
+        repeat(15) {
             end.add(result.removeFirst())
         }
         return tileStack
