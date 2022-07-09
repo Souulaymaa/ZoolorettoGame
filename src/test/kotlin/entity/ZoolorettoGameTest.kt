@@ -38,7 +38,7 @@ class ZoolorettoGameTest {
         playerEnclosures.add(enclosure2)
         playerEnclosures.add(enclosure3)
 
-        val players : Queue<Player> = LinkedList()
+        val players : LinkedList<Player> = LinkedList()
         players.add(Player("Beshr", Difficulty.HUMAN))
         players.add(Player("Basheer", Difficulty.HUMAN))
 

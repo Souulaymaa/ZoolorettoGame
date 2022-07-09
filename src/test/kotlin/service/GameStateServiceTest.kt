@@ -25,7 +25,7 @@ class GameStateServiceTest {
     // Player Queue is also needed for the constructor of ZoolorettoGameState.
     private val player1 = Player("Player 1", Difficulty.HUMAN)
     private val player2 = Player("Player 2", Difficulty.HUMAN)
-    private val players: Queue<Player> = LinkedList(listOf(player1, player2))
+    private val players: LinkedList<Player> = LinkedList(listOf(player1, player2))
 
     /**
      * tests the [GameStateService.deepZoolorettoCopy] function.

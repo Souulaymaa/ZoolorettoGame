@@ -120,7 +120,7 @@ internal class ScoreServiceTest {
     fun determineWinner() {
         val player1 = Player("sanad", Difficulty.HUMAN)
         val player2 = Player("mathias", Difficulty.HUMAN)
-        val twoTestPlayer : Queue<Player> = LinkedList(listOf(
+        val twoTestPlayer : LinkedList<Player> = LinkedList(listOf(
             player1, player2
         ))
         val twoPlayerZoolorettoGameState = ZoolorettoGameState(

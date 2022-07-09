@@ -6,7 +6,6 @@ import gamemockup.util.DeliveryTrucks
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.Test
 import java.util.LinkedList
-import java.util.Queue
 import kotlin.test.assertEquals
 
 /**
@@ -20,7 +19,7 @@ class EndGameTest {
 
         val player1 = Player("sanad", Difficulty.HUMAN)
         val player2 = Player("saskia", Difficulty.HUMAN)
-        val twoTestPlayer: Queue<Player> = LinkedList(
+        val twoTestPlayer: LinkedList<Player> = LinkedList(
             listOf(
                 player1, player2
             )

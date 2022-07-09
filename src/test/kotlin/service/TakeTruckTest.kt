@@ -21,7 +21,7 @@ class TakeTruckTest {
     private val player3 = Player("player3", Difficulty.HUMAN)
     private val tileStack = TileStack(Stack<Tile>(), Stack<Tile>())
     private val deliveryTrucks = mutableListOf<DeliveryTruck>()
-    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2, player3))
+    private val playerQ: LinkedList<Player> = LinkedList(listOf(player1, player2, player3))
 
     /**
      * Check if the function take truck saves the chosen truck

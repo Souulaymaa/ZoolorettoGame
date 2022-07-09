@@ -104,7 +104,7 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
             shuffeledPlayers.shuffle(Random(123))
         }
         // make the list a queue
-        val playerQueue: Queue<Player> = LinkedList<Player>(shuffeledPlayers)
+        val playerQueue: LinkedList<Player> = LinkedList<Player>(shuffeledPlayers)
         val gameState: ZoolorettoGameState
         //delivery trucks for a game with 3,4 or 5 players
         val deliveryTrucks: ArrayList<DeliveryTruck> = arrayListOf(DeliveryTruck(), DeliveryTruck(), DeliveryTruck())
@@ -174,8 +174,8 @@ class ZoolorettoGameService(private val rootService: RootService) : AbstractRefr
      * returns a [TileStack] created from a file in the format txt to which [path] is the path.
      */
     fun loadTileStackFromFile(path: String): TileStack {
-        var coins: String;
-        var vendingStalls: String;
+        var coins: String
+        var vendingStalls: String
         var animals: String
         val result: ArrayList<Tile> = ArrayList()
         val draw = Stack<Tile>()

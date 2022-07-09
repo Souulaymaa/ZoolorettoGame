@@ -21,7 +21,7 @@ class PlaceTileFromTruckEnclosureTest {
         DeliveryTruck(3),
         DeliveryTruck(3),
         DeliveryTruck(3))
-    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2))
+    private val playerQ: LinkedList<Player> = LinkedList(listOf(player1, player2))
     private val vendingStall = VendingStall(StallType.VENDING1)
     private val enclosure2 = Enclosure(4, 2, 1, Pair(5, 4), false)
 
