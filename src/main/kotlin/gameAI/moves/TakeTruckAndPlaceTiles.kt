@@ -16,7 +16,7 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
         val tilesOnTruck =currentPlayer.chosenTruck!!.tilesOnTruck
 
         for(i in 0 until tilesOnTruck.size){
-            putInGoodDestination(rootService, tilesOnTruck[i])
+            putInGoodDestination(rootService, tilesOnTruck[0])
         }
 
     }
