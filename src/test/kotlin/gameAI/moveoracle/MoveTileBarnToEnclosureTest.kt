@@ -9,7 +9,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.assertEquals
 
 class MoveTileBarnToEnclosureTest {
-    var zoolorettoGameState : ZoolorettoGameState? = null
+    var zoolorettoGameState = ZoolorettoGameStateMockups.twoPlayersZoolorettoGameStateFactory()
+    val moveOracle = MoveOracle(zoolorettoGameState)
     private val flamingo = TileLists.flamingos().first()
     private val chimpanzee = TileLists.chimpanzees().first()
     private val vendingStall = TileLists.vendingStalls().first()
@@ -24,8 +25,7 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun allMoveTileFromBarnToEnclosureInsufficientCoinsTest(){
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
-        val player1 = zoolorettoGameState!!.players.peek()
+        val player1 = zoolorettoGameState.players.peek()
         player1.coins = 0
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()
         assertEquals(0, moveList.size)
@@ -36,8 +36,7 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun allMoveTileFromBarnToEnclosureEmptyBarnTest(){
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
-        val player1 = zoolorettoGameState!!.players.peek()
+        val player1 = zoolorettoGameState.players.peek()
         player1.coins = 3
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()
         assertEquals(0, moveList.size)
@@ -48,7 +47,7 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun animalFromBarnToEnclosures(){
-        val player1 = zoolorettoGameState!!.players.peek()
+        val player1 = zoolorettoGameState.players.peek()
         player1.coins = 3
 
         player1.barn.animalTiles.add(flamingo)
@@ -67,12 +66,12 @@ class MoveTileBarnToEnclosureTest {
             player1.playerEnclosure[2].animalTiles.add((flamingo))
         }
 
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
+        val moveOracle = MoveOracle(zoolorettoGameState)
 
         //fourth enclosure is empty, 1 moves available as well
         //no vending stalls in barn hence no vending stall moves
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()
-        assertEquals(2, moveList.size)
+        assertEquals(1, moveList.size)
     }
 
     /**
@@ -80,7 +79,7 @@ class MoveTileBarnToEnclosureTest {
      */
     @Test
     fun vendingStallFromBarnToEnclosures(){
-        val player1 = zoolorettoGameState!!.players.peek()
+        val player1 = zoolorettoGameState.players.peek()
         player1.coins = 3
 
         player1.barn.vendingStalls.add(vendingStall)
@@ -96,16 +95,12 @@ class MoveTileBarnToEnclosureTest {
         //no possible move here
         player1.playerEnclosure[2].vendingStalls.add((vendingStall))
 
-        val moveOracle = MoveOracle(zoolorettoGameState!!)
+        val moveOracle = MoveOracle(zoolorettoGameState)
 
         //fourth enclosure is empty, 1 moves available as well
         //animal tiles not found in barn so no moves
         val moveList = moveOracle.allMoveTileFromBarnToEnclosure()
-        assertEquals(2, moveList.size)
+        assertEquals(1, moveList.size)
     }
-
-
-
-
 
 }

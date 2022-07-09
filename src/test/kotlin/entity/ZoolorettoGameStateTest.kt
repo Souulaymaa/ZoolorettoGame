@@ -29,7 +29,7 @@ class ZoolorettoGameStateTest {
     // Player Queue is also needed for the constructor of ZoolorettoGameState.
     private val player1 = Player("Player 1", Difficulty.HUMAN)
     private val player2 = Player("Player 2", Difficulty.HUMAN)
-    private val players: Queue<Player> = LinkedList()
+    private val players: LinkedList<Player> = LinkedList()
 
     /**
      * Checks if the [ZoolorettoGameState] object is created correctly with the provided constructor parameters.

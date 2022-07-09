@@ -1,6 +1,7 @@
 package gameAI.searchtree
 
 import entity.ZoolorettoGameState
+import gameAI.Move
 import service.GameStateService
 import java.util.*
 import kotlin.collections.ArrayList
@@ -48,5 +49,9 @@ class Tree(private val zoolorettoGameState: ZoolorettoGameState, level: Int) {
         return nodeWithMaxScore
     }
 
+    fun getBestMove() : Move {
+        val node = maximumBFS()
 
+        return node.movesTaken.first()
+    }
 }

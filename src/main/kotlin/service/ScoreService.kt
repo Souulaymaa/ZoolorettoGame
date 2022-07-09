@@ -4,10 +4,8 @@ import entity.*
 
 /**
  * service layer class to calculate the score of each player and gives back a high score list.
- *
- * @param rootService
  */
-class ScoreService(private val rootService: RootService) : AbstractRefreshingService() {
+class ScoreService(private val rootService: RootService): AbstractRefreshingService() {
     /**
      * Calculates the player's score
      * @return a score of the player

@@ -13,7 +13,7 @@ import java.util.*
  * @param [deliveryTrucks] List of the delivery Trucks
  */
 data class ZoolorettoGameState(
-    var paused: Boolean = false, var roundDisc: Boolean = false, val players: Queue<Player>,
+    var paused: Boolean = false, var roundDisc: Boolean = false, val players: LinkedList<Player>,
     var tileStack: TileStack, val deliveryTrucks: MutableList<DeliveryTruck>
 ): Serializable {
     var bank = 0

@@ -6,14 +6,14 @@ import java.util.*
 
 class PlayerQueues {
     companion object{
-        fun twoHumanPlayers() : Queue<Player> {
+        fun twoHumanPlayers() : LinkedList<Player> {
             return LinkedList(listOf(
                 Player("player1", Difficulty.HUMAN),
                 Player("player2", Difficulty.HUMAN)
             ))
         }
 
-        fun threeHumanPlayers() : Queue<Player> {
+        fun threeHumanPlayers() : LinkedList<Player> {
             return LinkedList(listOf(
                 Player("player1", Difficulty.HUMAN),
                 Player("player2", Difficulty.HUMAN),

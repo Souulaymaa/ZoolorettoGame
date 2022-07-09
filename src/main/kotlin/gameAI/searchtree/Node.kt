@@ -1,10 +1,14 @@
 package gameAI.searchtree
 
 import entity.Player
+import entity.ZoolorettoGame
 import entity.ZoolorettoGameState
 import gameAI.Move
 import gameAI.MoveOracle
 import service.GameStateService
+import service.PlayerActionService
+import service.RootService
+import service.ScoreService
 import kotlin.collections.ArrayList
 
 /**
@@ -18,12 +22,15 @@ import kotlin.collections.ArrayList
  * @param aiPlayer Player, who triggered the search for the best move
  * @param movesTaken Movement path from a [Node] to its root node
  */
-class Node(private val zoolorettoGameState : ZoolorettoGameState, private val aiPlayer : Player, private val movesTaken: ArrayList<Move>) {
+class Node(private val zoolorettoGameState : ZoolorettoGameState, private val aiPlayer : Player, val movesTaken: ArrayList<Move>) {
     val children = mutableListOf<Node>()
     val aiScore : Int = calculateScore()
 
     private fun calculateScore(): Int {
-        TODO("Implement score function")
+        val fakeRootService : RootService = RootService()
+        val scoreService = ScoreService(fakeRootService)
+
+        return scoreService.determineScore(aiPlayer)
     }
 
     /**
@@ -48,9 +55,11 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
                 val movesTakenPlusOne = ArrayList<Move>(movesTaken)
                 movesTakenPlusOne.add(move)
 
-                val child = Node(copy, aiPlayer, movesTakenPlusOne)
+                val aiPlayerInCopy = findAiPlayerInCopy(aiPlayer,copy)
+                val child = Node(copy, aiPlayerInCopy, movesTakenPlusOne)
+                this.children.add(child)
 
-                //Perform recursion
+                //Perform recursion, consider using a try catch here
                 child.createChildren(level -1)
             }
         }
@@ -59,7 +68,20 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
     /**
      * Function that should execute Moves on a ZoolorettoGameState, might be using Move's performMove method
      */
-    private fun performMove(zoolorettoGameState: ZoolorettoGameState, move: Move){
-        TODO("Lookup how PlayerActionService works as soon as services are pushed on main")
+    private fun performMove(copy: ZoolorettoGameState, move: Move){
+        val rootService = RootService()
+        rootService.zoolorettoGame = ZoolorettoGame(1.0f, copy)
+
+        move.performMove(rootService)
+    }
+
+    private fun findAiPlayerInCopy(toFind : Player, copy : ZoolorettoGameState) : Player{
+        val playerListInCopy = copy.players
+
+        val newAiPlayer = playerListInCopy.find { it == toFind }
+
+        checkNotNull(newAiPlayer)
+
+        return newAiPlayer
     }
 }

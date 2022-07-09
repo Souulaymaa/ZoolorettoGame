@@ -2,13 +2,12 @@ package gameAI
 
 import entity.*
 import gameAI.moves.*
-import service.GameStateService
 
 class MoveOracle(currentGameState: ZoolorettoGameState) {
      val currentGameStateCopy : ZoolorettoGameState
 
     init {
-        this.currentGameStateCopy = GameStateService.deepZoolorettoCopy(currentGameState)
+        this.currentGameStateCopy = currentGameState
     }
 
     /**
@@ -40,7 +39,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val possibleMoneyMoves = arrayListOf<Move>()
 
         val addTileToTruckMoves = determineAddTileToTruckMoves()
-        val takeTruckMoves = determineAllTakeTruckMoves()
+        val takeTruckMoves = determineTakeTruckMoves()
         possibleMoneyMoves.addAll(addTileToTruckMoves)
         possibleMoneyMoves.addAll(takeTruckMoves)
         return possibleMoneyMoves
@@ -53,33 +52,102 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * The function iterates over all delivery trucks and creates new [AddTileToTruck] moves
      * and returns them as a list.
      */
-    private fun determineAddTileToTruckMoves() : List<AddTileToTruck>{
+    private fun determineAddTileToTruckMoves() : List<Move>{
         val moves = mutableListOf<AddTileToTruck>()
         val deliveryTrucks = currentGameStateCopy.deliveryTrucks
 
-        for(deliveryTruck in deliveryTrucks){
+        for(i in 0 until deliveryTrucks.size){
+            val deliveryTruck = deliveryTrucks[i]
             if(deliveryTruck.tilesOnTruck.size < deliveryTruck.maxSize) {
-                moves.add(AddTileToTruck(deliveryTruck))
+                moves.add(AddTileToTruck(i))
             }
         }
-
         return moves
     }
 
     /**
-     * Function, that determines all possible [TakeTruck] moves.
+     * Function, that determines all possible [TakeTruckAndPlaceTiles] moves.
      *
-     * The functions iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruck] move
-     * and returns all moves afterwards as a list.
+     * The function iterates over all delivery trucks. If the truck is not empty it creates a new [TakeTruckAndPlaceTiles] move
+     * and finds the best option between all available trucks to take
      */
-    private fun determineAllTakeTruckMoves() : List<TakeTruck>{
-        val moves = mutableListOf<TakeTruck>()
-        val deliveryTrucks = currentGameStateCopy.deliveryTrucks
+    private fun determineTakeTruckMoves() : List<Move>{
+        val moves = mutableListOf<Move>()
+        val playerEnclosures = currentGameStateCopy.players.peek().playerEnclosure
 
-        for(deliveryTuck in deliveryTrucks){
-            if(deliveryTuck.tilesOnTruck.isNotEmpty()){
-                moves.add(TakeTruck(deliveryTuck))
+        val indexedTrucks = currentGameStateCopy.deliveryTrucks.mapIndexed { index, deliveryTruck ->
+            Pair(
+                index,
+                deliveryTruck
+            )
+        }
+        val indexedEnclosures = playerEnclosures.mapIndexed { index, enclosure -> Pair(index, enclosure) }
+
+        val notEmptyNorFullEnclosures = indexedEnclosures.filter {
+            val enclosure = it.second
+            enclosure.animalTiles.isNotEmpty() && enclosure.animalTiles.size < enclosure.maxAnimalSlots
+        }
+        val emptyEnclosures = indexedEnclosures.filter {
+            it.second.animalTiles.isEmpty()
+        }
+
+
+        val nonEmptyTrucks = indexedTrucks.filter { it.second.tilesOnTruck.isNotEmpty() }
+
+        var maxScore = -1
+        var chosenTruckPair : Pair<Int, DeliveryTruck> = Pair(-1, DeliveryTruck())
+        //chooses the best truck to be taken
+        for (indexedTruckPair in nonEmptyTrucks){
+            val animalList = ArrayList<Animal>()
+            val vendingList = ArrayList<VendingStall>()
+            var score = 0
+            //adds tile in animal lists or vendingStall lists.
+            //also increments score when coin tile is found
+            for(tile in indexedTruckPair.second.tilesOnTruck){
+                when (tile) {
+                    is Animal -> {
+                        animalList.add(tile)
+                    }
+                    is VendingStall -> {
+                        vendingList.add(tile)
+                    }
+                    else -> {
+                        // tile is coin
+                        score ++
+                    }
+                }
             }
+
+            //increments score when AnimalTile has same species as one of the enclosures.
+            //if no similar species were found, and at the same time there is an empty enclosure in list
+            //the score will also increase
+            for(animal in animalList){
+                val enclosuresWithSameSpecies = notEmptyNorFullEnclosures.filter {
+                    it.second.animalTiles[0].species == animal.species
+                }
+
+                if (enclosuresWithSameSpecies.isNotEmpty()){
+                    score++
+                }
+                else if (emptyEnclosures.isNotEmpty()){
+                    score++
+                }
+            }
+            //TODO: Consider vending stalls for optimal take truck if there is some spare time
+//            for(tile in vendingList){
+//                for (enclosure in notEmptyNorFullEnclosures){
+//                    if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
+//                        score ++
+//                    }
+//                }
+//            }
+            if (maxScore <= score){
+                maxScore = score
+                chosenTruckPair = indexedTruckPair
+            }
+        }
+        if (chosenTruckPair.second.tilesOnTruck.isNotEmpty()){
+            moves.add(TakeTruckAndPlaceTiles(chosenTruckPair.first))
         }
         return moves
     }
@@ -132,16 +200,12 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             }
         }
 
-        if(allEnclosuresAreFull && currentGameStateCopy.players.size == 2 && currentPlayer.playerEnclosure.size < 5)
-        {
-            return arrayListOf(ExpandZoo())
-        }
-        else if(allEnclosuresAreFull && currentGameStateCopy.players.size > 2 && currentPlayer.playerEnclosure.size < 4)
-        {
-            return arrayListOf(ExpandZoo())
-        }
-        else{
-            return arrayListOf()
+        return if(allEnclosuresAreFull && currentGameStateCopy.players.size == 2 && currentPlayer.playerEnclosure.size < 5) {
+            arrayListOf(ExpandZoo())
+        } else if(allEnclosuresAreFull && currentGameStateCopy.players.size > 2 && currentPlayer.playerEnclosure.size < 4) {
+            arrayListOf(ExpandZoo())
+        } else{
+            arrayListOf()
         }
     }
 
@@ -189,7 +253,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val moveList = ArrayList<Move>()
         for ((player, purchasableTiles) in combinations) {
             for (tile in purchasableTiles) {
-                moveList.add(PurchaseTile(player, tile))
+                TODO("CREATE MOVE INSTANCES WITH NEW PARAMETERS")
             }
         }
         return moveList
@@ -205,16 +269,16 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         val purchasableTiles : HashMap<Player, MutableSet<Tile>> = HashMap()
         val neededSpecies = mutableSetOf<Species>()
 
-        //Initialize the MutableMap
-        for(otherPlayer in currentGameStateCopy.players){
-            if(currentPlayer != otherPlayer){
-                purchasableTiles[otherPlayer] = HashSet<Tile>()
-            }
-        }
-
 
         if(currentPlayer.coins < 2){
             return purchasableTiles
+        }
+
+        //Initialize the MutableMap
+        for(otherPlayer in currentGameStateCopy.players){
+            if(currentPlayer != otherPlayer){
+                purchasableTiles[otherPlayer] = HashSet()
+            }
         }
 
         //Find all species the currentPlayer might need
@@ -250,8 +314,8 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * function to determine all the possible moveTileFromBarnToEnclosure actions.
      * @return a map of each tile in the barn to a list of enclosures it can be moved to.
      */
-    private fun possibleTileBarnToEnclosureMoves(): Map<Tile, List<Enclosure>>{
-        val possibleMoves : HashMap<Tile, List<Enclosure>> = HashMap()
+    private fun possibleTileBarnToEnclosureMoves(): Map<Tile, List<Int>>{
+        val possibleMoves : HashMap<Tile, List<Int>> = HashMap()
         val currentPlayer = currentGameStateCopy.players.peek()
         if (currentPlayer.coins < 1) {
             return possibleMoves
@@ -259,23 +323,27 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         if (currentPlayer.barn.animalTiles.size == 0 && currentPlayer.barn.vendingStalls.size == 0){
             return possibleMoves
         }
+        val playerEnclosures = currentPlayer.playerEnclosure
         for(animalTile in currentPlayer.barn.animalTiles){
-            val enclosures: MutableList<Enclosure> = mutableListOf()
-            for(enclosure in currentPlayer.playerEnclosure){
+            val enclosures: MutableList<Int> = mutableListOf()
+
+            for(i in 0 until currentPlayer.playerEnclosure.size){
+                val enclosure = playerEnclosures[i]
                 if (enclosure.animalTiles.isEmpty() ) {
-                    enclosures.add(enclosure)
+                    enclosures.add(i)
                 }else if ((animalTile.species == enclosure.animalTiles[0].species &&
                             enclosure.animalTiles.size < enclosure.maxAnimalSlots)) {
-                    enclosures.add(enclosure)
+                    enclosures.add(i)
                 }
             }
             possibleMoves[animalTile] = enclosures
         }
         for(vendingTile in currentPlayer.barn.vendingStalls){
-            val enclosures: MutableList<Enclosure> = mutableListOf()
-            for (enclosure in currentPlayer.playerEnclosure){
+            val enclosures: MutableList<Int> = mutableListOf()
+            for (i in 0 until currentPlayer.playerEnclosure.size){
+                val enclosure = currentPlayer.playerEnclosure[i]
                 if(enclosure.vendingStalls.size < enclosure.maxVendingStalls){
-                    enclosures.add(enclosure)
+                    enclosures.add(i)
                 }
             }
             possibleMoves[vendingTile] = enclosures
@@ -288,67 +356,68 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      */
     fun allMoveTileFromBarnToEnclosure(): List<Move>{
         val currentPlayer = currentGameStateCopy.players.peek()
-
         val combinations = possibleTileBarnToEnclosureMoves()
+        val playerEnclosures = currentPlayer.playerEnclosure
         val moveList = ArrayList<Move>()
-        for((tile,enclosures) in combinations){
-            for(enclosure in enclosures){
-                moveList.add(MoveTileFromBarnToEnclosure(currentPlayer, enclosure, tile))
+        val moveListAnimalTiles = ArrayList<Move>()
+        val moveListVendingStalls = ArrayList<Move>()
+        for((tile,enclosuresIndexes) in combinations){
+            for(index in enclosuresIndexes){
+                val enclosure = playerEnclosures[index]
+                if(tile is Animal && enclosure.animalTiles.isNotEmpty()
+                    && enclosure.animalTiles[0].species == tile.species
+                    && enclosure.animalTiles.size < enclosure.maxAnimalSlots){
+                    moveList.add(MoveTileFromBarnToEnclosure(index, tile))
+                    break
+                }
+                else if(tile is Animal && enclosure.animalTiles.isEmpty()){
+                    moveListAnimalTiles.add(MoveTileFromBarnToEnclosure(index,tile))
+                }
+                else if(tile is VendingStall && enclosure.vendingStalls.isEmpty()
+                    && enclosure.animalTiles.isNotEmpty()){
+                    moveList.add(MoveTileFromBarnToEnclosure(index, tile))
+                    break
+                }
+                else if(tile is VendingStall && enclosure.vendingStalls.isEmpty()){
+                    moveList.add(MoveTileFromBarnToEnclosure(index, tile))
+                }
+                else if(tile is VendingStall && enclosure.vendingStalls.isNotEmpty()
+                    && enclosure.maxVendingStalls == 2
+                    && enclosure.vendingStalls.size < enclosure.maxVendingStalls
+                    && enclosure.vendingStalls[0].stall != tile.stall){
+                    moveListVendingStalls.add(MoveTileFromBarnToEnclosure(index, tile))
+                }
+                else{
+                    moveListVendingStalls.add(MoveTileFromBarnToEnclosure(index, tile))
+                }
             }
         }
+        if(moveList.isEmpty()){
+            if(moveListVendingStalls.isNotEmpty()){
+                moveList.add(moveListVendingStalls.first())
+            }
+            else if (moveListAnimalTiles.isNotEmpty()){
+                moveList.add(moveListAnimalTiles.first())
+            }
+        }
+
         return moveList
     }
     /**
      * function to determine all the possible moveVendingStallEnclosureToBarn actions.
      * @return list of enclosures containing vending stalls.
      */
-    private fun possibleVendingStallEnclosureToBarnMoves(): List<Enclosure>{
-        val possibleMoves: MutableList<Enclosure> = mutableListOf()
+    private fun possibleVendingStallEnclosureToBarnMoves(): List<Int>{
+        val possibleMoves: MutableList<Int> = mutableListOf()
         val currentPlayer = currentGameStateCopy.players.peek()
+        val playerEnclosures = currentPlayer.playerEnclosure
         if(currentPlayer.coins < 1){
             return possibleMoves
         }
-        for(enclosure in currentPlayer.playerEnclosure){
+        for(i in 0 until playerEnclosures.size){
+            val enclosure = playerEnclosures[i]
             if(enclosure.vendingStalls.size > 0){
-                possibleMoves.add(enclosure)
-            }
-        }
-        return possibleMoves
-    }
-
-    /**
-     * function that returns all the possible choices for moving a vending stall from an enclosure to the barn.
-     */
-    fun allMoveVendingStallEnclosureToBarn(): List<Move>{
-        val currentPlayer = currentGameStateCopy.players.peek()
-
-        val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
-        val moveList = ArrayList<Move>()
-        for(enclosure in possibleEnclosures){
-            moveList.add(MoveVendingStallEnclosureToBarn(enclosure,currentPlayer))
-        }
-        return moveList
-    }
-    /**
-     * function to determine all the possible moveVendingStallEnclosureToEnclosure actions.
-     * @return map of an enclosure containing a vending stall to a list of enclosures the vending
-     * stall can be moved to.
-     */
-    private fun possibleVendingStallEnclosureToEnclosureMoves(): Map<Enclosure, List<Enclosure>>{
-        val possibleMoves: HashMap<Enclosure,List<Enclosure>> = HashMap()
-        val currentPlayer = currentGameStateCopy.players.peek()
-        if(currentPlayer.coins < 1){
-            return possibleMoves
-        }
-        for(sourceEnclosure in currentPlayer.playerEnclosure){
-            if(sourceEnclosure.vendingStalls.size > 0){
-                val enclosures: MutableList<Enclosure> = mutableListOf()
-                for(targetEnclosure in currentPlayer.playerEnclosure){
-                    if (sourceEnclosure != targetEnclosure && targetEnclosure.vendingStalls.size < targetEnclosure.maxVendingStalls){
-                        enclosures.add(targetEnclosure)
-                    }
-                }
-                possibleMoves[sourceEnclosure] = enclosures
+                possibleMoves.add(i)
             }
         }
         return possibleMoves
@@ -364,6 +433,51 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
         for((sourceEnclosure, enclosures) in combinations){
             for(targetEnclosure in enclosures){
                 moveList.add(MoveVendingStallEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
+            }
+        }
+        return moveList
+    }
+
+    /**
+     * function to determine all the possible moveVendingStallEnclosureToEnclosure actions.
+     * @return map of an enclosure containing a vending stall to a list of enclosures the vending
+     * stall can be moved to.
+     */
+    private fun possibleVendingStallEnclosureToEnclosureMoves(): Map<Int, List<Int>>{
+        val possibleMoves: HashMap<Int,List<Int>> = HashMap()
+        val currentPlayer = currentGameStateCopy.players.peek()
+        val playerEnclosures = currentPlayer.playerEnclosure
+        if(currentPlayer.coins < 1){
+            return possibleMoves
+        }
+        for(i in 0 until playerEnclosures.size){
+            val sourceEnclosure = playerEnclosures[i]
+            if(sourceEnclosure.vendingStalls.size > 0){
+                val enclosures: MutableList<Int> = mutableListOf()
+                for(j in 0 until playerEnclosures.size){
+                    val targetEnclosure = playerEnclosures[j]
+                    if (sourceEnclosure != targetEnclosure && targetEnclosure.vendingStalls.size < targetEnclosure.maxVendingStalls){
+                        enclosures.add(j)
+                    }
+                }
+                possibleMoves[i] = enclosures
+            }
+        }
+        return possibleMoves
+    }
+
+    /**
+     * function that returns all the possible choices for moving a vending stall from an enclosure to the barn.
+     */
+    fun allMoveVendingStallEnclosureToBarn(): List<Move>{
+        val currentPlayer = currentGameStateCopy.players.peek()
+        val playerEnclosures = currentPlayer.playerEnclosure
+        val possibleEnclosures = possibleVendingStallEnclosureToBarnMoves()
+        val moveList = ArrayList<Move>()
+        for(index in possibleEnclosures){
+            val enclosure = playerEnclosures[index]
+            for(vendingStall in enclosure.vendingStalls){
+                moveList.add(MoveVendingStallEnclosureToBarn(index, vendingStall))
             }
         }
         return moveList
@@ -398,16 +512,16 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param currentPlayer Parameter to fit the [ExchangeAllTilesBarnToEnclosure] cases
      * @return List of all possible move combinations as Move type
      */
-    private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Enclosure, List<Enclosure>>,
+    private fun exchangeAllTilesCombinationsToMoves(combinations: Map<Int, List<Int>>,
                                                     currentPlayer: Player): ArrayList<Move>
-     {
+    {
         val moveList = ArrayList<Move>()
 
         for ((sourceEnclosure, targetList) in combinations) {
             for (targetEnclosure in targetList) {
-                if (sourceEnclosure.isBarn) {
+                if (sourceEnclosure == 6) { //Might be unnecessary
                     moveList.addAll(createMovesForEachSpeciesInBarn(targetEnclosure, currentPlayer))
-                } else if (targetEnclosure.isBarn) {
+                } else if (targetEnclosure == 6) {
                     moveList.addAll(createMovesForEachSpeciesInBarn(sourceEnclosure, currentPlayer))
                 } else {
                     moveList.add(ExchangeAllTilesEnclosureToEnclosure(sourceEnclosure, targetEnclosure))
@@ -422,18 +536,21 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * Function to group the barn by its containing species and creating [ExchangeAllTilesBarnToEnclosure]
      * moves
      *
-     * @param enclosure the source enclosure
+     * @param enclosureIndex the source enclosure
      * @param player the player containing the barn
      */
-    private fun createMovesForEachSpeciesInBarn(enclosure: Enclosure,
+    private fun createMovesForEachSpeciesInBarn(enclosureIndex: Int,
                                                 player: Player): ArrayList<ExchangeAllTilesBarnToEnclosure>{
+        val currentPlayer = currentGameStateCopy.players.peek()
+        val playerEnclosures = currentPlayer.playerEnclosure
         val speciesMap = player.barn.animalTiles.groupBy { it.species }
 
         val outList = arrayListOf<ExchangeAllTilesBarnToEnclosure>()
 
         for ((species, tiles) in speciesMap){
+            val enclosure = playerEnclosures[enclosureIndex]
             if(tiles.size <= enclosure.maxAnimalSlots && enclosure.animalTiles[0].species != species){
-                outList.add(ExchangeAllTilesBarnToEnclosure(enclosure, player, species))
+                outList.add(ExchangeAllTilesBarnToEnclosure(enclosureIndex, species))
             }
 
         }
@@ -449,8 +566,8 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
      * @param player Player with a barn and enclosure
      * @return combinations Valid swap combinations
      */
-    private fun determineSwapCombinations(player: Player) : Map<Enclosure, List<Enclosure>>{
-        val combinations : HashMap<Enclosure, List<Enclosure>> = HashMap()
+    private fun determineSwapCombinations(player: Player) : Map<Int, List<Int>>{
+        val combinations : HashMap<Int, List<Int>> = HashMap()
 
         //Create a new list to union playerEnclosure and barn, without modifying playerEnclosure directly
         val playerEnclosureAndBarn = ArrayList(player.playerEnclosure)
@@ -462,7 +579,7 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
             if(sourceEnclosure.animalTiles.isEmpty()){
                 continue
             }
-            val swapTargets = ArrayList<Enclosure>()
+            val swapTargets = ArrayList<Int>()
 
             //Now find all possible swaps
             for(k in j + 1 until playerEnclosureAndBarn.size){
@@ -477,12 +594,18 @@ class MoveOracle(currentGameState: ZoolorettoGameState) {
                 }
 
                 if(eligibleToSwap(sourceEnclosure, targetEnclosure)){
-                    swapTargets.add(targetEnclosure)
+                    if(!targetEnclosure.isBarn){
+                        swapTargets.add(k)
+                    }
+                    else {
+                        swapTargets.add(6)
+                    }
+
                 }
             }
 
             //Create a new entry in the map
-            combinations[sourceEnclosure] = swapTargets
+            combinations[j] = swapTargets
         }
 
         return combinations

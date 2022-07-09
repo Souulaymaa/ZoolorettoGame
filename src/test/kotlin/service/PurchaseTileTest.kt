@@ -22,7 +22,7 @@ class PurchaseTileTest {
         DeliveryTruck(3),
         DeliveryTruck(3),
         DeliveryTruck(3))
-    private val playerQ: Queue<Player> = LinkedList(listOf(player1, player2))
+    private val playerQ: LinkedList<Player> = LinkedList(listOf(player1, player2))
     private val vendingStall = VendingStall(StallType.VENDING1)
     private val enclosure = Enclosure(5, 1, 2, Pair(8, 5), false)
 
