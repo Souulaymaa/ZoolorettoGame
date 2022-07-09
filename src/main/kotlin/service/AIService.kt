@@ -31,4 +31,11 @@ class AIService(val rootService: RootService) {
     }
 
 
+    fun getHint() : String{
+        val currentGameState = rootService.zoolorettoGame!!.currentGameState
+        val move = Tree(currentGameState, SEARCH_TREE_LEVEL).getBestMove()
+
+        return move.toHintString(rootService)
+    }
+
 }
