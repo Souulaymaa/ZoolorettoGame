@@ -15,7 +15,7 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
 
         val tilesOnTruck =currentPlayer.chosenTruck!!.tilesOnTruck
 
-        for(i in 0..tilesOnTruck.size){
+        for(i in 0 until tilesOnTruck.size){
             putInGoodDestination(rootService, tilesOnTruck[i])
         }
 
@@ -39,12 +39,16 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
         }
 
         val emptyEnclosures = indexedEnclosures.filter { it.second.animalTiles.isEmpty() }
-        val notFullEnclosures = indexedEnclosures.filter { it.second.animalTiles.size < it.second.maxAnimalSlots }
-        val notFullEnclosuresWithSameSpecies = notFullEnclosures.filter { it.second.animalTiles[0].species == tile.species }
+        val notFullAndNotEmptyEnclosures = indexedEnclosures.filter {
+            val notFull = it.second.animalTiles.size < it.second.maxAnimalSlots
+            val notEmpty = it.second.animalTiles.isNotEmpty()
+            return@filter notFull && notEmpty
+        }
+        val notFullAndNotEmptyEnclosuresWithSameSpecies = notFullAndNotEmptyEnclosures.filter { it.second.animalTiles[0].species == tile.species }
 
-        if (notFullEnclosuresWithSameSpecies.isNotEmpty()){
+        if (notFullAndNotEmptyEnclosuresWithSameSpecies.isNotEmpty()){
             //We have a compatible (those with animals and same type) enclosure that's not full
-            val targetIndex = notFullEnclosuresWithSameSpecies.first().first //returns pair<index,enc> and then index
+            val targetIndex = notFullAndNotEmptyEnclosuresWithSameSpecies.first().first //returns pair<index,enc> and then index
             rootService.playerActionService.placeTileFromTruck(targetIndex)
         }
         else if(emptyEnclosures.isNotEmpty()){
