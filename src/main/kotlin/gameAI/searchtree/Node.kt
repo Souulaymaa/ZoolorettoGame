@@ -8,6 +8,7 @@ import gameAI.MoveOracle
 import service.GameStateService
 import service.PlayerActionService
 import service.RootService
+import service.ScoreService
 import kotlin.collections.ArrayList
 
 /**
@@ -26,13 +27,10 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
     val aiScore : Int = calculateScore()
 
     private fun calculateScore(): Int {
-        val moveOracle = MoveOracle(zoolorettoGameState)
-        val allowedMoves = moveOracle.determineAllCurrentAllowedMoves()
+        val fakeRootService : RootService = RootService()
+        val scoreService = ScoreService(fakeRootService)
 
-        for (move in allowedMoves){
-
-        }
-        return 0
+        return scoreService.determineScore(aiPlayer)
     }
 
     /**
@@ -57,7 +55,8 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
                 val movesTakenPlusOne = ArrayList<Move>(movesTaken)
                 movesTakenPlusOne.add(move)
 
-                val child = Node(copy, aiPlayer, movesTakenPlusOne)
+                val aiPlayerInCopy = findAiPlayerInCopy(aiPlayer,copy)
+                val child = Node(copy, aiPlayerInCopy, movesTakenPlusOne)
                 this.children.add(child)
 
                 //Perform recursion, consider using a try catch here
@@ -74,5 +73,15 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
         rootService.zoolorettoGame = ZoolorettoGame(1.0f, copy)
 
         move.performMove(rootService)
+    }
+
+    private fun findAiPlayerInCopy(toFind : Player, copy : ZoolorettoGameState) : Player{
+        val playerListInCopy = copy.players
+
+        val newAiPlayer = playerListInCopy.find { it == toFind }
+
+        checkNotNull(newAiPlayer)
+
+        return newAiPlayer
     }
 }
