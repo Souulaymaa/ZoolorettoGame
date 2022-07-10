@@ -1,7 +1,7 @@
-package gameAI.tree
+package gameai.tree
 
 import entity.*
-import gameAI.searchtree.Node
+import gameai.searchtree.Node
 import gamemockup.ZoolorettoGameStateMockups
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow

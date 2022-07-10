@@ -9,6 +9,10 @@ import java.io.Serializable
  */
 abstract class Tile: Serializable
 
+
+    /**
+     * to String method
+     */
     fun toString() : String{
-        throw NotImplementedError()
+            throw NotImplementedError()
     }

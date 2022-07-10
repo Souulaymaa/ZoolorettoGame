@@ -1,4 +1,4 @@
-package gameAI.moveoracle
+package gameai.moveoracle
 
 import gamemockup.ZoolorettoGameStateMockups
 import org.junit.jupiter.api.Test

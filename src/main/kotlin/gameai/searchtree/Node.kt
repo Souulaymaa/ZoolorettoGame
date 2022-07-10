@@ -1,12 +1,11 @@
-package gameAI.searchtree
+package gameai.searchtree
 
 import entity.Player
 import entity.ZoolorettoGame
 import entity.ZoolorettoGameState
-import gameAI.Move
-import gameAI.MoveOracle
+import gameai.Move
+import gameai.MoveOracle
 import service.GameStateService
-import service.PlayerActionService
 import service.RootService
 import service.ScoreService
 import kotlin.collections.ArrayList
@@ -27,7 +26,7 @@ class Node(private val zoolorettoGameState : ZoolorettoGameState, private val ai
     val aiScore : Int = calculateScore()
 
     private fun calculateScore(): Int {
-        val fakeRootService : RootService = RootService()
+        val fakeRootService = RootService()
         val scoreService = ScoreService(fakeRootService)
 
         return scoreService.determineScore(aiPlayer)
