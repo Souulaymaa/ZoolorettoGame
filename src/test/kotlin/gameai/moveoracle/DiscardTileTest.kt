@@ -1,7 +1,7 @@
-package gameAI.moveoracle
+package gameai.moveoracle
 
 import entity.ZoolorettoGameState
-import gameAI.MoveOracle
+import gameai.MoveOracle
 import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
 import org.junit.jupiter.api.Test

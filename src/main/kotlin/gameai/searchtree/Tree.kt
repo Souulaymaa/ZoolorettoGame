@@ -1,11 +1,14 @@
-package gameAI.searchtree
+package gameai.searchtree
 
 import entity.ZoolorettoGameState
-import gameAI.Move
+import gameai.Move
 import service.GameStateService
 import java.util.*
 import kotlin.collections.ArrayList
 
+/**
+ * class Tree implemets Tree Data Structure to find the best Move that the AI-Bot can take.
+ */
 class Tree(private val zoolorettoGameState: ZoolorettoGameState, level: Int) {
     private val rootNode : Node
 
@@ -49,6 +52,9 @@ class Tree(private val zoolorettoGameState: ZoolorettoGameState, level: Int) {
         return nodeWithMaxScore
     }
 
+    /**
+     * function that returns Best Move
+     */
     fun getBestMove() : Move {
         val node = maximumBFS()
 

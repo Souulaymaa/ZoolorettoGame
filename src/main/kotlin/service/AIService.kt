@@ -1,24 +1,25 @@
 package service
 
 import entity.Difficulty
-import gameAI.MoveOracle
-import gameAI.searchtree.Tree
+import gameai.MoveOracle
+import gameai.searchtree.Tree
 import kotlin.random.Random
 
 class AIService(val rootService: RootService) {
-    val SEARCH_TREE_LEVEL = 4
+    private val searchTreeLevel = 4
     fun performNextMove(){
         val currentPlayer = rootService.zoolorettoGame!!.currentGameState.players.peek()
 
         when(currentPlayer.botSkillLevel){
             Difficulty.EASY, Difficulty.MEDIUM -> performEasyMove()
             Difficulty.HARD -> performHardMove()
+            else -> {}
         }
     }
 
     private fun performHardMove() {
         val currentGameState = rootService.zoolorettoGame!!.currentGameState
-        val move = Tree(currentGameState, SEARCH_TREE_LEVEL).getBestMove()
+        val move = Tree(currentGameState, searchTreeLevel).getBestMove()
 
         move.performMove(rootService)
     }
@@ -33,7 +34,7 @@ class AIService(val rootService: RootService) {
 
     fun getHint() : String{
         val currentGameState = rootService.zoolorettoGame!!.currentGameState
-        val move = Tree(currentGameState, SEARCH_TREE_LEVEL).getBestMove()
+        val move = Tree(currentGameState, searchTreeLevel).getBestMove()
 
         return move.toHintString(rootService)
     }

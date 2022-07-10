@@ -1,8 +1,11 @@
-package gameAI
+package gameai
 
 import entity.*
-import gameAI.moves.*
+import gameai.moves.*
 
+/**
+ * class MoveOracle combines all necessary functions to return all allowed moves for a given [ZoolorettoGameState]
+ */
 class MoveOracle(currentGameState: ZoolorettoGameState) {
      val currentGameStateCopy : ZoolorettoGameState
 

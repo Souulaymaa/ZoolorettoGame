@@ -1,11 +1,17 @@
-package gameAI.moves
+package gameai.moves
 
 import entity.*
-import gameAI.Move
+import gameai.Move
 import service.RootService
-
+/**
+ * class to implement functions for TakeTruckAndPlaceTiles Move
+ */
 class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
 
+    /**
+     * performMove dimply calls on the function that needs to be implemented mainly from the playerActionService.
+     * it is required so that the AI-Bot can perform moves and actions on its own.
+     */
     override fun performMove(rootService: RootService) {
         val currentGame = rootService.zoolorettoGame
         checkNotNull(currentGame)
@@ -21,6 +27,9 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
 
     }
 
+    /**
+     * helping method to split between animal destinations and vending stall destinations
+     */
     private fun putInGoodDestination(rootService: RootService, tile: Tile) {
         if(tile is Animal){
             putInGoodDestinationAnimal(rootService, tile)
@@ -30,6 +39,9 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
         }
     }
 
+    /**
+     * helping method to place animal tile in the best animal space destination
+     */
     private fun putInGoodDestinationAnimal(rootService: RootService, tile: Animal ){
         val currentPlayer = rootService.zoolorettoGame!!.currentGameState.players.peek()
         val enclosures = currentPlayer.playerEnclosure
@@ -62,6 +74,9 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
         }
     }
 
+    /**
+     * helping method to place vending Stall tile in the best vending Stall space destination
+     */
     private fun putInGoodDestinationVendingStall(rootService: RootService){
         val currentPlayer = rootService.zoolorettoGame!!.currentGameState.players.peek()
         val enclosures = currentPlayer.playerEnclosure
@@ -84,12 +99,12 @@ class TakeTruckAndPlaceTiles(private val truckIndex: Int) : Move {
         }
     }
 
+    /**
+     * toHintString simply returns a string to be used as a hint during when TakeTruckAndPlaceTiles
+     * action takes place
+     */
     override fun toHintString(rootService: RootService): String {
         //return "Take truck containing ${truck.tilesOnTruck.fold("") { acc, tile -> "$acc $tile" }} "
         return "TODO" //TODO
     }
-
-//    override fun toHintString(): String {
-//        return "move tile to Enclosure with ${destination.pointValues.toString()} Points"
-//    }
 }

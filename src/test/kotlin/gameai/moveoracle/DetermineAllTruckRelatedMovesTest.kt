@@ -1,6 +1,6 @@
-package gameAI.moveoracle
+package gameai.moveoracle
 
-import gameAI.MoveOracle
+import gameai.MoveOracle
 import gamemockup.ZoolorettoGameStateMockups
 import gamemockup.util.TileLists
 import kotlin.test.Test
